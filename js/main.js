@@ -1,7 +1,8 @@
 ;(function(undefined){
 
   // SYS
-  PX = 2
+  var PX  = 2;
+  var DEG = Math.PI/180;
   var canvas  = document.getElementById('js-canvas');
   var ctx     = canvas.getContext('2d');
   var rand = function Rand(min, max) {
@@ -38,11 +39,11 @@
       this.delta = this.getDelta();
       this.p = 0;
     }
-
     this.drawFlickBounds()
   };
 
   Ember.prototype.drawFlickBounds = function drawFlickBounds(){
+    return;
     this.ctx.beginPath();
     this.ctx.arc(this.flickCenter.x*PX, this.flickCenter.y*PX, this.flickRadius, 0, 2*Math.PI);
     this.ctx.lineWidth = PX;
@@ -54,21 +55,22 @@
       x: this.top.x,
       y: this.top.y,
     }
-    var flickRadius = 50*PX; // !!hardCode!!
+    var flickRadius = 20*PX; // !!hardCode!!
 
     this.flickCenter = flickCenter;
     this.flickRadius = flickRadius;
   }
   
   Ember.prototype.getDelta = function(){
+    var angle = rand(0,360);
     var newTop = {
-      x: this.top.x + rand(-10,10),
-      y: this.top.y + rand(-50,50)
+      x: Math.round(this.flickCenter.x + Math.cos(angle*DEG)*this.flickRadius),
+      y: Math.round(this.flickCenter.y + Math.sin(angle*DEG)*2*this.flickRadius)
     }
-
+    // console.log(newTop);
     var delta = {
-      x: this.top.x - newTop.x,
-      y: this.top.y - newTop.y
+      x: newTop.x - this.top.x,
+      y: newTop.y - this.top.y
     }
     return delta;
   }
