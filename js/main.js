@@ -15,10 +15,11 @@
     this.top = this.o.top;
     this.p = 0; // used to animate delta
     if (!this.ctx) { console.error('no context, aborting'); return}
+    this.getFlickBounds()
     this.delta = this.getDelta();
   };
 
-  Ember.prototype.draw = function(){
+  Ember.prototype.draw = function Draw(){
     this.ctx.clearRect(0,0,1200,1200)
     this.ctx.beginPath();
     this.ctx.moveTo(200*PX, 300*PX);
@@ -30,18 +31,38 @@
     this.ctx.fillStyle = 'rgba(255,20,147,0.5)';
     this.ctx.fill();
 
-    this.p += .01;
+    this.p += .2;
     if (this.p >= 1) {
       this.top.x = topX;
       this.top.y = topY;
       this.delta = this.getDelta();
       this.p = 0;
     }
+
+    this.drawFlickBounds()
   };
+
+  Ember.prototype.drawFlickBounds = function drawFlickBounds(){
+    this.ctx.beginPath();
+    this.ctx.arc(this.flickCenter.x*PX, this.flickCenter.y*PX, this.flickRadius, 0, 2*Math.PI);
+    this.ctx.lineWidth = PX;
+    this.ctx.stroke();
+  }
+
+  Ember.prototype.getFlickBounds = function GetFlickBounds(){
+    var flickCenter = {
+      x: this.top.x,
+      y: this.top.y,
+    }
+    var flickRadius = 50*PX; // !!hardCode!!
+
+    this.flickCenter = flickCenter;
+    this.flickRadius = flickRadius;
+  }
   
   Ember.prototype.getDelta = function(){
     var newTop = {
-      x: this.top.x + rand(-50,50),
+      x: this.top.x + rand(-10,10),
       y: this.top.y + rand(-50,50)
     }
 
