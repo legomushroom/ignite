@@ -15,6 +15,7 @@
     this.ctx = this.o.ctx;
     this.top = this.o.top;
     this.color = this.o.color || 'deeppink';
+    this.flickRadius = this.o.flickRadius || 10;
     this.p = 0; // used to animate delta
     if (!this.ctx) { console.error('no context, aborting'); return}
     this.getFlickBounds()
@@ -55,7 +56,7 @@
       x: this.top.x,
       y: this.top.y,
     }
-    var flickRadius = 10*PX; // !!hardCode!!
+    var flickRadius = this.flickRadius*PX;
 
     this.flickCenter = flickCenter;
     this.flickRadius = flickRadius;
@@ -74,10 +75,11 @@
     }
     return delta;
   }
-
+  var embers = [];
   var ember = new Ember({
       ctx: ctx,
       sensivity: .15,
+      flickRadius: 10,
       color: 'rgba(255,20,147,0.5)',
       top: { x: 275, y: 100 }
     });
@@ -85,6 +87,7 @@
   var ember2 = new Ember({
       ctx: ctx,
       sensivity: .15,
+      flickRadius: 10,
       color: 'rgba(155,20,147,0.5)',
       top: { x: 325, y: 150 }
     });
@@ -92,16 +95,20 @@
   var ember3 = new Ember({
       ctx: ctx,
       sensivity: .1,
+      flickRadius: 15,
       color: 'rgba(55,120,147,0.5)',
       top: { x: 300, y: 50 }
     });
+
+  embers.push(ember, ember2, ember3);
   
   // LOOP
   var loop = function loop(){
     ctx.clearRect(0,0,1200,1200)
-    ember.draw();
-    ember2.draw();
-    ember3.draw();
+    
+    for (var i = embers.length - 1; i >= 0; i--) {
+      embers[i].draw()
+    };
     requestAnimationFrame(loop)
   };
   loop();
