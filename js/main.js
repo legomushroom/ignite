@@ -14,6 +14,9 @@
     this.o = o || {};
     this.ctx = this.o.ctx;
     this.top = this.o.top;
+    this.right = this.o.right;
+    this.bottom = this.o.bottom;
+    this.left = this.o.left;
     this.color = this.o.color || 'deeppink';
     this.flickRadius = this.o.flickRadius || 10;
     this.p = 0; // used to animate delta
@@ -24,11 +27,12 @@
 
   Ember.prototype.draw = function Draw(){
     this.ctx.beginPath();
-    this.ctx.moveTo(250*PX, 300*PX);
+    this.ctx.moveTo(this.left.x*PX, this.left.y*PX);
     var topX = this.top.x+(this.p*this.delta.x);
     var topY = this.top.y+(this.p*this.delta.y);
     this.ctx.lineTo(topX*PX, topY*PX);
-    this.ctx.lineTo(350*PX, 300*PX);
+    this.ctx.lineTo(this.right.x*PX, this.right.y*PX);
+    this.ctx.lineTo(this.bottom.x*PX, this.bottom.y*PX);
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
@@ -81,26 +85,30 @@
       sensivity: .15,
       flickRadius: 10,
       color: 'rgba(255,20,147,0.5)',
-      top: { x: 275, y: 100 }
+      top:    { x: 275, y: 100 },
+      right:  { x: 250, y: 200 },
+      bottom: { x: 275, y: 300 },
+      left:   { x: 350, y: 200 }
     });
 
-  var ember2 = new Ember({
-      ctx: ctx,
-      sensivity: .15,
-      flickRadius: 10,
-      color: 'rgba(155,20,147,0.5)',
-      top: { x: 325, y: 150 }
-    });
+  // var ember2 = new Ember({
+  //     ctx: ctx,
+  //     sensivity: .15,
+  //     flickRadius: 10,
+  //     color: 'rgba(155,20,147,0.5)',
+  //     top: { x: 325, y: 150 }
+  //   });
 
-  var ember3 = new Ember({
-      ctx: ctx,
-      sensivity: .1,
-      flickRadius: 15,
-      color: 'rgba(55,120,147,0.5)',
-      top: { x: 300, y: 50 }
-    });
+  // var ember3 = new Ember({
+  //     ctx: ctx,
+  //     sensivity: .1,
+  //     flickRadius: 15,
+  //     color: 'rgba(55,120,147,0.5)',
+  //     top: { x: 300, y: 50 }
+  //   });
 
-  embers.push(ember, ember2, ember3);
+  embers.push(ember);
+  // embers.push(ember, ember2, ember3);
   
   // LOOP
   var loop = function loop(){
