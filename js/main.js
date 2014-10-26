@@ -80,10 +80,21 @@
     return delta;
   }
   var embers = [];
-  var ember = new Ember({
+  var ember1 = new Ember({
       ctx: ctx,
       sensivity: .25,
       flickRadius: 10,
+      color: '#ED8CBA',
+      top:    { x: 280, y: 240 },
+      right:  { x: 300, y: 410 },
+      bottom: { x: 280, y: 438 },
+      left:   { x: 232, y: 404 }
+    });
+
+  var ember11 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 20,
       color: '#ED8CBA',
       top:    { x: 280, y: 240 },
       right:  { x: 300, y: 410 },
@@ -102,10 +113,32 @@
       left:   { x: 256, y: 420 }
     });
 
+  var ember21 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 30,
+      color: '#E86CA9',
+      top:    { x: 314, y: 130 },
+      right:  { x: 364, y: 412 },
+      bottom: { x: 310, y: 460 },
+      left:   { x: 256, y: 420 }
+    });
+
   var ember3 = new Ember({
       ctx: ctx,
       sensivity: .25,
       flickRadius: 10,
+      color: '#A4D7F5',
+      top:    { x: 330, y: 160 },
+      right:  { x: 348, y: 388 },
+      bottom: { x: 314, y: 426 },
+      left:   { x: 280, y: 380 }
+    });
+
+  var ember31 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 20,
       color: '#A4D7F5',
       top:    { x: 330, y: 160 },
       right:  { x: 348, y: 388 },
@@ -124,29 +157,47 @@
       left:   { x: 300, y: 410 }
     });
 
-  var ember5 = new Ember({
+  var ember41 = new Ember({
       ctx: ctx,
       sensivity: .25,
-      flickRadius: 10,
+      flickRadius: 20,
       color: '#F6D58A',
       top:    { x: 352, y: 252 },
       right:  { x: 376, y: 402 },
       bottom: { x: 328, y: 444 },
       left:   { x: 300, y: 410 }
     });
-  
 
-  // var ember3 = new Ember({
-  //     ctx: ctx,
-  //     sensivity: .1,
-  //     flickRadius: 15,
-  //     color: 'rgba(55,120,147,0.5)',
-  //     top: { x: 300, y: 50 }
-  //   });
+  var ember42 = new Ember({
+      ctx: ctx,
+      sensivity: .15,
+      flickRadius: 20,
+      color: '#F6D58A',
+      top:    { x: 352, y: 252 },
+      right:  { x: 376, y: 402 },
+      bottom: { x: 328, y: 444 },
+      left:   { x: 300, y: 410 }
+    });
 
-  embers.push(ember, ember2, ember3, ember4, ember5);
+  embers.push(ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, ember42);
   // embers.push(ember, ember2, ember3);
   ctx.globalCompositeOperation = 'multiply'
+
+
+  drawBones = function drawBones() {
+    ctx.lineWidth = 7*PX
+    ctx.strokeStyle = '#80404B'
+    // bone 1
+    ctx.beginPath()
+    ctx.moveTo(260*PX, 474*PX);
+    ctx.lineTo(360*PX, 500*PX);
+    ctx.stroke();
+    // bone 2
+    ctx.beginPath()
+    ctx.moveTo(256*PX, 510*PX);
+    ctx.lineTo(356*PX, 472*PX);
+    ctx.stroke();
+  }
 
   // LOOP
   var loop = function loop(){
@@ -155,7 +206,8 @@
     for (var i = embers.length - 1; i >= 0; i--) {
       embers[i].draw()
     };
-    requestAnimationFrame(loop)
+    drawBones()
+    requestAnimationFrame(loop);
   };
   loop();
 
