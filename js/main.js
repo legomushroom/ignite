@@ -65,7 +65,7 @@
   Ember.prototype.getDelta = function(){
     var angle = rand(0,360);
     var newTop = {
-      x: this.flickCenter.x + Math.cos(angle*DEG)*.5*this.flickRadius,
+      x: this.flickCenter.x + Math.cos(angle*DEG)*.05*this.flickRadius,
       y: this.flickCenter.y + Math.sin(angle*DEG)*1.5*this.flickRadius
     }
     // console.log(newTop);
