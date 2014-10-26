@@ -82,22 +82,59 @@
   var embers = [];
   var ember = new Ember({
       ctx: ctx,
-      sensivity: .15,
+      sensivity: .25,
       flickRadius: 10,
-      color: 'rgba(255,20,147,0.5)',
-      top:    { x: 275, y: 100 },
-      right:  { x: 250, y: 200 },
-      bottom: { x: 275, y: 300 },
-      left:   { x: 350, y: 200 }
+      color: '#ED8CBA',
+      top:    { x: 280, y: 240 },
+      right:  { x: 300, y: 410 },
+      bottom: { x: 280, y: 438 },
+      left:   { x: 232, y: 404 }
     });
 
-  // var ember2 = new Ember({
-  //     ctx: ctx,
-  //     sensivity: .15,
-  //     flickRadius: 10,
-  //     color: 'rgba(155,20,147,0.5)',
-  //     top: { x: 325, y: 150 }
-  //   });
+  var ember2 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 20,
+      color: '#E86CA9',
+      top:    { x: 314, y: 130 },
+      right:  { x: 364, y: 412 },
+      bottom: { x: 310, y: 460 },
+      left:   { x: 256, y: 420 }
+    });
+
+  var ember3 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 10,
+      color: '#A4D7F5',
+      top:    { x: 330, y: 160 },
+      right:  { x: 348, y: 388 },
+      bottom: { x: 314, y: 426 },
+      left:   { x: 280, y: 380 }
+    });
+
+  var ember4 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 10,
+      color: '#F6D58A',
+      top:    { x: 352, y: 252 },
+      right:  { x: 376, y: 402 },
+      bottom: { x: 328, y: 444 },
+      left:   { x: 300, y: 410 }
+    });
+
+  var ember5 = new Ember({
+      ctx: ctx,
+      sensivity: .25,
+      flickRadius: 10,
+      color: '#F6D58A',
+      top:    { x: 352, y: 252 },
+      right:  { x: 376, y: 402 },
+      bottom: { x: 328, y: 444 },
+      left:   { x: 300, y: 410 }
+    });
+  
 
   // var ember3 = new Ember({
   //     ctx: ctx,
@@ -107,9 +144,10 @@
   //     top: { x: 300, y: 50 }
   //   });
 
-  embers.push(ember);
+  embers.push(ember, ember2, ember3, ember4, ember5);
   // embers.push(ember, ember2, ember3);
-  
+  ctx.globalCompositeOperation = 'multiply'
+
   // LOOP
   var loop = function loop(){
     ctx.clearRect(0,0,1200,1200)
