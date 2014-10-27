@@ -9,6 +9,8 @@
     return Math.round(Math.random()*(max-min) + min);
   }
 
+  var mc = new Hammer(canvas);
+
   // EMBER CLASS
   var Ember = function Ember(o){
     this.o = o || {};
@@ -61,7 +63,7 @@
   };
 
   Ember.prototype.drawFlickBounds = function drawFlickBounds(){
-    return;
+    // return;
     this.ctx.beginPath();
     this.ctx.arc(this.flickCenter.x*PX, this.flickCenter.y*PX, this.flickRadius, 0, 2*Math.PI);
     this.ctx.lineWidth = PX;
@@ -200,6 +202,12 @@
     ctx.lineTo(356*PX, 472*PX);
     ctx.stroke();
   }
+
+  // mc.on('tap', function(e) {
+  //   console.log(e);
+  //   x = e.pointers[0].clientX;
+  //   y = e.pointers[0].clientY;
+  // });
 
   // LOOP
   var loop = function loop(){
