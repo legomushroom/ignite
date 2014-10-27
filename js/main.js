@@ -78,6 +78,9 @@
     var flickRadius = this.flickRadius*PX;
 
     this.flickCenter = flickCenter;
+    this.flickCenterStart = {};
+    this.flickCenterStart.x = flickCenter.x;
+    this.flickCenterStart.y = flickCenter.y;
     this.flickRadius = flickRadius;
   }
   
@@ -94,6 +97,29 @@
     }
     return delta;
   }
+
+  Ember.prototype.sendTop = function SendTop(dX, dY) {
+    var it = this;
+
+    var deltaX = deltaY = 0;
+    tween2 = new TWEEN.Tween({ p: 0 }).to({ p: 1 }, 1000+rand(0,200))
+      .onStart(function() {
+        deltaX = it.flickCenterStart.x - it.flickCenter.x
+        deltaY = it.flickCenterStart.y - it.flickCenter.y
+      })
+      .onUpdate(function() {
+        it.flickCenter.x = it.flickCenterStart.x-(deltaX*(1-this.p))
+        it.flickCenter.y = it.flickCenterStart.y-(deltaY*(1-this.p))
+      })
+      .easing(TWEEN.Easing.Elastic.Out)
+
+    tween1 = new TWEEN.Tween({ p: 0 }).to({ p: 1 }, 300)
+      .onUpdate(function(){
+        it.flickCenter.x = it.flickCenterStart.x+(dX*PX*this.p)
+        it.flickCenter.y = it.flickCenterStart.y+(dY*PX*this.p)
+      }).chain(tween2).start()
+  }
+
   var embers = [];
   var ember1 = new Ember({
       ctx: ctx,
@@ -208,6 +234,17 @@
   //   x = e.pointers[0].clientX;
   //   y = e.pointers[0].clientY;
   // });
+  
+  var rX = rY = 0;
+  setTimeout(function() {
+    for (var i = embers.length - 1; i >= 0; i--) {
+      if (i % 2 == 0){
+        rX = rand(-100, 100)
+        rY = rand(-100, 100)
+      }
+      embers[i].sendTop(-50+rX, rY);
+    };
+  }, 3000)
 
   // LOOP
   var loop = function loop(){
@@ -216,7 +253,8 @@
     for (var i = embers.length - 1; i >= 0; i--) {
       embers[i].draw()
     };
-    drawBones()
+    drawBones();
+    TWEEN.update();
     requestAnimationFrame(loop);
   };
   loop();
