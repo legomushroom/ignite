@@ -20,6 +20,8 @@
     this.color = this.o.color || 'deeppink';
     this.flickRadius = this.o.flickRadius || 10;
     this.p = 0; // used to animate delta
+    this.p2 = 0; // used to animate delta
+    this.p2Step = .01
     if (!this.ctx) { console.error('no context, aborting'); return}
     this.getFlickBounds()
     this.delta = this.getDelta();
@@ -27,12 +29,12 @@
 
   Ember.prototype.draw = function Draw(){
     this.ctx.beginPath();
-    this.ctx.moveTo(this.left.x*PX, this.left.y*PX);
+    this.ctx.moveTo(this.left.x*PX, (this.left.y+this.p2*20)*PX);
     var topX = this.top.x+(this.p*this.delta.x);
     var topY = this.top.y+(this.p*this.delta.y);
     this.ctx.lineTo(topX*PX, topY*PX);
-    this.ctx.lineTo(this.right.x*PX, this.right.y*PX);
-    this.ctx.lineTo(this.bottom.x*PX, this.bottom.y*PX);
+    this.ctx.lineTo((this.right.x)*PX, (this.right.y+this.p2*20)*PX);
+    this.ctx.lineTo(this.bottom.x*PX, (this.bottom.y+this.p2*20)*PX);
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
@@ -44,6 +46,17 @@
       this.delta = this.getDelta();
       this.p = 0;
     }
+
+    // this.p2 -= this.p2Step
+    // if (this.p2 <= 0) {
+    //   this.p2 = 1
+    // }
+    // if (this.p2 >= 1) {
+    //   this.p2Step = -this.p2Step;
+    // }
+    // if (this.p2 <= 0) {
+    //   this.p2Step = -this.p2Step;
+    // }
     this.drawFlickBounds()
   };
 
@@ -131,7 +144,7 @@
       color: '#A4D7F5',
       top:    { x: 330, y: 160 },
       right:  { x: 348, y: 388 },
-      bottom: { x: 314, y: 426 },
+      bottom: { x: 310, y: 460 },
       left:   { x: 280, y: 380 }
     });
 
@@ -142,7 +155,7 @@
       color: '#A4D7F5',
       top:    { x: 330, y: 160 },
       right:  { x: 348, y: 388 },
-      bottom: { x: 314, y: 426 },
+      bottom: { x: 310, y: 460 },
       left:   { x: 280, y: 380 }
     });
 
@@ -168,18 +181,7 @@
       left:   { x: 300, y: 410 }
     });
 
-  var ember42 = new Ember({
-      ctx: ctx,
-      sensivity: .15,
-      flickRadius: 20,
-      color: '#F6D58A',
-      top:    { x: 352, y: 252 },
-      right:  { x: 376, y: 402 },
-      bottom: { x: 328, y: 444 },
-      left:   { x: 300, y: 410 }
-    });
-
-  embers.push(ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, ember42);
+  embers.push(ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41);
   // embers.push(ember, ember2, ember3);
   ctx.globalCompositeOperation = 'multiply'
 
