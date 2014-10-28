@@ -1,5 +1,3 @@
-((undefined_) ->
-  
   # SYS
   PX = 2
   DEG = Math.PI / 180
@@ -342,5 +340,3 @@
     return
 
   animationLoop()
-  return
-)()
