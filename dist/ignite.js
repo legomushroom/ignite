@@ -1,113 +1,118 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Draw, Ember, GetFlickBounds, SendTop, TWEEN, drawFlickBounds, h;
+var Ember, TWEEN, h;
 
 h = require('./helpers');
 
 TWEEN = require('./tweenjs.min');
 
-Ember = Ember = function(o) {
-  this.o = o || {};
-  this.ctx = this.o.ctx;
-  this.top = this.o.top;
-  this.right = this.o.right;
-  this.bottom = this.o.bottom;
-  this.left = this.o.left;
-  this.color = this.o.color || "deeppink";
-  this.flickRadius = this.o.flickRadius || 10;
-  this.p = 0;
-  this.p2 = 0;
-  this.p2Step = .01;
-  if (!this.ctx) {
-    console.error("no context, aborting");
-    return;
-  }
-  this.getFlickBounds();
-  this.delta = this.getDelta();
-};
-
-Ember.prototype.draw = Draw = function() {
-  var topX, topY;
-  this.ctx.beginPath();
-  this.ctx.moveTo(this.left.x * h.PX, (this.left.y + this.p2 * 20) * h.PX);
-  topX = this.top.x + (this.p * this.delta.x);
-  topY = this.top.y + (this.p * this.delta.y);
-  this.ctx.lineTo(topX * h.PX, topY * h.PX);
-  this.ctx.lineTo(this.right.x * h.PX, (this.right.y + this.p2 * 20) * h.PX);
-  this.ctx.lineTo(this.bottom.x * h.PX, (this.bottom.y + this.p2 * 20) * h.PX);
-  this.ctx.closePath();
-  this.ctx.fillStyle = this.color;
-  this.ctx.fill();
-  this.p += this.o.sensivity;
-  if (this.p >= 1) {
-    this.top.x = topX;
-    this.top.y = topY;
-    this.delta = this.getDelta();
+Ember = (function() {
+  function Ember(o) {
+    this.o = o != null ? o : {};
+    this.ctx = this.o.ctx;
+    this.top = this.o.top;
+    this.right = this.o.right;
+    this.bottom = this.o.bottom;
+    this.left = this.o.left;
+    this.color = this.o.color || "deeppink";
+    this.flickRadius = this.o.flickRadius || 10;
     this.p = 0;
+    this.p2 = 0;
+    this.p2Step = .01;
+    if (!this.ctx) {
+      console.error("no context, aborting");
+      return;
+    }
+    this.getFlickBounds();
+    this.delta = this.getDelta();
   }
-  this.drawFlickBounds();
-};
 
-Ember.prototype.drawFlickBounds = drawFlickBounds = function() {
-  return;
-  this.ctx.beginPath();
-  this.ctx.arc(this.flickCenter.x * PX, this.flickCenter.y * PX, this.flickRadius, 0, 2 * Math.PI);
-  this.ctx.lineWidth = PX;
-  this.ctx.stroke();
-};
-
-Ember.prototype.getFlickBounds = GetFlickBounds = function() {
-  var PX, flickCenter, flickRadius;
-  PX = 2;
-  flickCenter = {
-    x: this.top.x,
-    y: this.top.y
+  Ember.prototype.draw = function() {
+    var topX, topY;
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.left.x * h.PX, (this.left.y + this.p2 * 20) * h.PX);
+    topX = this.top.x + (this.p * this.delta.x);
+    topY = this.top.y + (this.p * this.delta.y);
+    this.ctx.lineTo(topX * h.PX, topY * h.PX);
+    this.ctx.lineTo(this.right.x * h.PX, (this.right.y + this.p2 * 20) * h.PX);
+    this.ctx.lineTo(this.bottom.x * h.PX, (this.bottom.y + this.p2 * 20) * h.PX);
+    this.ctx.closePath();
+    this.ctx.fillStyle = this.color;
+    this.ctx.fill();
+    this.p += this.o.sensivity;
+    if (this.p >= 1) {
+      this.top.x = topX;
+      this.top.y = topY;
+      this.delta = this.getDelta();
+      this.p = 0;
+    }
+    this.drawFlickBounds();
   };
-  flickRadius = this.flickRadius * PX;
-  this.flickCenter = flickCenter;
-  this.flickCenterStart = {};
-  this.flickCenterStart.x = flickCenter.x;
-  this.flickCenterStart.y = flickCenter.y;
-  this.flickRadius = flickRadius;
-};
 
-Ember.prototype.getDelta = function() {
-  var angle, delta, newTop;
-  angle = h.rand(0, 360);
-  newTop = {
-    x: this.flickCenter.x + Math.cos(angle * h.DEG) * .05 * this.flickRadius,
-    y: this.flickCenter.y + Math.sin(angle * h.DEG) * 1.5 * this.flickRadius
+  Ember.prototype.drawFlickBounds = function() {
+    return;
+    this.ctx.beginPath();
+    this.ctx.arc(this.flickCenter.x * PX, this.flickCenter.y * PX, this.flickRadius, 0, 2 * Math.PI);
+    this.ctx.lineWidth = PX;
+    this.ctx.stroke();
   };
-  delta = {
-    x: newTop.x - this.top.x,
-    y: newTop.y - this.top.y
-  };
-  return delta;
-};
 
-Ember.prototype.sendTop = SendTop = function(dX, dY) {
-  var deltaX, deltaY, it, tween1, tween2;
-  it = this;
-  deltaX = deltaY = 0;
-  tween2 = new TWEEN.Tween({
-    p: 0
-  }).to({
-    p: 1
-  }, 1000 + h.rand(0, 200)).onStart(function() {
-    deltaX = it.flickCenterStart.x - it.flickCenter.x;
-    deltaY = it.flickCenterStart.y - it.flickCenter.y;
-  }).onUpdate(function() {
-    it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - this.p));
-    it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - this.p));
-  }).easing(TWEEN.Easing.Elastic.Out);
-  tween1 = new TWEEN.Tween({
-    p: 0
-  }).to({
-    p: 1
-  }, 300).onUpdate(function() {
-    it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * this.p);
-    it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * this.p);
-  }).chain(tween2).start();
-};
+  Ember.prototype.getFlickBounds = function() {
+    var PX, flickCenter, flickRadius;
+    PX = 2;
+    flickCenter = {
+      x: this.top.x,
+      y: this.top.y
+    };
+    flickRadius = this.flickRadius * PX;
+    this.flickCenter = flickCenter;
+    this.flickCenterStart = {};
+    this.flickCenterStart.x = flickCenter.x;
+    this.flickCenterStart.y = flickCenter.y;
+    this.flickRadius = flickRadius;
+  };
+
+  Ember.prototype.getDelta = function() {
+    var angle, delta, newTop;
+    angle = h.rand(0, 360);
+    newTop = {
+      x: this.flickCenter.x + Math.cos(angle * h.DEG) * .05 * this.flickRadius,
+      y: this.flickCenter.y + Math.sin(angle * h.DEG) * 1.5 * this.flickRadius
+    };
+    delta = {
+      x: newTop.x - this.top.x,
+      y: newTop.y - this.top.y
+    };
+    return delta;
+  };
+
+  Ember.prototype.sendTop = function(dX, dY) {
+    var deltaX, deltaY, it, tween1, tween2;
+    it = this;
+    deltaX = deltaY = 0;
+    tween2 = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 1000 + h.rand(0, 200)).onStart(function() {
+      deltaX = it.flickCenterStart.x - it.flickCenter.x;
+      deltaY = it.flickCenterStart.y - it.flickCenter.y;
+    }).onUpdate(function() {
+      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - this.p));
+      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - this.p));
+    }).easing(TWEEN.Easing.Elastic.Out);
+    tween1 = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 300).onUpdate(function() {
+      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * this.p);
+      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * this.p);
+    }).chain(tween2).start();
+  };
+
+  return Ember;
+
+})();
 
 module.exports = Ember;
 
@@ -169,7 +174,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc;
+    var ember1, mc;
     this.animationLoop();
     mc = new Hammer(this.canvas);
     ember1 = new Ember({
@@ -194,162 +199,7 @@ Main = (function() {
         y: 404
       }
     });
-    ember11 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 20,
-      color: "#ED8CBA",
-      top: {
-        x: 280,
-        y: 240
-      },
-      right: {
-        x: 300,
-        y: 410
-      },
-      bottom: {
-        x: 280,
-        y: 438
-      },
-      left: {
-        x: 232,
-        y: 404
-      }
-    });
-    ember2 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 20,
-      color: "#E86CA9",
-      top: {
-        x: 314,
-        y: 130
-      },
-      right: {
-        x: 364,
-        y: 412
-      },
-      bottom: {
-        x: 310,
-        y: 460
-      },
-      left: {
-        x: 256,
-        y: 420
-      }
-    });
-    ember21 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 30,
-      color: "#E86CA9",
-      top: {
-        x: 314,
-        y: 130
-      },
-      right: {
-        x: 364,
-        y: 412
-      },
-      bottom: {
-        x: 310,
-        y: 460
-      },
-      left: {
-        x: 256,
-        y: 420
-      }
-    });
-    ember3 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 10,
-      color: "#A4D7F5",
-      top: {
-        x: 330,
-        y: 160
-      },
-      right: {
-        x: 348,
-        y: 388
-      },
-      bottom: {
-        x: 310,
-        y: 460
-      },
-      left: {
-        x: 280,
-        y: 380
-      }
-    });
-    ember31 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 20,
-      color: "#A4D7F5",
-      top: {
-        x: 330,
-        y: 160
-      },
-      right: {
-        x: 348,
-        y: 388
-      },
-      bottom: {
-        x: 310,
-        y: 460
-      },
-      left: {
-        x: 280,
-        y: 380
-      }
-    });
-    ember4 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 10,
-      color: "#F6D58A",
-      top: {
-        x: 352,
-        y: 252
-      },
-      right: {
-        x: 376,
-        y: 402
-      },
-      bottom: {
-        x: 328,
-        y: 444
-      },
-      left: {
-        x: 300,
-        y: 410
-      }
-    });
-    ember41 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 20,
-      color: "#F6D58A",
-      top: {
-        x: 352,
-        y: 252
-      },
-      right: {
-        x: 376,
-        y: 402
-      },
-      bottom: {
-        x: 328,
-        y: 444
-      },
-      left: {
-        x: 300,
-        y: 410
-      }
-    });
-    this.embers.push(ember1, ember11, ember2, ember21, ember3);
-    this.embers.push(ember31, ember4, ember41);
+    this.embers.push(ember1);
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
