@@ -1,7 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Draw, Ember, GetFlickBounds, SendTop, drawFlickBounds, h;
+var Draw, Ember, GetFlickBounds, SendTop, TWEEN, drawFlickBounds, h;
 
 h = require('./helpers');
+
+TWEEN = require('./tweenjs.min');
 
 Ember = Ember = function(o) {
   this.o = o || {};
@@ -90,7 +92,7 @@ Ember.prototype.sendTop = SendTop = function(dX, dY) {
     p: 0
   }).to({
     p: 1
-  }, 1000 + rand(0, 200)).onStart(function() {
+  }, 1000 + h.rand(0, 200)).onStart(function() {
     deltaX = it.flickCenterStart.x - it.flickCenter.x;
     deltaY = it.flickCenterStart.y - it.flickCenter.y;
   }).onUpdate(function() {
@@ -111,7 +113,7 @@ module.exports = Ember;
 
 
 
-},{"./helpers":3}],2:[function(require,module,exports){
+},{"./helpers":3,"./tweenjs.min":5}],2:[function(require,module,exports){
 /*! Hammer.JS - v2.0.4 - 2014-09-28
  * http://hammerjs.github.io/
  *
@@ -142,7 +144,7 @@ module.exports = new Helpers;
 
 
 },{}],4:[function(require,module,exports){
-var DEG, Ember, Hammer, Main, PX, Rand, TWEEN, rand;
+var Ember, Hammer, Main, TWEEN, h;
 
 Ember = require('./ember');
 
@@ -150,24 +152,28 @@ Hammer = require('./hammer.min');
 
 TWEEN = require('./tweenjs.min');
 
-rand = Rand = function(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-};
-
-PX = 2;
-
-DEG = Math.PI / 180;
+h = require('./helpers');
 
 Main = (function() {
   function Main(o) {
-    var animationLoop, canvas, ctx, drawBones, ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, embers, mc, rX, rY;
     this.o = o != null ? o : {};
-    canvas = document.getElementById("js-canvas");
-    ctx = canvas.getContext("2d");
-    mc = new Hammer(canvas);
-    embers = [];
+    this.vars();
+    this.run();
+  }
+
+  Main.prototype.vars = function() {
+    this.canvas = document.getElementById("js-canvas");
+    this.ctx = this.canvas.getContext("2d");
+    this.animationLoop = this.animationLoop.bind(this);
+    return this.embers = [];
+  };
+
+  Main.prototype.run = function() {
+    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc;
+    this.animationLoop();
+    mc = new Hammer(this.canvas);
     ember1 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 10,
       color: "#ED8CBA",
@@ -189,7 +195,7 @@ Main = (function() {
       }
     });
     ember11 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 20,
       color: "#ED8CBA",
@@ -211,7 +217,7 @@ Main = (function() {
       }
     });
     ember2 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 20,
       color: "#E86CA9",
@@ -233,7 +239,7 @@ Main = (function() {
       }
     });
     ember21 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 30,
       color: "#E86CA9",
@@ -255,7 +261,7 @@ Main = (function() {
       }
     });
     ember3 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 10,
       color: "#A4D7F5",
@@ -277,7 +283,7 @@ Main = (function() {
       }
     });
     ember31 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 20,
       color: "#A4D7F5",
@@ -299,7 +305,7 @@ Main = (function() {
       }
     });
     ember4 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 10,
       color: "#F6D58A",
@@ -321,7 +327,7 @@ Main = (function() {
       }
     });
     ember41 = new Ember({
-      ctx: ctx,
+      ctx: this.ctx,
       sensivity: .25,
       flickRadius: 20,
       color: "#F6D58A",
@@ -342,48 +348,52 @@ Main = (function() {
         y: 410
       }
     });
-    embers.push(ember1, ember11, ember2, ember21, ember3);
-    embers.push(ember31, ember4, ember41);
-    ctx.globalCompositeOperation = "multiply";
-    drawBones = drawBones = function() {
-      ctx.lineWidth = 7 * PX;
-      ctx.strokeStyle = "#80404B";
-      ctx.beginPath();
-      ctx.moveTo(260 * PX, 474 * PX);
-      ctx.lineTo(360 * PX, 500 * PX);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(256 * PX, 510 * PX);
-      ctx.lineTo(356 * PX, 472 * PX);
-      ctx.stroke();
-    };
+    this.embers.push(ember1, ember11, ember2, ember21, ember3);
+    this.embers.push(ember31, ember4, ember41);
+    return this.ctx.globalCompositeOperation = "multiply";
+  };
+
+  Main.prototype.drawBones = function() {
+    var rX, rY;
+    this.ctx.lineWidth = 7 * h.PX;
+    this.ctx.strokeStyle = "#80404B";
+    this.ctx.beginPath();
+    this.ctx.moveTo(260 * h.PX, 474 * h.PX);
+    this.ctx.lineTo(360 * h.PX, 500 * h.PX);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.moveTo(256 * h.PX, 510 * h.PX);
+    this.ctx.lineTo(356 * h.PX, 472 * h.PX);
+    this.ctx.stroke();
     rX = rY = 0;
-    setTimeout((function() {
-      var i;
-      i = embers.length - 1;
-      while (i >= 0) {
-        if (i % 2 === 0) {
-          rX = rand(-100, 100);
-          rY = rand(-100, 100);
+    return setTimeout(((function(_this) {
+      return function() {
+        var i;
+        i = _this.embers.length - 1;
+        while (i >= 0) {
+          if (i % 2 === 0) {
+            rX = h.rand(-100, 100);
+            rY = h.rand(-100, 100);
+          }
+          _this.embers[i].sendTop(-50 + rX, rY);
+          i--;
         }
-        embers[i].sendTop(-50 + rX, rY);
-        i--;
-      }
-    }), 3000);
-    animationLoop = function() {
-      var i;
-      ctx.clearRect(0, 0, 1200, 1200);
-      i = embers.length - 1;
-      while (i >= 0) {
-        embers[i].draw();
-        i--;
-      }
-      drawBones();
-      TWEEN.update();
-      requestAnimationFrame(animationLoop);
-    };
-    animationLoop();
-  }
+      };
+    })(this)), 3000);
+  };
+
+  Main.prototype.animationLoop = function() {
+    var i;
+    this.ctx.clearRect(0, 0, 1200, 1200);
+    i = this.embers.length - 1;
+    while (i >= 0) {
+      this.embers[i].draw();
+      i--;
+    }
+    this.drawBones();
+    TWEEN.update();
+    requestAnimationFrame(this.animationLoop);
+  };
 
   return Main;
 
@@ -393,7 +403,7 @@ new Main;
 
 
 
-},{"./ember":1,"./hammer.min":2,"./tweenjs.min":5}],5:[function(require,module,exports){
+},{"./ember":1,"./hammer.min":2,"./helpers":3,"./tweenjs.min":5}],5:[function(require,module,exports){
 // tween.js v.0.15.0 https://github.com/sole/tween.js
 void 0 === Date.now && (Date.now = function() {
     return (new Date).valueOf()

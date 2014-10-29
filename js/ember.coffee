@@ -1,5 +1,6 @@
 # EMBER CLASS
 h = require './helpers'
+TWEEN = require './tweenjs.min'
 
 # PX = 2
 # rand = Rand = (min, max) ->
@@ -98,7 +99,7 @@ Ember::sendTop = SendTop = (dX, dY) ->
   deltaX = deltaY = 0
   tween2 = new TWEEN.Tween(p: 0).to(
     p: 1
-  , 1000 + rand(0, 200)).onStart(->
+  , 1000 + h.rand(0, 200)).onStart(->
     deltaX = it.flickCenterStart.x - it.flickCenter.x
     deltaY = it.flickCenterStart.y - it.flickCenter.y
     return

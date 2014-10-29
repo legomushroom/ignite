@@ -1,22 +1,27 @@
 Ember = require './ember'
 Hammer = require './hammer.min'
 TWEEN = require './tweenjs.min'
-rand = Rand = (min, max) ->
-  Math.round Math.random() * (max - min) + min
-PX = 2
-DEG = Math.PI / 180
+h = require './helpers'
 
 class Main
   constructor:(@o={})->
+    @vars()
+    @run()
+
+  vars:->
     # SYS
-    canvas = document.getElementById("js-canvas")
-    ctx = canvas.getContext("2d")
+    @canvas = document.getElementById("js-canvas")
+    @ctx = @canvas.getContext("2d")
+    @animationLoop = @animationLoop.bind(@)
+    @embers = []
 
-    mc = new Hammer(canvas)
+  run:->
+    @animationLoop()
 
-    embers = []
+    mc = new Hammer(@canvas)
+
     ember1 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 10
       color: "#ED8CBA"
@@ -37,7 +42,7 @@ class Main
         y: 404
     )
     ember11 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 20
       color: "#ED8CBA"
@@ -58,7 +63,7 @@ class Main
         y: 404
     )
     ember2 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 20
       color: "#E86CA9"
@@ -79,7 +84,7 @@ class Main
         y: 420
     )
     ember21 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 30
       color: "#E86CA9"
@@ -100,7 +105,7 @@ class Main
         y: 420
     )
     ember3 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 10
       color: "#A4D7F5"
@@ -121,7 +126,7 @@ class Main
         y: 380
     )
     ember31 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 20
       color: "#A4D7F5"
@@ -142,7 +147,7 @@ class Main
         y: 380
     )
     ember4 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 10
       color: "#F6D58A"
@@ -163,7 +168,7 @@ class Main
         y: 410
     )
     ember41 = new Ember(
-      ctx: ctx
+      ctx: @ctx
       sensivity: .25
       flickRadius: 20
       color: "#F6D58A"
@@ -183,27 +188,27 @@ class Main
         x: 300
         y: 410
     )
-    embers.push ember1, ember11, ember2, ember21, ember3
-    embers.push ember31, ember4, ember41
+    @embers.push ember1, ember11, ember2, ember21, ember3
+    @embers.push ember31, ember4, ember41
 
     # embers.push(ember, ember2, ember3);
-    ctx.globalCompositeOperation = "multiply"
-    drawBones = drawBones = ->
-      ctx.lineWidth = 7 * PX
-      ctx.strokeStyle = "#80404B"
-      
-      # bone 1
-      ctx.beginPath()
-      ctx.moveTo 260 * PX, 474 * PX
-      ctx.lineTo 360 * PX, 500 * PX
-      ctx.stroke()
-      
-      # bone 2
-      ctx.beginPath()
-      ctx.moveTo 256 * PX, 510 * PX
-      ctx.lineTo 356 * PX, 472 * PX
-      ctx.stroke()
-      return
+    @ctx.globalCompositeOperation = "multiply"
+  
+  drawBones:->
+    @ctx.lineWidth = 7*h.PX
+    @ctx.strokeStyle = "#80404B"
+    
+    # bone 1
+    @ctx.beginPath()
+    @ctx.moveTo 260 * h.PX, 474 * h.PX
+    @ctx.lineTo 360 * h.PX, 500 * h.PX
+    @ctx.stroke()
+    
+    # bone 2
+    @ctx.beginPath()
+    @ctx.moveTo 256 * h.PX, 510 * h.PX
+    @ctx.lineTo 356 * h.PX, 472 * h.PX
+    @ctx.stroke()
 
 
     # mc.on('tap', function(e) {
@@ -212,31 +217,29 @@ class Main
     #   y = e.pointers[0].clientY;
     # });
     rX = rY = 0
-    setTimeout (->
-      i = embers.length - 1
+    setTimeout (=>
+      i = @embers.length - 1
 
       while i >= 0
         if i % 2 is 0
-          rX = rand(-100, 100)
-          rY = rand(-100, 100)
-        embers[i].sendTop -50 + rX, rY
+          rX = h.rand(-100, 100)
+          rY = h.rand(-100, 100)
+        @embers[i].sendTop -50 + rX, rY
         i--
       return
     ), 3000
 
     # LOOP
-    animationLoop = ->
-      ctx.clearRect 0, 0, 1200, 1200
-      i = embers.length - 1
+  animationLoop: ->
+    @ctx.clearRect 0, 0, 1200, 1200
+    i = @embers.length - 1
 
-      while i >= 0
-        embers[i].draw()
-        i--
-      drawBones()
-      TWEEN.update()
-      requestAnimationFrame animationLoop
-      return
-
-    animationLoop()
+    while i >= 0
+      @embers[i].draw()
+      i--
+    @drawBones()
+    TWEEN.update()
+    requestAnimationFrame @animationLoop
+    return
 
 new Main
