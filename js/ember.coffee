@@ -1,9 +1,11 @@
 # EMBER CLASS
-PX = 2
-rand = Rand = (min, max) ->
-  Math.round Math.random() * (max - min) + min
+h = require './helpers'
 
-DEG = Math.PI / 180
+# PX = 2
+# rand = Rand = (min, max) ->
+#   Math.round Math.random() * (max - min) + min
+
+# DEG = Math.PI / 180
 
 Ember = Ember = (o) ->
   @o = o or {}
@@ -26,12 +28,12 @@ Ember = Ember = (o) ->
 
 Ember::draw = Draw = ->
   @ctx.beginPath()
-  @ctx.moveTo @left.x * PX, (@left.y + @p2 * 20) * PX
+  @ctx.moveTo @left.x * h.PX, (@left.y + @p2 * 20) * h.PX
   topX = @top.x + (@p * @delta.x)
   topY = @top.y + (@p * @delta.y)
-  @ctx.lineTo topX * PX, topY * PX
-  @ctx.lineTo (@right.x) * PX, (@right.y + @p2 * 20) * PX
-  @ctx.lineTo @bottom.x * PX, (@bottom.y + @p2 * 20) * PX
+  @ctx.lineTo topX * h.PX, topY * h.PX
+  @ctx.lineTo (@right.x) * h.PX, (@right.y + @p2 * 20) * h.PX
+  @ctx.lineTo @bottom.x * h.PX, (@bottom.y + @p2 * 20) * h.PX
   @ctx.closePath()
   @ctx.fillStyle = @color
   @ctx.fill()
@@ -78,10 +80,10 @@ Ember::getFlickBounds = GetFlickBounds = ->
   return
 
 Ember::getDelta = ->
-  angle = rand(0, 360)
+  angle = h.rand(0, 360)
   newTop =
-    x: @flickCenter.x + Math.cos(angle * DEG) * .05 * @flickRadius
-    y: @flickCenter.y + Math.sin(angle * DEG) * 1.5 * @flickRadius
+    x: @flickCenter.x + Math.cos(angle * h.DEG) * .05 * @flickRadius
+    y: @flickCenter.y + Math.sin(angle * h.DEG) * 1.5 * @flickRadius
 
   
   # console.log(newTop);
@@ -108,8 +110,8 @@ Ember::sendTop = SendTop = (dX, dY) ->
   tween1 = new TWEEN.Tween(p: 0).to(
     p: 1
   , 300).onUpdate(->
-    it.flickCenter.x = it.flickCenterStart.x + (dX * PX * @p)
-    it.flickCenter.y = it.flickCenterStart.y + (dY * PX * @p)
+    it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * @p)
+    it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * @p)
     return
   ).chain(tween2).start()
   return
