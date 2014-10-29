@@ -7,34 +7,40 @@ TWEEN = require('./tweenjs.min');
 
 Ember = (function() {
   function Ember(o) {
+    var deltas;
     this.o = o != null ? o : {};
     this.ctx = this.o.ctx;
     this.top = this.o.top;
+    this.flickRadius = this.o.flickRadius || 10;
+    this.top2 = this.o.top;
     this.right = this.o.right;
     this.bottom = this.o.bottom;
     this.left = this.o.left;
     this.color = this.o.color || "deeppink";
-    this.flickRadius = this.o.flickRadius || 10;
+    this.angle = 0;
+    this.angle2 = 0;
+    this.angleStep = h.rand(25, 50);
+    this.angleStep2 = h.rand(25, 50);
     this.p = 0;
-    this.p2 = 0;
-    this.p2Step = .01;
     if (!this.ctx) {
       console.error("no context, aborting");
       return;
     }
     this.getFlickBounds();
-    this.delta = this.getDelta();
+    deltas = this.getDelta();
+    this.delta = deltas.delta;
+    this.delta2 = deltas.delta2;
   }
 
   Ember.prototype.draw = function() {
-    var topX, topY;
+    var deltas, topX, topY;
     this.ctx.beginPath();
-    this.ctx.moveTo(this.left.x * h.PX, (this.left.y + this.p2 * 20) * h.PX);
+    this.ctx.moveTo(this.left.x * h.PX, this.left.y * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
     topY = this.top.y + (this.p * this.delta.y);
     this.ctx.lineTo(topX * h.PX, topY * h.PX);
-    this.ctx.lineTo(this.right.x * h.PX, (this.right.y + this.p2 * 20) * h.PX);
-    this.ctx.lineTo(this.bottom.x * h.PX, (this.bottom.y + this.p2 * 20) * h.PX);
+    this.ctx.lineTo(this.right.x * h.PX, this.right.y * h.PX);
+    this.ctx.lineTo(this.bottom.x * h.PX, this.bottom.y * h.PX);
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
@@ -42,17 +48,22 @@ Ember = (function() {
     if (this.p >= 1) {
       this.top.x = topX;
       this.top.y = topY;
-      this.delta = this.getDelta();
+      deltas = this.getDelta();
+      this.delta = deltas.delta;
+      this.delta2 = deltas.delta2;
       this.p = 0;
     }
     this.drawFlickBounds();
   };
 
   Ember.prototype.drawFlickBounds = function() {
+    var x, y;
     return;
     this.ctx.beginPath();
-    this.ctx.arc(this.flickCenter.x * PX, this.flickCenter.y * PX, this.flickRadius, 0, 2 * Math.PI);
-    this.ctx.lineWidth = PX;
+    x = this.flickCenter.x * h.PX;
+    y = this.flickCenter.y * h.PX;
+    this.ctx.arc(x, y, this.flickRadius, 0, 2 * Math.PI);
+    this.ctx.lineWidth = h.PX;
     this.ctx.stroke();
   };
 
@@ -72,42 +83,29 @@ Ember = (function() {
   };
 
   Ember.prototype.getDelta = function() {
-    var angle, delta, newTop;
-    angle = h.rand(0, 360);
+    var delta, delta2, newTop, newTop2;
+    this.angle += this.angleStep;
+    this.angle2 -= this.angleStep;
     newTop = {
-      x: this.flickCenter.x + Math.cos(angle * h.DEG) * .05 * this.flickRadius,
-      y: this.flickCenter.y + Math.sin(angle * h.DEG) * 1.5 * this.flickRadius
+      x: this.flickCenter.x + Math.cos(this.angle * h.DEG) * .05 * this.flickRadius,
+      y: this.flickCenter.y + Math.sin(this.angle * h.DEG) * 1.5 * this.flickRadius
+    };
+    newTop2 = {
+      x: this.flickCenter.x + Math.cos(this.angle2 * h.DEG) * .05 * this.flickRadius,
+      y: this.flickCenter.y + Math.sin(this.angle2 * h.DEG) * 1.5 * this.flickRadius
     };
     delta = {
       x: newTop.x - this.top.x,
       y: newTop.y - this.top.y
     };
-    return delta;
-  };
-
-  Ember.prototype.sendTop = function(dX, dY) {
-    var deltaX, deltaY, it, tween1, tween2;
-    it = this;
-    deltaX = deltaY = 0;
-    tween2 = new TWEEN.Tween({
-      p: 0
-    }).to({
-      p: 1
-    }, 1000 + h.rand(0, 200)).onStart(function() {
-      deltaX = it.flickCenterStart.x - it.flickCenter.x;
-      deltaY = it.flickCenterStart.y - it.flickCenter.y;
-    }).onUpdate(function() {
-      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - this.p));
-      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - this.p));
-    }).easing(TWEEN.Easing.Elastic.Out);
-    tween1 = new TWEEN.Tween({
-      p: 0
-    }).to({
-      p: 1
-    }, 300).onUpdate(function() {
-      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * this.p);
-      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * this.p);
-    }).chain(tween2).start();
+    delta2 = {
+      x: newTop2.x - this.top2.x,
+      y: newTop2.y - this.top2.y
+    };
+    return {
+      delta: delta,
+      delta2: delta2
+    };
   };
 
   return Ember;
@@ -174,7 +172,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var ember1, mc;
+    var ember1, ember2, ember3, ember4, mc;
     this.animationLoop();
     mc = new Hammer(this.canvas);
     ember1 = new Ember({
@@ -199,12 +197,77 @@ Main = (function() {
         y: 404
       }
     });
-    this.embers.push(ember1);
+    ember2 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      flickRadius: 20,
+      color: "#E86CA9",
+      top: {
+        x: 314,
+        y: 130
+      },
+      right: {
+        x: 364,
+        y: 412
+      },
+      bottom: {
+        x: 310,
+        y: 460
+      },
+      left: {
+        x: 256,
+        y: 420
+      }
+    });
+    ember3 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      flickRadius: 10,
+      color: "#A4D7F5",
+      top: {
+        x: 330,
+        y: 160
+      },
+      right: {
+        x: 348,
+        y: 388
+      },
+      bottom: {
+        x: 310,
+        y: 460
+      },
+      left: {
+        x: 280,
+        y: 380
+      }
+    });
+    ember4 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      flickRadius: 10,
+      color: "#F6D58A",
+      top: {
+        x: 352,
+        y: 252
+      },
+      right: {
+        x: 376,
+        y: 402
+      },
+      bottom: {
+        x: 328,
+        y: 444
+      },
+      left: {
+        x: 300,
+        y: 410
+      }
+    });
+    this.embers.push(ember1, ember2, ember3, ember4);
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
   Main.prototype.drawBones = function() {
-    var rX, rY;
     this.ctx.lineWidth = 7 * h.PX;
     this.ctx.strokeStyle = "#80404B";
     this.ctx.beginPath();
@@ -214,22 +277,7 @@ Main = (function() {
     this.ctx.beginPath();
     this.ctx.moveTo(256 * h.PX, 510 * h.PX);
     this.ctx.lineTo(356 * h.PX, 472 * h.PX);
-    this.ctx.stroke();
-    rX = rY = 0;
-    return setTimeout(((function(_this) {
-      return function() {
-        var i;
-        i = _this.embers.length - 1;
-        while (i >= 0) {
-          if (i % 2 === 0) {
-            rX = h.rand(-100, 100);
-            rY = h.rand(-100, 100);
-          }
-          _this.embers[i].sendTop(-50 + rX, rY);
-          i--;
-        }
-      };
-    })(this)), 3000);
+    return this.ctx.stroke();
   };
 
   Main.prototype.animationLoop = function() {
