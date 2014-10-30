@@ -100,7 +100,7 @@ module.exports = Ember;
 
 
 
-},{"./helpers":3,"./tweenjs.min":5}],2:[function(require,module,exports){
+},{"./helpers":3,"./tweenjs.min":6}],2:[function(require,module,exports){
 /*! Hammer.JS - v2.0.4 - 2014-09-28
  * http://hammerjs.github.io/
  *
@@ -131,9 +131,11 @@ module.exports = new Helpers;
 
 
 },{}],4:[function(require,module,exports){
-var Ember, Hammer, Main, TWEEN, h;
+var Ember, Hammer, Main, Spark, TWEEN, h;
 
 Ember = require('./ember');
+
+Spark = require('./spark');
 
 Hammer = require('./hammer.min');
 
@@ -152,11 +154,12 @@ Main = (function() {
     this.canvas = document.getElementById("js-canvas");
     this.ctx = this.canvas.getContext("2d");
     this.animationLoop = this.animationLoop.bind(this);
-    return this.embers = [];
+    this.embers = [];
+    return this.sparks = [];
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc;
+    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc, spark1, spark2, spark3, spark4;
     this.animationLoop();
     mc = new Hammer(this.canvas);
     ember1 = new Ember({
@@ -352,6 +355,56 @@ Main = (function() {
     this.embers.push(ember2, ember21);
     this.embers.push(ember3, ember31);
     this.embers.push(ember4, ember41);
+    spark1 = new Spark({
+      ctx: this.ctx,
+      start: {
+        x: 344,
+        y: 200
+      },
+      color: "#F6D58A",
+      length: 10,
+      radius: 7,
+      delay: 9
+    });
+    spark2 = new Spark({
+      ctx: this.ctx,
+      start: {
+        x: 284,
+        y: 260
+      },
+      color: "#D5296F",
+      length: 10,
+      radius: 9,
+      delay: 12,
+      isDelayed: true
+    });
+    spark3 = new Spark({
+      ctx: this.ctx,
+      start: {
+        x: 324,
+        y: 210
+      },
+      color: "#65B4ED",
+      length: 10,
+      radius: 6,
+      delay: 8,
+      isDelayed: true
+    });
+    spark4 = new Spark({
+      ctx: this.ctx,
+      start: {
+        x: 310,
+        y: 160
+      },
+      color: "#EA69A9",
+      length: 10,
+      radius: 6,
+      delay: 18
+    });
+    this.sparks.push(spark1);
+    this.sparks.push(spark2);
+    this.sparks.push(spark3);
+    this.sparks.push(spark4);
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
@@ -371,6 +424,11 @@ Main = (function() {
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, 1200, 1200);
+    i = this.sparks.length - 1;
+    while (i >= 0) {
+      this.sparks[i].draw();
+      i--;
+    }
     i = this.embers.length - 1;
     while (i >= 0) {
       this.embers[i].draw();
@@ -389,7 +447,77 @@ new Main;
 
 
 
-},{"./ember":1,"./hammer.min":2,"./helpers":3,"./tweenjs.min":5}],5:[function(require,module,exports){
+},{"./ember":1,"./hammer.min":2,"./helpers":3,"./spark":5,"./tweenjs.min":6}],5:[function(require,module,exports){
+var Spark, h;
+
+h = require('./helpers');
+
+Spark = (function() {
+  function Spark(o) {
+    this.o = o != null ? o : {};
+    this.vars();
+  }
+
+  Spark.prototype.vars = function() {
+    this.ctx = this.o.ctx;
+    this.start = this.o.start;
+    this.position = {};
+    this.position.x = this.start.x;
+    this.position.y = this.start.y;
+    this.length = this.o.length;
+    this.radius = this.o.radius;
+    this.color = this.o.color;
+    this.delay = this.o.delay;
+    this.delta = this.getDelta();
+    this.isDelayed = this.o.isDelayed;
+    this.p = 0;
+    this.pSin = 0;
+    this.pSinStep = .04;
+    return this.d = 0;
+  };
+
+  Spark.prototype.draw = function() {
+    var x, y;
+    if (!this.isDelayed) {
+      this.ctx.beginPath();
+      x = (this.position.x + (30 * Math.sin(this.pSin))) * h.PX;
+      y = (this.position.y - (this.p * this.delta)) * h.PX;
+      this.ctx.arc(x, y, this.radius * (1 - this.p), 0, 2 * Math.PI);
+      this.ctx.fillStyle = this.color;
+      this.ctx.fill();
+      this.pSin += this.pSinStep;
+      if (this.pSin >= 1 || this.pSin <= 0) {
+        this.pSinStep = -this.pSinStep;
+      }
+      this.p += .02;
+      if (this.p >= 1) {
+        this.p = 0;
+        this.pSin = 0;
+        this.pSinStep = -this.pSinStep;
+        return this.isDelayed = true;
+      }
+    } else {
+      this.d += .1;
+      if (this.d >= this.delay) {
+        this.d = 0;
+        return this.isDelayed = false;
+      }
+    }
+  };
+
+  Spark.prototype.getDelta = function() {
+    return this.start.y - this.length;
+  };
+
+  return Spark;
+
+})();
+
+module.exports = Spark;
+
+
+
+},{"./helpers":3}],6:[function(require,module,exports){
 // tween.js v.0.15.0 https://github.com/sole/tween.js
 void 0 === Date.now && (Date.now = function() {
     return (new Date).valueOf()

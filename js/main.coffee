@@ -1,4 +1,5 @@
 Ember = require './ember'
+Spark = require './spark'
 Hammer = require './hammer.min'
 TWEEN = require './tweenjs.min'
 h = require './helpers'
@@ -14,6 +15,7 @@ class Main
     @ctx = @canvas.getContext("2d")
     @animationLoop = @animationLoop.bind(@)
     @embers = []
+    @sparks = []
 
   run:->
     @animationLoop()
@@ -25,8 +27,8 @@ class Main
       sensivity: .25
       angleStep: 45
       flickRadius: 20
-      color: "#E86CA9"
-      top: x: 314, y: 130
+      color:  "#E86CA9"
+      top:    x: 314, y: 130
       right:  x: 364, y: 412
       bottom: x: 310, y: 460
       left:   x: 256, y: 420
@@ -137,6 +139,45 @@ class Main
     @embers.push ember3, ember31
     @embers.push ember4, ember41
 
+    spark1 = new Spark
+      ctx:    @ctx
+      start:  x: 344, y: 200
+      color:  "#F6D58A"
+      length: 10
+      radius: 7
+      delay: 9
+
+    spark2 = new Spark
+      ctx:    @ctx
+      start:  x: 284, y: 260
+      color:  "#D5296F"
+      length: 10
+      radius: 9
+      delay: 12
+      isDelayed: true
+
+    spark3 = new Spark
+      ctx:    @ctx
+      start:  x: 324, y: 210
+      color:  "#65B4ED"
+      length: 10
+      radius: 6
+      delay: 8
+      isDelayed: true
+
+    spark4 = new Spark
+      ctx:    @ctx
+      start:  x: 310, y: 160
+      color:  "#EA69A9"
+      length: 10
+      radius: 6
+      delay: 18
+
+    @sparks.push spark1
+    @sparks.push spark2
+    @sparks.push spark3
+    @sparks.push spark4
+
     @ctx.globalCompositeOperation = "multiply"
 
   drawBones:->
@@ -177,11 +218,16 @@ class Main
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, 1200, 1200
-    i = @embers.length - 1
+    i = @sparks.length - 1
+    while i >= 0
+      @sparks[i].draw()
+      i--
 
+    i = @embers.length - 1
     while i >= 0
       @embers[i].draw()
       i--
+
     @drawBones()
     TWEEN.update()
     requestAnimationFrame @animationLoop

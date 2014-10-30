@@ -16,15 +16,13 @@ class Ember
     @angleStart = @o.angleStart or 0
     @angle = @angleStart
     @p = 0 # used to animate delta
-    # @p2 = 0 # used to animate delta
-    # @p2Step = .01
     unless @ctx
       console.error "no context, aborting"
       return
     @getFlickBounds()
     @delta = @getDelta()
 
-  draw: ->   
+  draw:->
     @ctx.beginPath()
     @ctx.moveTo @left.x*h.PX, (@left.y)*h.PX
     topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)
@@ -34,16 +32,6 @@ class Ember
     @ctx.closePath()
     @ctx.fillStyle = @color
     @ctx.fill()
-
-    # @ctx.beginPath()
-    # @ctx.moveTo @left.x*h.PX, @left.y*h.PX
-    # topX2 = @top2.x + @p*@delta2.x; topY2 = @top2.y + @p*@delta2.y
-    # @ctx.lineTo topX2*h.PX, topY2*h.PX
-    # @ctx.lineTo @right.x*h.PX, @right.y*h.PX
-    # @ctx.lineTo @bottom.x*h.PX,@bottom.y*h.PX
-    # @ctx.closePath()
-    # @ctx.fillStyle = @color
-    # @ctx.fill()
 
     @p += @o.sensivity
     if @p >= 1
@@ -76,7 +64,7 @@ class Ember
   
   getDelta: ->
     @angle += @angleStep
-    # ang
+
     if @angle % 360 > 90 and @angle % 360 < 270
       @angle += 10
 
