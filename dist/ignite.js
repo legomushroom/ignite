@@ -332,8 +332,8 @@ Main = (function() {
       flickRadius: 20,
       color: "#F6D58A",
       top: {
-        x: 346,
-        y: 252
+        x: 344,
+        y: 232
       },
       right: {
         x: 376,

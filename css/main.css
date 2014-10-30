@@ -1,0 +1,10 @@
+.canvas {
+  width: 600px;
+  height: 600px;
+  position: absolute;
+  z-index: 2;
+}
+.canvas--2 {
+  border: 1px solid #008000;
+  z-index: 1;
+}

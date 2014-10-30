@@ -126,7 +126,7 @@ class Main
       angleStart: 90
       flickRadius: 20
       color: "#F6D58A"
-      top:    x: 346, y: 252
+      top:    x: 344, y: 232
       right:  x: 376, y: 402
       bottom: x: 328, y: 444
       left:   x: 300, y: 410
