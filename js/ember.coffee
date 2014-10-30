@@ -8,15 +8,13 @@ class Ember
     @top = @o.top
     @flickRadius = @o.flickRadius or 10
     @top2 = @o.top
-    # @top2.y +=  @flickRadius
     @right = @o.right
     @bottom = @o.bottom
     @left = @o.left
     @color = @o.color or "deeppink"
     @angle = 0
     @angle2 = 0
-    @angleStep = h.rand(25,50)
-    @angleStep2 = h.rand(25,50)
+    @angleStep = h.rand(30,40)
     @p = 0 # used to animate delta
     # @p2 = 0 # used to animate delta
     # @p2Step = .01
@@ -24,10 +22,7 @@ class Ember
       console.error "no context, aborting"
       return
     @getFlickBounds()
-    deltas = @getDelta()
-    @delta = deltas.delta
-    @delta2 = deltas.delta2
-    # @delta3 = deltas.delta3
+    @delta = @getDelta()
 
   draw: ->
     
@@ -54,10 +49,7 @@ class Ember
     @p += @o.sensivity
     if @p >= 1
       @top.x = topX; @top.y = topY
-      # @top2.x = topX2; @top2.y = topY2
-      deltas = @getDelta()
-      @delta = deltas.delta
-      @delta2 = deltas.delta2
+      @delta = @getDelta()
       @p = 0
 
     @drawFlickBounds()
@@ -85,18 +77,15 @@ class Ember
   
   getDelta: ->
     @angle += @angleStep
-    @angle2 -= @angleStep
+    # ang
+    if @angle % 360 > 90 and @angle % 360 < 270
+      @angle += 10
 
     newTop =
       x: @flickCenter.x + Math.cos(@angle * h.DEG) * .05 * @flickRadius
-      y: @flickCenter.y + Math.sin(@angle * h.DEG) * 1.5 * @flickRadius
-    newTop2 =
-      x: @flickCenter.x + Math.cos(@angle2 * h.DEG) * .05 * @flickRadius
-      y: @flickCenter.y + Math.sin(@angle2 * h.DEG) * 1.5 * @flickRadius
+      y: @flickCenter.y + Math.sin(@angle * h.DEG) * 1 * @flickRadius
     
     delta  = x: newTop.x  - @top.x,  y: newTop.y  - @top.y
-    delta2 = x: newTop2.x - @top2.x, y: newTop2.y - @top2.y
-    delta: delta, delta2: delta2
 
   # sendTop: (dX, dY) ->
   #   it = @

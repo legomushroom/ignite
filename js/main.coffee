@@ -23,9 +23,20 @@ class Main
     ember1 = new Ember(
       ctx: @ctx
       sensivity: .25
-      flickRadius: 10
+      flickRadius: 20
       color: "#ED8CBA"
       top:    x: 280, y: 240
+      right:  x: 300, y: 410
+      bottom: x: 280, y: 438
+      left:   x: 232, y: 404
+    )
+
+    ember11 = new Ember(
+      ctx: @ctx
+      sensivity: .25
+      flickRadius: 20
+      color: "#ED8CBA"
+      top:    x: 290, y: 240
       right:  x: 300, y: 410
       bottom: x: 280, y: 438
       left:   x: 232, y: 404
@@ -41,11 +52,21 @@ class Main
       bottom: x: 310, y: 460
       left:   x: 256, y: 420
     )
+    ember21 = new Ember(
+      ctx: @ctx
+      sensivity: .25
+      flickRadius: 20
+      color: "#E86CA9"
+      top: x: 324, y: 130
+      right:  x: 364, y: 412
+      bottom: x: 310, y: 460
+      left:   x: 256, y: 420
+    )
     
     ember3 = new Ember(
       ctx: @ctx
       sensivity: .25
-      flickRadius: 10
+      flickRadius: 20
       color: "#A4D7F5"
       top:    x: 330, y: 160
       right:  x: 348, y: 388
@@ -56,15 +77,27 @@ class Main
     ember4 = new Ember(
       ctx: @ctx
       sensivity: .25
-      flickRadius: 10
+      flickRadius: 20
       color: "#F6D58A"
       top:    x: 352, y: 252
       right:  x: 376, y: 402
       bottom: x: 328, y: 444
       left:   x: 300, y: 410
     )
+
+    ember41 = new Ember(
+      ctx: @ctx
+      sensivity: .25
+      flickRadius: 20
+      color: "#F6D58A"
+      top:    x: 346, y: 252
+      right:  x: 376, y: 402
+      bottom: x: 328, y: 444
+      left:   x: 300, y: 410
+    )
+
    
-    @embers.push ember1, ember2, ember3, ember4
+    @embers.push ember1, ember2, ember3, ember4, ember41, ember21, ember11
 
     @ctx.globalCompositeOperation = "multiply"
   
