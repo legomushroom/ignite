@@ -12,9 +12,9 @@ class Ember
     @bottom = @o.bottom
     @left = @o.left
     @color = @o.color or "deeppink"
-    @angle = 0
-    @angle2 = 0
-    @angleStep = h.rand(30,40)
+    @angleStep = @o.angleStep or h.rand(30,40)
+    @angleStart = @o.angleStart or 0
+    @angle = @angleStart
     @p = 0 # used to animate delta
     # @p2 = 0 # used to animate delta
     # @p2Step = .01
@@ -24,8 +24,7 @@ class Ember
     @getFlickBounds()
     @delta = @getDelta()
 
-  draw: ->
-    
+  draw: ->   
     @ctx.beginPath()
     @ctx.moveTo @left.x*h.PX, (@left.y)*h.PX
     topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)

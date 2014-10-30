@@ -16,9 +16,9 @@ Ember = (function() {
     this.bottom = this.o.bottom;
     this.left = this.o.left;
     this.color = this.o.color || "deeppink";
-    this.angle = 0;
-    this.angle2 = 0;
-    this.angleStep = h.rand(30, 40);
+    this.angleStep = this.o.angleStep || h.rand(30, 40);
+    this.angleStart = this.o.angleStart || 0;
+    this.angle = this.angleStart;
     this.p = 0;
     if (!this.ctx) {
       console.error("no context, aborting");
@@ -156,56 +156,13 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, mc;
+    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc;
     this.animationLoop();
     mc = new Hammer(this.canvas);
     ember1 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
-      flickRadius: 20,
-      color: "#ED8CBA",
-      top: {
-        x: 280,
-        y: 240
-      },
-      right: {
-        x: 300,
-        y: 410
-      },
-      bottom: {
-        x: 280,
-        y: 438
-      },
-      left: {
-        x: 232,
-        y: 404
-      }
-    });
-    ember11 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      flickRadius: 20,
-      color: "#ED8CBA",
-      top: {
-        x: 290,
-        y: 240
-      },
-      right: {
-        x: 300,
-        y: 410
-      },
-      bottom: {
-        x: 280,
-        y: 438
-      },
-      left: {
-        x: 232,
-        y: 404
-      }
-    });
-    ember2 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
+      angleStep: 45,
       flickRadius: 20,
       color: "#E86CA9",
       top: {
@@ -225,14 +182,16 @@ Main = (function() {
         y: 420
       }
     });
-    ember21 = new Ember({
+    ember11 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
+      angleStep: 45,
+      angleStart: 90,
       flickRadius: 20,
       color: "#E86CA9",
       top: {
         x: 324,
-        y: 130
+        y: 120
       },
       right: {
         x: 364,
@@ -247,13 +206,86 @@ Main = (function() {
         y: 420
       }
     });
+    ember2 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      angleStep: 45,
+      angleStart: 20,
+      flickRadius: 20,
+      color: "#ED8CBA",
+      top: {
+        x: 280,
+        y: 240
+      },
+      right: {
+        x: 300,
+        y: 410
+      },
+      bottom: {
+        x: 280,
+        y: 438
+      },
+      left: {
+        x: 232,
+        y: 404
+      }
+    });
+    ember21 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      angleStep: 45,
+      angleStart: 90,
+      flickRadius: 20,
+      color: "#ED8CBA",
+      top: {
+        x: 290,
+        y: 240
+      },
+      right: {
+        x: 300,
+        y: 410
+      },
+      bottom: {
+        x: 280,
+        y: 438
+      },
+      left: {
+        x: 232,
+        y: 404
+      }
+    });
     ember3 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
+      angleStep: 45,
       flickRadius: 20,
       color: "#A4D7F5",
       top: {
-        x: 330,
+        x: 333,
+        y: 160
+      },
+      right: {
+        x: 348,
+        y: 388
+      },
+      bottom: {
+        x: 310,
+        y: 460
+      },
+      left: {
+        x: 280,
+        y: 380
+      }
+    });
+    ember31 = new Ember({
+      ctx: this.ctx,
+      sensivity: .25,
+      angleStep: 45,
+      angleStart: 90,
+      flickRadius: 20,
+      color: "#A4D7F5",
+      top: {
+        x: 333,
         y: 160
       },
       right: {
@@ -272,6 +304,7 @@ Main = (function() {
     ember4 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
+      angleStep: 45,
       flickRadius: 20,
       color: "#F6D58A",
       top: {
@@ -294,6 +327,8 @@ Main = (function() {
     ember41 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
+      angleStep: 45,
+      angleStart: 90,
       flickRadius: 20,
       color: "#F6D58A",
       top: {
@@ -313,7 +348,10 @@ Main = (function() {
         y: 410
       }
     });
-    this.embers.push(ember1, ember2, ember3, ember4, ember41, ember21, ember11);
+    this.embers.push(ember1, ember11);
+    this.embers.push(ember2, ember21);
+    this.embers.push(ember3, ember31);
+    this.embers.push(ember4, ember41);
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
