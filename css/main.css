@@ -3,4 +3,9 @@
   height: 600px;
   margin: 0 auto;
   display: block;
+  position: absolute;
+  z-index: 2;
+}
+.canvas--2 {
+  z-index: 1;
 }

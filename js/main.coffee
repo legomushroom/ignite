@@ -12,15 +12,29 @@ class Main
   vars:->
     # SYS
     @canvas = document.getElementById("js-canvas")
+    @canvas2 = document.getElementById("js-canvas2")
     @ctx = @canvas.getContext("2d")
+    @ctx2 = @canvas2.getContext("2d")
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
 
+    mc = new Hammer(@canvas)
+
+    mc.add new Hammer.Pan {threshold: 50}
+
+    mc.on 'tap', (e)=>
+      @drawTap(e)
+
+  drawTap:(e)->
+    @ctx.beginPath()
+    @ctx2.arc e.center.x, e.center.y, 40*h.PX, 0, 2*Math.PI
+    @ctx2.stroke()
+    console.log e.center
+
   run:->
     @animationLoop()
 
-    mc = new Hammer(@canvas)
 
     ember1 = new Ember(
       ctx: @ctx
@@ -204,11 +218,9 @@ class Main
     @ctx.rect(0,0,600*h.PX,400*h.PX)
     # @ctx.fill()
     @ctx.clip()
-    # mc.on('tap', function(e) {
-    #   console.log(e);
-    #   x = e.pointers[0].clientX;
-    #   y = e.pointers[0].clientY;
-    # });
+      # x = e.pointers[0].clientX
+      # y = e.pointers[0].clientY
+
     # rX = rY = 0
     # setTimeout (=>
     #   i = @embers.length - 1

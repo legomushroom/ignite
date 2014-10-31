@@ -151,17 +151,35 @@ Main = (function() {
   }
 
   Main.prototype.vars = function() {
+    var mc;
     this.canvas = document.getElementById("js-canvas");
+    this.canvas2 = document.getElementById("js-canvas2");
     this.ctx = this.canvas.getContext("2d");
+    this.ctx2 = this.canvas2.getContext("2d");
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
-    return this.sparks = [];
+    this.sparks = [];
+    mc = new Hammer(this.canvas);
+    mc.add(new Hammer.Pan({
+      threshold: 50
+    }));
+    return mc.on('tap', (function(_this) {
+      return function(e) {
+        return _this.drawTap(e);
+      };
+    })(this));
+  };
+
+  Main.prototype.drawTap = function(e) {
+    this.ctx.beginPath();
+    this.ctx2.arc(e.center.x, e.center.y, 40 * h.PX, 0, 2 * Math.PI);
+    this.ctx2.stroke();
+    return console.log(e.center);
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, mc, spark1, spark2, spark3, spark4;
+    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, spark1, spark2, spark3, spark4;
     this.animationLoop();
-    mc = new Hammer(this.canvas);
     ember1 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
