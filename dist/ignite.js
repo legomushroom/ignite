@@ -421,9 +421,18 @@ Main = (function() {
     return this.ctx.stroke();
   };
 
+  Main.prototype.drawMask = function() {
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.arc(300 * h.PX, 330 * h.PX, 105 * h.PX, 0, 2 * Math.PI);
+    this.ctx.rect(0, 0, 600 * h.PX, 400 * h.PX);
+    return this.ctx.clip();
+  };
+
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, 1200, 1200);
+    this.drawMask();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
@@ -435,6 +444,7 @@ Main = (function() {
       i--;
     }
     this.drawBones();
+    this.ctx.restore();
     TWEEN.update();
     requestAnimationFrame(this.animationLoop);
   };
@@ -494,7 +504,8 @@ Spark = (function() {
         this.p = 0;
         this.pSin = 0;
         this.pSinStep = -this.pSinStep;
-        return this.isDelayed = true;
+        this.isDelayed = true;
+        return this.radius = h.rand(5, 10);
       }
     } else {
       this.d += .1;

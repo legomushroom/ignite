@@ -197,6 +197,13 @@ class Main
     @ctx.stroke()
 
 
+  drawMask:->
+    @ctx.save()
+    @ctx.beginPath()
+    @ctx.arc(300*h.PX, 330*h.PX, 105*h.PX, 0, 2*Math.PI)
+    @ctx.rect(0,0,600*h.PX,400*h.PX)
+    # @ctx.fill()
+    @ctx.clip()
     # mc.on('tap', function(e) {
     #   console.log(e);
     #   x = e.pointers[0].clientX;
@@ -218,6 +225,8 @@ class Main
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, 1200, 1200
+    
+    @drawMask()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()
@@ -229,6 +238,7 @@ class Main
       i--
 
     @drawBones()
+    @ctx.restore()
     TWEEN.update()
     requestAnimationFrame @animationLoop
     return

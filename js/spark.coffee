@@ -39,6 +39,7 @@ class Spark
         @pSin = 0
         @pSinStep = -@pSinStep
         @isDelayed = true
+        @radius = h.rand(5,10)
     
     else
       @d += .1
