@@ -92,6 +92,31 @@ Ember = (function() {
     };
   };
 
+  Ember.prototype.sendTop = function(dX, dY) {
+    var deltaX, deltaY, it, tween1, tween2;
+    it = this;
+    deltaX = deltaY = 0;
+    tween2 = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 1000 + h.rand(0, 200)).onStart(function() {
+      deltaX = it.flickCenterStart.x - it.flickCenter.x;
+      deltaY = it.flickCenterStart.y - it.flickCenter.y;
+    }).onUpdate(function() {
+      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - this.p));
+      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - this.p));
+    }).easing(TWEEN.Easing.Elastic.Out);
+    tween1 = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 100).onUpdate(function() {
+      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * this.p);
+      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * this.p);
+    }).chain(tween2).start();
+  };
+
   return Ember;
 
 })();
@@ -151,7 +176,7 @@ Main = (function() {
   }
 
   Main.prototype.vars = function() {
-    var mc;
+    var rX, rY;
     this.canvas = document.getElementById("js-canvas");
     this.canvas2 = document.getElementById("js-canvas2");
     this.ctx = this.canvas.getContext("2d");
@@ -159,15 +184,21 @@ Main = (function() {
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
-    mc = new Hammer(this.canvas);
-    mc.add(new Hammer.Pan({
-      threshold: 50
-    }));
-    return mc.on('tap', (function(_this) {
-      return function(e) {
-        return _this.drawTap(e);
+    rX = rY = 0;
+    return setTimeout(((function(_this) {
+      return function() {
+        var i;
+        i = _this.embers.length - 1;
+        while (i >= 0) {
+          if (i % 2 === 0) {
+            rX = h.rand(-100, 100);
+            rY = h.rand(-100, 100);
+          }
+          _this.embers[i].sendTop(-50 + rX, rY);
+          i--;
+        }
       };
-    })(this));
+    })(this)), 3000);
   };
 
   Main.prototype.drawTap = function(e) {

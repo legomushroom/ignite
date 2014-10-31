@@ -19,12 +19,25 @@ class Main
     @embers = []
     @sparks = []
 
-    mc = new Hammer(@canvas)
 
-    mc.add new Hammer.Pan {threshold: 50}
+    rX = rY = 0
+    setTimeout (=>
+      i = @embers.length - 1
+      while i >= 0
+        if i % 2 is 0
+          rX = h.rand(-100, 100)
+          rY = h.rand(-100, 100)
+        @embers[i].sendTop -50 + rX, rY
+        i--
+      return
+    ), 3000
 
-    mc.on 'tap', (e)=>
-      @drawTap(e)
+    # mc = new Hammer(@canvas)
+
+    # mc.add new Hammer.Pan {threshold: 50}
+
+    # mc.on 'tap', (e)=>
+    #   @drawTap(e)
 
   drawTap:(e)->
     @ctx.beginPath()
@@ -221,18 +234,7 @@ class Main
       # x = e.pointers[0].clientX
       # y = e.pointers[0].clientY
 
-    # rX = rY = 0
-    # setTimeout (=>
-    #   i = @embers.length - 1
-
-    #   while i >= 0
-    #     if i % 2 is 0
-    #       rX = h.rand(-100, 100)
-    #       rY = h.rand(-100, 100)
-    #     @embers[i].sendTop -50 + rX, rY
-    #     i--
-    #   return
-    # ), 3000
+    
 
     # LOOP
   animationLoop: ->

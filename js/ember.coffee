@@ -74,26 +74,27 @@ class Ember
     
     delta  = x: newTop.x  - @top.x,  y: newTop.y  - @top.y
 
-  # sendTop: (dX, dY) ->
-  #   it = @
-  #   deltaX = deltaY = 0
-  #   tween2 = new TWEEN.Tween(p: 0).to(
-  #     p: 1
-  #   , 1000 + h.rand(0, 200)).onStart(->
-  #     deltaX = it.flickCenterStart.x - it.flickCenter.x
-  #     deltaY = it.flickCenterStart.y - it.flickCenter.y
-  #     return
-  #   ).onUpdate(->
-  #     it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - @p))
-  #     it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - @p))
-  #     return
-  #   ).easing(TWEEN.Easing.Elastic.Out)
-  #   tween1 = new TWEEN.Tween(p: 0).to(
-  #     p: 1
-  #   , 300).onUpdate(->
-  #     it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * @p)
-  #     it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * @p)
-  #     return
-  #   ).chain(tween2).start()
-  #   return
+  sendTop: (dX, dY) ->
+    it = @
+    deltaX = deltaY = 0
+    tween2 = new TWEEN.Tween(p: 0).to(
+      p: 1
+    , 1000 + h.rand(0, 200)).onStart(->
+      deltaX = it.flickCenterStart.x - it.flickCenter.x
+      deltaY = it.flickCenterStart.y - it.flickCenter.y
+      return
+    ).onUpdate(->
+      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - @p))
+      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - @p))
+      return
+    ).easing(TWEEN.Easing.Elastic.Out)
+    
+    tween1 = new TWEEN.Tween(p: 0).to(
+      p: 1
+    , 100).onUpdate(->
+      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * @p)
+      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * @p)
+      return
+    ).chain(tween2).start()
+    return
 module.exports = Ember
