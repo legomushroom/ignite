@@ -200,7 +200,7 @@ class Main
   drawMask:->
     @ctx.save()
     @ctx.beginPath()
-    @ctx.arc(300*h.PX, 330*h.PX, 105*h.PX, 0, 2*Math.PI)
+    @ctx.arc(305*h.PX, 320*h.PX, 107*h.PX, 0, 2*Math.PI)
     @ctx.rect(0,0,600*h.PX,400*h.PX)
     # @ctx.fill()
     @ctx.clip()
@@ -226,7 +226,7 @@ class Main
   animationLoop: ->
     @ctx.clearRect 0, 0, 1200, 1200
     
-    @drawMask()
+    # @drawMask()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()
@@ -238,7 +238,7 @@ class Main
       i--
 
     @drawBones()
-    @ctx.restore()
+    # @ctx.restore()
     TWEEN.update()
     requestAnimationFrame @animationLoop
     return

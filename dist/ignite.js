@@ -424,7 +424,7 @@ Main = (function() {
   Main.prototype.drawMask = function() {
     this.ctx.save();
     this.ctx.beginPath();
-    this.ctx.arc(300 * h.PX, 330 * h.PX, 105 * h.PX, 0, 2 * Math.PI);
+    this.ctx.arc(305 * h.PX, 320 * h.PX, 107 * h.PX, 0, 2 * Math.PI);
     this.ctx.rect(0, 0, 600 * h.PX, 400 * h.PX);
     return this.ctx.clip();
   };
@@ -432,7 +432,6 @@ Main = (function() {
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, 1200, 1200);
-    this.drawMask();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
@@ -444,7 +443,6 @@ Main = (function() {
       i--;
     }
     this.drawBones();
-    this.ctx.restore();
     TWEEN.update();
     requestAnimationFrame(this.animationLoop);
   };
