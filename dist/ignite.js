@@ -52,7 +52,6 @@ Ember = (function() {
 
   Ember.prototype.drawFlickBounds = function() {
     var x, y;
-    return;
     this.ctx.beginPath();
     x = this.flickCenter.x * h.PX;
     y = this.flickCenter.y * h.PX;
@@ -183,19 +182,17 @@ Main = (function() {
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
-    return this.wind = {
+    this.wind = {
       x: 400,
       y: 300,
-      angle: -110,
-      acc: 100
+      angle: -150,
+      acc: 200
     };
-  };
-
-  Main.prototype.drawTap = function(e) {
-    this.ctx.beginPath();
-    this.ctx2.arc(e.center.x, e.center.y, 40 * h.PX, 0, 2 * Math.PI);
-    this.ctx2.stroke();
-    return console.log(e.center);
+    return setTimeout(((function(_this) {
+      return function() {
+        return _this.runWind();
+      };
+    })(this)), 3000);
   };
 
   Main.prototype.run = function() {
@@ -460,28 +457,6 @@ Main = (function() {
     return this.ctx.stroke();
   };
 
-  Main.prototype.drawWind = function() {
-    var end;
-    this.ctx.beginPath();
-    this.ctx.arc(this.wind.x * h.PX, this.wind.y * h.PX, this.wind.acc * h.PX, 0, 2 * Math.PI);
-    end = {
-      x: this.wind.x + Math.cos(this.wind.angle) * this.wind.acc,
-      y: this.wind.x + Math.sin(this.wind.angle) * this.wind.acc
-    };
-    this.ctx.moveTo(this.wind.x * h.PX, this.wind.y * h.PX);
-    this.ctx.lineTo(end.x * h.PX, end.y * h.PX);
-    this.ctx.lineWidth = 1;
-    return this.ctx.stroke();
-  };
-
-  Main.prototype.drawMask = function() {
-    this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.arc(305 * h.PX, 320 * h.PX, 107 * h.PX, 0, 2 * Math.PI);
-    this.ctx.rect(0, 0, 600 * h.PX, 400 * h.PX);
-    return this.ctx.clip();
-  };
-
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, 1200, 1200);
@@ -496,7 +471,6 @@ Main = (function() {
       i--;
     }
     this.drawBones();
-    this.drawWind();
     TWEEN.update();
     requestAnimationFrame(this.animationLoop);
   };

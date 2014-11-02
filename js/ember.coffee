@@ -43,7 +43,7 @@ class Ember
     return
 
   drawFlickBounds: ->
-    return
+    # return
     @ctx.beginPath()
     x = @flickCenter.x*h.PX; y = @flickCenter.y*h.PX
     @ctx.arc x, y, @flickRadius, 0, 2*Math.PI

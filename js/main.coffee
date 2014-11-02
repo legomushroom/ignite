@@ -20,38 +20,22 @@ class Main
     @sparks = []
     @wind =
       x: 400, y: 300
-      angle: -110
-      acc: 100
+      angle: -150
+      acc: 200
 
-
-    # rX = rY = 0
-    # setTimeout (=>
-    #   i = @embers.length - 1
-    #   while i >= 0
-    #     if i % 2 is 0
-    #       rX = h.rand(-100, 100)
-    #       rY = h.rand(-100, 100)
-    #     @embers[i].sendTop -50 + rX, rY
-    #     i--
-    #   return
-    # ), 3000
+    setTimeout (=>
+      @runWind()
+    ), 3000
 
     # mc = new Hammer(@canvas)
 
     # mc.add new Hammer.Pan {threshold: 50}
 
-    # mc.on 'tap', (e)=>
-    #   @drawTap(e)
-
-  drawTap:(e)->
-    @ctx.beginPath()
-    @ctx2.arc e.center.x, e.center.y, 40*h.PX, 0, 2*Math.PI
-    @ctx2.stroke()
-    console.log e.center
+    # mc.on 'tap', (e)=> @drawTap(e)
+  
 
   run:->
     @animationLoop()
-
 
     ember1 = new Ember(
       ctx: @ctx
@@ -76,18 +60,6 @@ class Main
       bottom: x: 310, y: 460
       left:   x: 256, y: 420
     )
-    # ember12 = new Ember(
-    #   ctx: @ctx
-    #   sensivity: .25
-    #   angleStep: 45
-    #   angleStart: 45
-    #   flickRadius: 20
-    #   color: "#E86CA9"
-    #   top: x: 320, y: 130
-    #   right:  x: 364, y: 412
-    #   bottom: x: 310, y: 460
-    #   left:   x: 256, y: 420
-    # )
 
     ember2 = new Ember(
       ctx: @ctx
@@ -227,29 +199,6 @@ class Main
     @ctx.lineTo 356 * h.PX, 472 * h.PX
     @ctx.stroke()
 
-  drawWind:->
-    @ctx.beginPath()
-    @ctx.arc @wind.x*h.PX, @wind.y*h.PX, @wind.acc*h.PX, 0 , 2*Math.PI
-    end =
-      x: @wind.x+Math.cos(@wind.angle)*@wind.acc
-      y: @wind.x+Math.sin(@wind.angle)*@wind.acc
-
-    @ctx.moveTo @wind.x*h.PX, @wind.y*h.PX
-    @ctx.lineTo end.x*h.PX, end.y*h.PX
-
-    @ctx.lineWidth = 1
-    @ctx.stroke()
-
-  drawMask:->
-    @ctx.save()
-    @ctx.beginPath()
-    @ctx.arc(305*h.PX, 320*h.PX, 107*h.PX, 0, 2*Math.PI)
-    @ctx.rect(0,0,600*h.PX,400*h.PX)
-    # @ctx.fill()
-    @ctx.clip()
-      # x = e.pointers[0].clientX
-      # y = e.pointers[0].clientY
-
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, 1200, 1200
@@ -266,7 +215,6 @@ class Main
       i--
 
     @drawBones()
-    @drawWind()
     # @ctx.restore()
     TWEEN.update()
     requestAnimationFrame @animationLoop
