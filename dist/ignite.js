@@ -56,7 +56,7 @@ Ember = (function() {
     x = this.flickCenter.x * h.PX;
     y = this.flickCenter.y * h.PX;
     this.ctx.arc(x, y, this.flickRadius, 0, 2 * Math.PI);
-    this.ctx.lineWidth = h.PX;
+    this.ctx.lineWidth = h.PX / 2;
     this.ctx.stroke();
   };
 
@@ -155,7 +155,7 @@ module.exports = new Helpers;
 
 
 },{}],4:[function(require,module,exports){
-var Ember, Hammer, Main, Spark, TWEEN, h;
+var BasePoint, Ember, Hammer, Main, Spark, TWEEN, h;
 
 Ember = require('./ember');
 
@@ -167,6 +167,32 @@ TWEEN = require('./tweenjs.min');
 
 h = require('./helpers');
 
+BasePoint = (function() {
+  function BasePoint(o) {
+    this.o = o != null ? o : {};
+    this.vars();
+  }
+
+  BasePoint.prototype.vars = function() {
+    this.ctx = this.o.ctx;
+    this.base = this.o.base;
+    this.radius = this.o.radius;
+    return this.offset = this.o.offset;
+  };
+
+  BasePoint.prototype.draw = function() {
+    this.getPosition();
+    this.ctx.beginPath();
+    this.ctx.arc(this.base.x, this.base.y, 2 * h.PX, 0, 2 * Math.PI);
+    return this.ctx.fill();
+  };
+
+  BasePoint.prototype.getPosition = function() {};
+
+  return BasePoint;
+
+})();
+
 Main = (function() {
   function Main(o) {
     this.o = o != null ? o : {};
@@ -176,23 +202,16 @@ Main = (function() {
 
   Main.prototype.vars = function() {
     this.canvas = document.getElementById("js-canvas");
-    this.canvas2 = document.getElementById("js-canvas2");
     this.ctx = this.canvas.getContext("2d");
-    this.ctx2 = this.canvas2.getContext("2d");
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
-    this.wind = {
-      x: 400,
-      y: 300,
-      angle: -150,
-      acc: 200
+    return this.base = {
+      x: 310 * h.PX,
+      y: 460 * h.PX,
+      radius: 400 * h.PX,
+      angle: 0
     };
-    return setTimeout(((function(_this) {
-      return function() {
-        return _this.runWind();
-      };
-    })(this)), 3000);
   };
 
   Main.prototype.run = function() {
@@ -471,8 +490,28 @@ Main = (function() {
       i--;
     }
     this.drawBones();
-    TWEEN.update();
+    this.drawBase();
     requestAnimationFrame(this.animationLoop);
+  };
+
+  Main.prototype.drawBase = function() {
+    var x, y;
+    this.ctx.beginPath();
+    this.ctx.arc(this.base.x, this.base.y, 5 * h.PX, 0, 2 * Math.PI);
+    this.ctx.fillStyle = 'cyan';
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(this.base.x, this.base.y, this.base.radius, 0, 2 * Math.PI);
+    this.ctx.lineWidth = h.PX;
+    this.ctx.strokeStyle = 'cyan';
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    x = this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * this.base.radius;
+    y = this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * this.base.radius;
+    this.ctx.moveTo(this.base.x, this.base.y);
+    this.ctx.lineTo(x, y);
+    this.ctx.strokeStyle = 'slateblue';
+    return this.ctx.stroke();
   };
 
   return Main;

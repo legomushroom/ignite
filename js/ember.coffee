@@ -47,7 +47,7 @@ class Ember
     @ctx.beginPath()
     x = @flickCenter.x*h.PX; y = @flickCenter.y*h.PX
     @ctx.arc x, y, @flickRadius, 0, 2*Math.PI
-    @ctx.lineWidth = h.PX
+    @ctx.lineWidth = h.PX/2
     @ctx.stroke()
     return
 

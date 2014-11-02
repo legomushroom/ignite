@@ -4,6 +4,26 @@ Hammer = require './hammer.min'
 TWEEN = require './tweenjs.min'
 h = require './helpers'
 
+
+class BasePoint
+  constructor:(@o={})->
+    @vars()
+  vars:->
+    @ctx = @o.ctx
+    @base = @o.base
+    @radius = @o.radius
+    @offset = @o.offset
+
+  draw:->
+    @getPosition()
+    @ctx.beginPath()
+    @ctx.arc @base.x, @base.y, 2*h.PX, 0, 2*Math.PI
+    @ctx.fill()
+
+    
+
+  getPosition:->
+
 class Main
   constructor:(@o={})->
     @vars()
@@ -12,25 +32,16 @@ class Main
   vars:->
     # SYS
     @canvas = document.getElementById("js-canvas")
-    @canvas2 = document.getElementById("js-canvas2")
     @ctx = @canvas.getContext("2d")
-    @ctx2 = @canvas2.getContext("2d")
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
-    @wind =
-      x: 400, y: 300
-      angle: -150
-      acc: 200
-
-    setTimeout (=>
-      @runWind()
-    ), 3000
+    
+    @base =
+      x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0
 
     # mc = new Hammer(@canvas)
-
     # mc.add new Hammer.Pan {threshold: 50}
-
     # mc.on 'tap', (e)=> @drawTap(e)
   
 
@@ -203,7 +214,6 @@ class Main
   animationLoop: ->
     @ctx.clearRect 0, 0, 1200, 1200
     
-    # @drawMask()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()
@@ -215,9 +225,30 @@ class Main
       i--
 
     @drawBones()
-    # @ctx.restore()
-    TWEEN.update()
+    @drawBase()
+    # TWEEN.update()
     requestAnimationFrame @animationLoop
     return
+
+  drawBase:->
+    @ctx.beginPath()
+    @ctx.arc @base.x, @base.y, 5*h.PX, 0, 2*Math.PI
+    @ctx.fillStyle = 'cyan'
+    @ctx.fill()
+    @ctx.beginPath()
+    @ctx.arc @base.x, @base.y, @base.radius, 0, 2*Math.PI
+    @ctx.lineWidth = h.PX
+    @ctx.strokeStyle = 'cyan'
+    @ctx.stroke()
+
+    @ctx.beginPath()
+    x = @base.x + Math.cos((@base.angle-90)*h.DEG)*@base.radius
+    y = @base.y + Math.sin((@base.angle-90)*h.DEG)*@base.radius
+
+    @ctx.moveTo @base.x, @base.y
+    @ctx.lineTo x, y
+    @ctx.strokeStyle = 'slateblue'
+    @ctx.stroke()
+
 
 new Main
