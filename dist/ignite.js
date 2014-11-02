@@ -11,13 +11,21 @@ Ember = (function() {
     this.ctx = this.o.ctx;
     this.top = this.o.top;
     this.flickRadius = this.o.flickRadius || 10;
-    this.top2 = this.o.top;
     this.right = this.o.right;
     this.bottom = this.o.bottom;
     this.left = this.o.left;
     this.color = this.o.color || "deeppink";
     this.angleStep = this.o.angleStep || h.rand(30, 40);
     this.angleStart = this.o.angleStart || 0;
+    this.basePoint = this.o.basePoint || this.top;
+    this.basePoint.onPositionChange = (function(_this) {
+      return function() {
+        return _this.flickCenter = {
+          x: _this.basePoint.x,
+          y: _this.basePoint.y
+        };
+      };
+    })(this);
     this.angle = this.angleStart;
     this.p = 0;
     if (!this.ctx) {
@@ -57,6 +65,7 @@ Ember = (function() {
     y = this.flickCenter.y * h.PX;
     this.ctx.arc(x, y, this.flickRadius, 0, 2 * Math.PI);
     this.ctx.lineWidth = h.PX / 2;
+    this.ctx.strokeStyle = '#777';
     this.ctx.stroke();
   };
 
@@ -64,8 +73,8 @@ Ember = (function() {
     var PX, flickCenter, flickRadius;
     PX = 2;
     flickCenter = {
-      x: this.top.x,
-      y: this.top.y
+      x: this.basePoint.x,
+      y: this.basePoint.y
     };
     flickRadius = this.flickRadius * PX;
     this.flickCenter = flickCenter;
@@ -89,31 +98,6 @@ Ember = (function() {
       x: newTop.x - this.top.x,
       y: newTop.y - this.top.y
     };
-  };
-
-  Ember.prototype.sendTop = function(dX, dY) {
-    var deltaX, deltaY, it, tween1, tween2;
-    it = this;
-    deltaX = deltaY = 0;
-    tween2 = new TWEEN.Tween({
-      p: 0
-    }).to({
-      p: 1
-    }, 1000 + h.rand(0, 200)).onStart(function() {
-      deltaX = it.flickCenterStart.x - it.flickCenter.x;
-      deltaY = it.flickCenterStart.y - it.flickCenter.y;
-    }).onUpdate(function() {
-      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - this.p));
-      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - this.p));
-    }).easing(TWEEN.Easing.Elastic.Out);
-    tween1 = new TWEEN.Tween({
-      p: 0
-    }).to({
-      p: 1
-    }, 100).onUpdate(function() {
-      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * this.p);
-      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * this.p);
-    }).chain(tween2).start();
   };
 
   return Ember;
@@ -171,23 +155,41 @@ BasePoint = (function() {
   function BasePoint(o) {
     this.o = o != null ? o : {};
     this.vars();
+    this.getPosition();
   }
 
   BasePoint.prototype.vars = function() {
     this.ctx = this.o.ctx;
     this.base = this.o.base;
-    this.radius = this.o.radius;
-    return this.offset = this.o.offset;
+    this.radius = this.o.radius * h.PX;
+    this.offset = this.o.offset;
+    return this.angle = this.o.angle;
   };
 
   BasePoint.prototype.draw = function() {
-    this.getPosition();
     this.ctx.beginPath();
-    this.ctx.arc(this.base.x, this.base.y, 2 * h.PX, 0, 2 * Math.PI);
-    return this.ctx.fill();
+    this.ctx.arc(this.center.x, this.center.y, 1 * h.PX, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.center.x, this.center.y);
+    this.ctx.lineTo(this.x * h.PX, this.y * h.PX);
+    return this.ctx.stroke();
   };
 
-  BasePoint.prototype.getPosition = function() {};
+  BasePoint.prototype.getPosition = function() {
+    this.center = {
+      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX),
+      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX)
+    };
+    this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
+    return this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
+  };
+
+  BasePoint.prototype.setAngle = function(angle) {
+    this.angle = angle;
+    this.getPosition();
+    return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
+  };
 
   return BasePoint;
 
@@ -206,16 +208,25 @@ Main = (function() {
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
-    return this.base = {
+    this.basePoints = [];
+    this.base = {
       x: 310 * h.PX,
       y: 460 * h.PX,
       radius: 400 * h.PX,
       angle: 0
     };
+    this.basePoint11 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 15,
+      offset: 61,
+      angle: 0
+    });
+    return this.basePoints.push(this.basePoint11);
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, spark1, spark2, spark3, spark4;
+    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, i, spark1, spark2, spark3, spark4;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -262,8 +273,15 @@ Main = (function() {
       left: {
         x: 256,
         y: 420
-      }
+      },
+      basePoint: this.basePoint11
     });
+    i = 0;
+    setInterval((function(_this) {
+      return function() {
+        return _this.basePoint11.setAngle(i += 10);
+      };
+    })(this), 500);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -491,6 +509,11 @@ Main = (function() {
     }
     this.drawBones();
     this.drawBase();
+    i = this.basePoints.length - 1;
+    while (i >= 0) {
+      this.basePoints[i].draw();
+      i--;
+    }
     requestAnimationFrame(this.animationLoop);
   };
 

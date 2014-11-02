@@ -8,21 +8,42 @@ h = require './helpers'
 class BasePoint
   constructor:(@o={})->
     @vars()
+    @getPosition()
   vars:->
     @ctx = @o.ctx
     @base = @o.base
-    @radius = @o.radius
+    @radius = @o.radius*h.PX
     @offset = @o.offset
+    @angle = @o.angle
 
   draw:->
-    @getPosition()
     @ctx.beginPath()
-    @ctx.arc @base.x, @base.y, 2*h.PX, 0, 2*Math.PI
+  
+    @ctx.arc @center.x, @center.y, 1*h.PX, 0, 2*Math.PI
     @ctx.fill()
 
-    
+    # @ctx.beginPath()
+    # @ctx.arc x, y, @radius, 0, 2*Math.PI
+    # @ctx.strokeStyle = 'cyan'
+    # @ctx.stroke()
+
+    @ctx.beginPath()
+    @ctx.moveTo @center.x, @center.y
+    @ctx.lineTo @x*h.PX, @y*h.PX
+    @ctx.stroke()
 
   getPosition:->
+    @center =
+      x: @base.x + Math.cos((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
+      y: @base.y + Math.sin((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
+
+    @x = (@center.x + Math.cos(@angle*h.DEG)*@radius)/2
+    @y = (@center.y + Math.sin(@angle*h.DEG)*@radius)/2
+
+  setAngle:(angle)->
+    @angle = angle
+    @getPosition()
+    @onPositionChange?()
 
 class Main
   constructor:(@o={})->
@@ -36,14 +57,23 @@ class Main
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
+    @basePoints = []
     
     @base =
       x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0
 
+    @basePoint11 = new BasePoint
+      ctx: @ctx
+      base: @base
+      radius: 15
+      offset: 61
+      angle: 0
+
+    @basePoints.push @basePoint11
+
     # mc = new Hammer(@canvas)
     # mc.add new Hammer.Pan {threshold: 50}
     # mc.on 'tap', (e)=> @drawTap(e)
-  
 
   run:->
     @animationLoop()
@@ -70,7 +100,14 @@ class Main
       right:  x: 364, y: 412
       bottom: x: 310, y: 460
       left:   x: 256, y: 420
+      basePoint: @basePoint11
     )
+
+
+    i = 0
+    setInterval =>
+      @basePoint11.setAngle(i += 10)
+    , 500
 
     ember2 = new Ember(
       ctx: @ctx
@@ -226,6 +263,12 @@ class Main
 
     @drawBones()
     @drawBase()
+
+    i = @basePoints.length - 1
+    while i >= 0
+      @basePoints[i].draw()
+      i--
+
     # TWEEN.update()
     requestAnimationFrame @animationLoop
     return

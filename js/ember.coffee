@@ -7,13 +7,16 @@ class Ember
     @ctx = @o.ctx
     @top = @o.top
     @flickRadius = @o.flickRadius or 10
-    @top2 = @o.top
     @right = @o.right
     @bottom = @o.bottom
     @left = @o.left
     @color = @o.color or "deeppink"
     @angleStep = @o.angleStep or h.rand(30,40)
     @angleStart = @o.angleStart or 0
+    @basePoint = @o.basePoint or @top
+    @basePoint.onPositionChange = =>
+      @flickCenter = x: @basePoint.x, y: @basePoint.y
+
     @angle = @angleStart
     @p = 0 # used to animate delta
     unless @ctx
@@ -48,12 +51,13 @@ class Ember
     x = @flickCenter.x*h.PX; y = @flickCenter.y*h.PX
     @ctx.arc x, y, @flickRadius, 0, 2*Math.PI
     @ctx.lineWidth = h.PX/2
+    @ctx.strokeStyle = '#777'
     @ctx.stroke()
     return
 
   getFlickBounds: ->
     PX = 2
-    flickCenter = x: @top.x, y: @top.y
+    flickCenter = x: @basePoint.x, y: @basePoint.y
     flickRadius = @flickRadius*PX
     @flickCenter = flickCenter
     @flickCenterStart = {}
@@ -74,27 +78,4 @@ class Ember
     
     delta  = x: newTop.x  - @top.x,  y: newTop.y  - @top.y
 
-  sendTop: (dX, dY) ->
-    it = @
-    deltaX = deltaY = 0
-    tween2 = new TWEEN.Tween(p: 0).to(
-      p: 1
-    , 1000 + h.rand(0, 200)).onStart(->
-      deltaX = it.flickCenterStart.x - it.flickCenter.x
-      deltaY = it.flickCenterStart.y - it.flickCenter.y
-      return
-    ).onUpdate(->
-      it.flickCenter.x = it.flickCenterStart.x - (deltaX * (1 - @p))
-      it.flickCenter.y = it.flickCenterStart.y - (deltaY * (1 - @p))
-      return
-    ).easing(TWEEN.Easing.Elastic.Out)
-    
-    tween1 = new TWEEN.Tween(p: 0).to(
-      p: 1
-    , 100).onUpdate(->
-      it.flickCenter.x = it.flickCenterStart.x + (dX * h.PX * @p)
-      it.flickCenter.y = it.flickCenterStart.y + (dY * h.PX * @p)
-      return
-    ).chain(tween2).start()
-    return
 module.exports = Ember
