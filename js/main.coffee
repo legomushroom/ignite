@@ -18,19 +18,23 @@ class Main
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
+    @wind =
+      x: 400, y: 300
+      angle: -110
+      acc: 100
 
 
-    rX = rY = 0
-    setTimeout (=>
-      i = @embers.length - 1
-      while i >= 0
-        if i % 2 is 0
-          rX = h.rand(-100, 100)
-          rY = h.rand(-100, 100)
-        @embers[i].sendTop -50 + rX, rY
-        i--
-      return
-    ), 3000
+    # rX = rY = 0
+    # setTimeout (=>
+    #   i = @embers.length - 1
+    #   while i >= 0
+    #     if i % 2 is 0
+    #       rX = h.rand(-100, 100)
+    #       rY = h.rand(-100, 100)
+    #     @embers[i].sendTop -50 + rX, rY
+    #     i--
+    #   return
+    # ), 3000
 
     # mc = new Hammer(@canvas)
 
@@ -223,6 +227,18 @@ class Main
     @ctx.lineTo 356 * h.PX, 472 * h.PX
     @ctx.stroke()
 
+  drawWind:->
+    @ctx.beginPath()
+    @ctx.arc @wind.x*h.PX, @wind.y*h.PX, @wind.acc*h.PX, 0 , 2*Math.PI
+    end =
+      x: @wind.x+Math.cos(@wind.angle)*@wind.acc
+      y: @wind.x+Math.sin(@wind.angle)*@wind.acc
+
+    @ctx.moveTo @wind.x*h.PX, @wind.y*h.PX
+    @ctx.lineTo end.x*h.PX, end.y*h.PX
+
+    @ctx.lineWidth = 1
+    @ctx.stroke()
 
   drawMask:->
     @ctx.save()
@@ -233,8 +249,6 @@ class Main
     @ctx.clip()
       # x = e.pointers[0].clientX
       # y = e.pointers[0].clientY
-
-    
 
     # LOOP
   animationLoop: ->
@@ -252,6 +266,7 @@ class Main
       i--
 
     @drawBones()
+    @drawWind()
     # @ctx.restore()
     TWEEN.update()
     requestAnimationFrame @animationLoop

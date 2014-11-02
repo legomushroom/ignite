@@ -176,7 +176,6 @@ Main = (function() {
   }
 
   Main.prototype.vars = function() {
-    var rX, rY;
     this.canvas = document.getElementById("js-canvas");
     this.canvas2 = document.getElementById("js-canvas2");
     this.ctx = this.canvas.getContext("2d");
@@ -184,21 +183,12 @@ Main = (function() {
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
-    rX = rY = 0;
-    return setTimeout(((function(_this) {
-      return function() {
-        var i;
-        i = _this.embers.length - 1;
-        while (i >= 0) {
-          if (i % 2 === 0) {
-            rX = h.rand(-100, 100);
-            rY = h.rand(-100, 100);
-          }
-          _this.embers[i].sendTop(-50 + rX, rY);
-          i--;
-        }
-      };
-    })(this)), 3000);
+    return this.wind = {
+      x: 400,
+      y: 300,
+      angle: -110,
+      acc: 100
+    };
   };
 
   Main.prototype.drawTap = function(e) {
@@ -470,6 +460,20 @@ Main = (function() {
     return this.ctx.stroke();
   };
 
+  Main.prototype.drawWind = function() {
+    var end;
+    this.ctx.beginPath();
+    this.ctx.arc(this.wind.x * h.PX, this.wind.y * h.PX, this.wind.acc * h.PX, 0, 2 * Math.PI);
+    end = {
+      x: this.wind.x + Math.cos(this.wind.angle) * this.wind.acc,
+      y: this.wind.x + Math.sin(this.wind.angle) * this.wind.acc
+    };
+    this.ctx.moveTo(this.wind.x * h.PX, this.wind.y * h.PX);
+    this.ctx.lineTo(end.x * h.PX, end.y * h.PX);
+    this.ctx.lineWidth = 1;
+    return this.ctx.stroke();
+  };
+
   Main.prototype.drawMask = function() {
     this.ctx.save();
     this.ctx.beginPath();
@@ -492,6 +496,7 @@ Main = (function() {
       i--;
     }
     this.drawBones();
+    this.drawWind();
     TWEEN.update();
     requestAnimationFrame(this.animationLoop);
   };
