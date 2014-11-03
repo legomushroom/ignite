@@ -7,6 +7,7 @@ class Ember
     @ctx = @o.ctx
     @top = @o.top
     @flickRadius = @o.flickRadius or 10
+    @base = @o.base
     @right = @o.right
     @bottom = @o.bottom
     @left = @o.left
@@ -46,7 +47,7 @@ class Ember
     return
 
   drawFlickBounds: ->
-    # return
+    return
     @ctx.beginPath()
     x = @flickCenter.x*h.PX; y = @flickCenter.y*h.PX
     @ctx.arc x, y, @flickRadius, 0, 2*Math.PI
@@ -67,15 +68,30 @@ class Ember
     return
   
   getDelta: ->
-    @angle += @angleStep
+    @angle += @angleStep/180
+    # @angle %= 360
 
-    if @angle % 360 > 90 and @angle % 360 < 270
-      @angle += 10
+    # if @angle > 90 and @angle < 270
+    #   @angle += 20
+
+    ang = @angle
+    rX = .01*@flickRadius
+    rY = 1*@flickRadius
+    cX = @flickCenter.x; cY = @flickCenter.y
+    bAng = @base.angle*h.DEG
+    oX = cX-(rY*@sin(ang))*@sin(bAng)+rX*@cos(ang)*@cos(bAng)
+    oY = cY+(rX*@cos(ang))*@sin(bAng)+rY*@sin(ang)*@cos(bAng)
+    # console.log oX, oY
+    newTop =
+      x: @flickCenter.x + Math.cos((@angle+90)*h.DEG)*.1*@flickRadius
+      y: @flickCenter.y + Math.sin((@angle+90)*h.DEG)*1*@flickRadius
 
     newTop =
-      x: @flickCenter.x + Math.cos(@angle * h.DEG) * .05 * @flickRadius
-      y: @flickCenter.y + Math.sin(@angle * h.DEG) * 1 * @flickRadius
+      x: oX, y: oY
     
     delta  = x: newTop.x  - @top.x,  y: newTop.y  - @top.y
+
+  sin:(n)-> Math.sin.apply n, arguments
+  cos:(n)-> Math.cos.apply n, arguments
 
 module.exports = Ember

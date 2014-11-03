@@ -11,6 +11,7 @@ Ember = (function() {
     this.ctx = this.o.ctx;
     this.top = this.o.top;
     this.flickRadius = this.o.flickRadius || 10;
+    this.base = this.o.base;
     this.right = this.o.right;
     this.bottom = this.o.bottom;
     this.left = this.o.left;
@@ -60,6 +61,7 @@ Ember = (function() {
 
   Ember.prototype.drawFlickBounds = function() {
     var x, y;
+    return;
     this.ctx.beginPath();
     x = this.flickCenter.x * h.PX;
     y = this.flickCenter.y * h.PX;
@@ -85,19 +87,36 @@ Ember = (function() {
   };
 
   Ember.prototype.getDelta = function() {
-    var delta, newTop;
-    this.angle += this.angleStep;
-    if (this.angle % 360 > 90 && this.angle % 360 < 270) {
-      this.angle += 10;
-    }
+    var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
+    this.angle += this.angleStep / 180;
+    ang = this.angle;
+    rX = .01 * this.flickRadius;
+    rY = 1 * this.flickRadius;
+    cX = this.flickCenter.x;
+    cY = this.flickCenter.y;
+    bAng = this.base.angle * h.DEG;
+    oX = cX - (rY * this.sin(ang)) * this.sin(bAng) + rX * this.cos(ang) * this.cos(bAng);
+    oY = cY + (rX * this.cos(ang)) * this.sin(bAng) + rY * this.sin(ang) * this.cos(bAng);
     newTop = {
-      x: this.flickCenter.x + Math.cos(this.angle * h.DEG) * .05 * this.flickRadius,
-      y: this.flickCenter.y + Math.sin(this.angle * h.DEG) * 1 * this.flickRadius
+      x: this.flickCenter.x + Math.cos((this.angle + 90) * h.DEG) * .1 * this.flickRadius,
+      y: this.flickCenter.y + Math.sin((this.angle + 90) * h.DEG) * 1 * this.flickRadius
+    };
+    newTop = {
+      x: oX,
+      y: oY
     };
     return delta = {
       x: newTop.x - this.top.x,
       y: newTop.y - this.top.y
     };
+  };
+
+  Ember.prototype.sin = function(n) {
+    return Math.sin.apply(n, arguments);
+  };
+
+  Ember.prototype.cos = function(n) {
+    return Math.cos.apply(n, arguments);
   };
 
   return Ember;
@@ -173,7 +192,8 @@ Base = (function() {
     _results = [];
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       point = _ref[i];
-      _results.push(this.point.setAngle(this.angle));
+      point.getPosition();
+      _results.push(point.setAngle(this.angle));
     }
     return _results;
   };
@@ -182,25 +202,7 @@ Base = (function() {
     return this.points.push(point);
   };
 
-  Base.prototype.draw = function() {
-    var x, y;
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
-    this.ctx.fillStyle = 'cyan';
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-    this.ctx.lineWidth = h.PX;
-    this.ctx.strokeStyle = 'cyan';
-    this.ctx.stroke();
-    this.ctx.beginPath();
-    x = this.x + Math.cos((this.angle - 90) * h.DEG) * this.radius;
-    y = this.y + Math.sin((this.angle - 90) * h.DEG) * this.radius;
-    this.ctx.moveTo(this.x, this.y);
-    this.ctx.lineTo(x, y);
-    this.ctx.strokeStyle = 'slateblue';
-    return this.ctx.stroke();
-  };
+  Base.prototype.draw = function() {};
 
   return Base;
 
@@ -218,18 +220,11 @@ BasePoint = (function() {
     this.base = this.o.base;
     this.radius = this.o.radius * h.PX;
     this.offset = this.o.offset;
-    return this.angle = this.o.angle;
+    this.angle = this.o.angle;
+    return this.baseAngle = this.angle;
   };
 
-  BasePoint.prototype.draw = function() {
-    this.ctx.beginPath();
-    this.ctx.arc(this.center.x, this.center.y, 1 * h.PX, 0, 2 * Math.PI);
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.center.x, this.center.y);
-    this.ctx.lineTo(this.x * h.PX, this.y * h.PX);
-    return this.ctx.stroke();
-  };
+  BasePoint.prototype.draw = function() {};
 
   BasePoint.prototype.getPosition = function() {
     this.center = {
@@ -237,13 +232,13 @@ BasePoint = (function() {
       y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX)
     };
     this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
-    return this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
+    this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
+    return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
 
   BasePoint.prototype.setAngle = function(angle) {
-    this.angle = angle;
-    this.getPosition();
-    return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
+    this.angle = this.baseAngle + angle;
+    return this.getPosition();
   };
 
   return BasePoint;
@@ -271,6 +266,14 @@ Main = (function() {
       angle: 0,
       ctx: this.ctx
     });
+    this.basePoint1 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 4,
+      offset: 71,
+      angle: 0
+    });
+    this.base.addPoint(this.basePoint1);
     this.basePoint11 = new BasePoint({
       ctx: this.ctx,
       base: this.base,
@@ -278,11 +281,59 @@ Main = (function() {
       offset: 61,
       angle: 0
     });
-    return this.basePoints.push(this.basePoint11);
+    this.base.addPoint(this.basePoint11);
+    this.basePoint2 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 30,
+      offset: 182,
+      angle: -180
+    });
+    this.base.addPoint(this.basePoint2);
+    this.basePoint21 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 20,
+      offset: 182,
+      angle: -180
+    });
+    this.base.addPoint(this.basePoint21);
+    this.basePoint3 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 24,
+      offset: 101,
+      angle: 0
+    });
+    this.base.addPoint(this.basePoint3);
+    this.basePoint31 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 22,
+      offset: 106,
+      angle: 0
+    });
+    this.base.addPoint(this.basePoint31);
+    this.basePoint4 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 34,
+      offset: 173,
+      angle: 0
+    });
+    this.base.addPoint(this.basePoint4);
+    this.basePoint41 = new BasePoint({
+      ctx: this.ctx,
+      base: this.base,
+      radius: 42,
+      offset: 193,
+      angle: 0
+    });
+    return this.base.addPoint(this.basePoint41);
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, i, spark1, spark2, spark3, spark4;
+    var coef, ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, i, spark1, spark2, spark3, spark4;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -305,7 +356,9 @@ Main = (function() {
       left: {
         x: 256,
         y: 420
-      }
+      },
+      basePoint: this.basePoint1,
+      base: this.base
     });
     ember11 = new Ember({
       ctx: this.ctx,
@@ -330,14 +383,20 @@ Main = (function() {
         x: 256,
         y: 420
       },
-      basePoint: this.basePoint11
+      basePoint: this.basePoint11,
+      base: this.base
     });
     i = 0;
+    coef = 1;
     setInterval((function(_this) {
       return function() {
-        return _this.basePoint11.setAngle(i += 10);
+        i += coef * .1;
+        if (i < -25 || i > 25) {
+          coef = -coef;
+        }
+        return _this.base.setAngle(i);
       };
-    })(this), 500);
+    })(this), 16);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -360,7 +419,9 @@ Main = (function() {
       left: {
         x: 232,
         y: 404
-      }
+      },
+      basePoint: this.basePoint2,
+      base: this.base
     });
     ember21 = new Ember({
       ctx: this.ctx,
@@ -384,7 +445,9 @@ Main = (function() {
       left: {
         x: 232,
         y: 404
-      }
+      },
+      basePoint: this.basePoint21,
+      base: this.base
     });
     ember3 = new Ember({
       ctx: this.ctx,
@@ -407,7 +470,9 @@ Main = (function() {
       left: {
         x: 280,
         y: 380
-      }
+      },
+      basePoint: this.basePoint3,
+      base: this.base
     });
     ember31 = new Ember({
       ctx: this.ctx,
@@ -417,8 +482,8 @@ Main = (function() {
       flickRadius: 20,
       color: "#A4D7F5",
       top: {
-        x: 333,
-        y: 160
+        x: 335,
+        y: 155
       },
       right: {
         x: 348,
@@ -431,7 +496,9 @@ Main = (function() {
       left: {
         x: 280,
         y: 380
-      }
+      },
+      basePoint: this.basePoint31,
+      base: this.base
     });
     ember4 = new Ember({
       ctx: this.ctx,
@@ -454,7 +521,9 @@ Main = (function() {
       left: {
         x: 300,
         y: 410
-      }
+      },
+      basePoint: this.basePoint4,
+      base: this.base
     });
     ember41 = new Ember({
       ctx: this.ctx,
@@ -478,7 +547,9 @@ Main = (function() {
       left: {
         x: 300,
         y: 410
-      }
+      },
+      basePoint: this.basePoint41,
+      base: this.base
     });
     this.embers.push(ember1, ember11);
     this.embers.push(ember2, ember21);
@@ -565,9 +636,9 @@ Main = (function() {
     }
     this.drawBones();
     this.base.draw();
-    i = this.basePoints.length - 1;
+    i = this.base.points.length - 1;
     while (i >= 0) {
-      this.basePoints[i].draw();
+      this.base.points[i].draw();
       i--;
     }
     requestAnimationFrame(this.animationLoop);
