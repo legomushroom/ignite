@@ -4,6 +4,45 @@ Hammer = require './hammer.min'
 TWEEN = require './tweenjs.min'
 h = require './helpers'
 
+class Base
+  constructor:(@o={})->
+    @vars()
+
+  vars:->
+    @ctx = @o.ctx
+    @x = @o.x
+    @y = @o.y
+    @radius = @o.radius
+    @angle = @o.angle
+    @points = []
+
+  setAngle:(angle)->
+    @angle = angle
+    for point, i in @points
+      @point.setAngle @angle
+
+  addPoint:(point)-> @points.push point
+
+  draw:->
+    @ctx.beginPath()
+    @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
+    @ctx.fillStyle = 'cyan'
+    @ctx.fill()
+    @ctx.beginPath()
+    @ctx.arc @x, @y, @radius, 0, 2*Math.PI
+    @ctx.lineWidth = h.PX
+    @ctx.strokeStyle = 'cyan'
+    @ctx.stroke()
+
+    @ctx.beginPath()
+    x = @x + Math.cos((@angle-90)*h.DEG)*@radius
+    y = @y + Math.sin((@angle-90)*h.DEG)*@radius
+
+    @ctx.moveTo @x, @y
+    @ctx.lineTo x, y
+    @ctx.strokeStyle = 'slateblue'
+    @ctx.stroke()
+
 
 class BasePoint
   constructor:(@o={})->
@@ -59,8 +98,8 @@ class Main
     @sparks = []
     @basePoints = []
     
-    @base =
-      x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0
+    @base = new Base
+      x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0, ctx: @ctx
 
     @basePoint11 = new BasePoint
       ctx: @ctx
@@ -262,7 +301,7 @@ class Main
       i--
 
     @drawBones()
-    @drawBase()
+    @base.draw()
 
     i = @basePoints.length - 1
     while i >= 0
@@ -272,26 +311,6 @@ class Main
     # TWEEN.update()
     requestAnimationFrame @animationLoop
     return
-
-  drawBase:->
-    @ctx.beginPath()
-    @ctx.arc @base.x, @base.y, 5*h.PX, 0, 2*Math.PI
-    @ctx.fillStyle = 'cyan'
-    @ctx.fill()
-    @ctx.beginPath()
-    @ctx.arc @base.x, @base.y, @base.radius, 0, 2*Math.PI
-    @ctx.lineWidth = h.PX
-    @ctx.strokeStyle = 'cyan'
-    @ctx.stroke()
-
-    @ctx.beginPath()
-    x = @base.x + Math.cos((@base.angle-90)*h.DEG)*@base.radius
-    y = @base.y + Math.sin((@base.angle-90)*h.DEG)*@base.radius
-
-    @ctx.moveTo @base.x, @base.y
-    @ctx.lineTo x, y
-    @ctx.strokeStyle = 'slateblue'
-    @ctx.stroke()
 
 
 new Main

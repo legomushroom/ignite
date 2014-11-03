@@ -139,7 +139,7 @@ module.exports = new Helpers;
 
 
 },{}],4:[function(require,module,exports){
-var BasePoint, Ember, Hammer, Main, Spark, TWEEN, h;
+var Base, BasePoint, Ember, Hammer, Main, Spark, TWEEN, h;
 
 Ember = require('./ember');
 
@@ -150,6 +150,61 @@ Hammer = require('./hammer.min');
 TWEEN = require('./tweenjs.min');
 
 h = require('./helpers');
+
+Base = (function() {
+  function Base(o) {
+    this.o = o != null ? o : {};
+    this.vars();
+  }
+
+  Base.prototype.vars = function() {
+    this.ctx = this.o.ctx;
+    this.x = this.o.x;
+    this.y = this.o.y;
+    this.radius = this.o.radius;
+    this.angle = this.o.angle;
+    return this.points = [];
+  };
+
+  Base.prototype.setAngle = function(angle) {
+    var i, point, _i, _len, _ref, _results;
+    this.angle = angle;
+    _ref = this.points;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      point = _ref[i];
+      _results.push(this.point.setAngle(this.angle));
+    }
+    return _results;
+  };
+
+  Base.prototype.addPoint = function(point) {
+    return this.points.push(point);
+  };
+
+  Base.prototype.draw = function() {
+    var x, y;
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
+    this.ctx.fillStyle = 'cyan';
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    this.ctx.lineWidth = h.PX;
+    this.ctx.strokeStyle = 'cyan';
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    x = this.x + Math.cos((this.angle - 90) * h.DEG) * this.radius;
+    y = this.y + Math.sin((this.angle - 90) * h.DEG) * this.radius;
+    this.ctx.moveTo(this.x, this.y);
+    this.ctx.lineTo(x, y);
+    this.ctx.strokeStyle = 'slateblue';
+    return this.ctx.stroke();
+  };
+
+  return Base;
+
+})();
 
 BasePoint = (function() {
   function BasePoint(o) {
@@ -209,12 +264,13 @@ Main = (function() {
     this.embers = [];
     this.sparks = [];
     this.basePoints = [];
-    this.base = {
+    this.base = new Base({
       x: 310 * h.PX,
       y: 460 * h.PX,
       radius: 400 * h.PX,
-      angle: 0
-    };
+      angle: 0,
+      ctx: this.ctx
+    });
     this.basePoint11 = new BasePoint({
       ctx: this.ctx,
       base: this.base,
@@ -508,33 +564,13 @@ Main = (function() {
       i--;
     }
     this.drawBones();
-    this.drawBase();
+    this.base.draw();
     i = this.basePoints.length - 1;
     while (i >= 0) {
       this.basePoints[i].draw();
       i--;
     }
     requestAnimationFrame(this.animationLoop);
-  };
-
-  Main.prototype.drawBase = function() {
-    var x, y;
-    this.ctx.beginPath();
-    this.ctx.arc(this.base.x, this.base.y, 5 * h.PX, 0, 2 * Math.PI);
-    this.ctx.fillStyle = 'cyan';
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.arc(this.base.x, this.base.y, this.base.radius, 0, 2 * Math.PI);
-    this.ctx.lineWidth = h.PX;
-    this.ctx.strokeStyle = 'cyan';
-    this.ctx.stroke();
-    this.ctx.beginPath();
-    x = this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * this.base.radius;
-    y = this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * this.base.radius;
-    this.ctx.moveTo(this.base.x, this.base.y);
-    this.ctx.lineTo(x, y);
-    this.ctx.strokeStyle = 'slateblue';
-    return this.ctx.stroke();
   };
 
   return Main;
