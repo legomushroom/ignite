@@ -68,7 +68,7 @@ class Ember
     return
   
   getDelta: ->
-    @angle += @angleStep/180
+    @angle += @angleStep/60
     # @angle %= 360
 
     # if @angle > 90 and @angle < 270

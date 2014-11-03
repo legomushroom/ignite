@@ -88,7 +88,7 @@ Ember = (function() {
 
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / 180;
+    this.angle += this.angleStep / 60;
     ang = this.angle;
     rX = .01 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -390,7 +390,7 @@ Main = (function() {
     coef = 1;
     setInterval((function(_this) {
       return function() {
-        i += coef * .1;
+        i += coef * .5;
         if (i < -25 || i > 25) {
           coef = -coef;
         }
@@ -564,7 +564,8 @@ Main = (function() {
       color: "#F6D58A",
       length: 10,
       radius: 7,
-      delay: 9
+      delay: 9,
+      base: this.base
     });
     spark2 = new Spark({
       ctx: this.ctx,
@@ -576,7 +577,8 @@ Main = (function() {
       length: 10,
       radius: 9,
       delay: 12,
-      isDelayed: true
+      isDelayed: true,
+      base: this.base
     });
     spark3 = new Spark({
       ctx: this.ctx,
@@ -588,7 +590,8 @@ Main = (function() {
       length: 10,
       radius: 6,
       delay: 8,
-      isDelayed: true
+      isDelayed: true,
+      base: this.base
     });
     spark4 = new Spark({
       ctx: this.ctx,
@@ -599,7 +602,8 @@ Main = (function() {
       color: "#EA69A9",
       length: 10,
       radius: 6,
-      delay: 18
+      delay: 18,
+      base: this.base
     });
     this.sparks.push(spark1);
     this.sparks.push(spark2);

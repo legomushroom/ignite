@@ -209,7 +209,7 @@ class Main
     i = 0
     coef = 1
     setInterval =>
-      i += coef*.1
+      i += coef*.5
       if i < -25 or i > 25
         coef = -coef
       @base.setAngle i
@@ -319,6 +319,7 @@ class Main
       length: 10
       radius: 7
       delay: 9
+      base: @base
 
     spark2 = new Spark
       ctx:    @ctx
@@ -328,6 +329,7 @@ class Main
       radius: 9
       delay: 12
       isDelayed: true
+      base: @base
 
     spark3 = new Spark
       ctx:    @ctx
@@ -337,6 +339,7 @@ class Main
       radius: 6
       delay: 8
       isDelayed: true
+      base: @base
 
     spark4 = new Spark
       ctx:    @ctx
@@ -345,6 +348,7 @@ class Main
       length: 10
       radius: 6
       delay: 18
+      base: @base
 
     @sparks.push spark1
     @sparks.push spark2
