@@ -337,12 +337,12 @@ class Main
       ctx:    @ctx
       start:  x: 324, y: 210
       color:  "#65B4ED"
-      length: 250
+      length: 300
       radius: 6
       delay: 8
       isDelayed: true
       base: @base
-      offset: 20
+      offset: 24
 
     spark4 = new Spark
       ctx:    @ctx

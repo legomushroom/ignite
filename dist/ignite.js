@@ -599,12 +599,12 @@ Main = (function() {
         y: 210
       },
       color: "#65B4ED",
-      length: 250,
+      length: 300,
       radius: 6,
       delay: 8,
       isDelayed: true,
       base: this.base,
-      offset: 20
+      offset: 24
     });
     spark4 = new Spark({
       ctx: this.ctx,
@@ -704,20 +704,21 @@ Spark = (function() {
   };
 
   Spark.prototype.draw = function() {
-    var b, quirk, rad, x, y;
+    var b, quirk, rad, speed, x, y;
     if (!this.isDelayed) {
       this.ctx.beginPath();
+      speed = Math.abs(this.base.angle) / 3000;
       b = this.base;
       rad = b.radius + 100 - this.length + (this.length * this.p);
-      quirk = 3 * Math.sin(this.pSin) * this.sinCoef;
+      quirk = Math.sin(this.pSin) * this.sinCoef;
       x = b.x + Math.cos((b.angle + quirk - 90) * h.DEG) * rad;
       y = b.y + Math.sin((b.angle + quirk - 90) * h.DEG) * rad;
       x += this.offset * h.PX;
       this.ctx.arc(x, y, this.radius * (1 - this.p), 0, 2 * Math.PI);
       this.ctx.fillStyle = this.color;
       this.ctx.fill();
-      this.pSin += this.pSinStep;
-      this.p += .02;
+      this.pSin += this.pSinStep + speed;
+      this.p += .02 + speed;
       if (this.p >= 1) {
         this.p = 0;
         this.pSin = 0;
@@ -727,7 +728,7 @@ Spark = (function() {
       }
     } else {
       this.d += .1;
-      if (this.d >= this.delay) {
+      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 45)) {
         this.d = 0;
         return this.isDelayed = false;
       }

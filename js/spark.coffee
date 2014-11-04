@@ -27,12 +27,10 @@ class Spark
   draw:->
     if !@isDelayed
       @ctx.beginPath()
-      # x = (@position.x+(30*Math.sin(@pSin)))*h.PX
-      # y = (@position.y - (@p*@delta))*h.PX
-      
+      speed = Math.abs(@base.angle)/3000
       b = @base
       rad = (b.radius+100-@length+(@length*@p))
-      quirk = 3*Math.sin(@pSin)*@sinCoef
+      quirk = Math.sin(@pSin)*@sinCoef
       x = b.x + Math.cos((b.angle+quirk-90)*h.DEG)*rad
       y = b.y + Math.sin((b.angle+quirk-90)*h.DEG)*rad
       x += @offset*h.PX
@@ -40,9 +38,9 @@ class Spark
       @ctx.fillStyle = @color
       @ctx.fill()
 
-      @pSin += @pSinStep
+      @pSin += @pSinStep + speed
       # @sinCoef = -@sinCoef if @pSin >= 1 or @pSin <= 0
-      @p += .02
+      @p += .02 + speed
       
       if @p >= 1
         @p = 0
@@ -53,7 +51,7 @@ class Spark
     
     else
       @d += .1
-      if @d >= @delay
+      if @d >= @delay*(1 - Math.abs(@base.angle)/45)
         @d = 0
         @isDelayed = false
 
