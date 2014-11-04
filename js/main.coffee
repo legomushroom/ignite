@@ -25,24 +25,25 @@ class Base
   addPoint:(point)-> @points.push point
 
   draw:->
-    # @ctx.beginPath()
-    # @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
-    # @ctx.fillStyle = 'cyan'
-    # @ctx.fill()
-    # @ctx.beginPath()
-    # @ctx.arc @x, @y, @radius, 0, 2*Math.PI
-    # @ctx.lineWidth = h.PX
-    # @ctx.strokeStyle = 'cyan'
-    # @ctx.stroke()
+    # return
+    @ctx.beginPath()
+    @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
+    @ctx.fillStyle = 'cyan'
+    @ctx.fill()
+    @ctx.beginPath()
+    @ctx.arc @x, @y, @radius, 0, 2*Math.PI
+    @ctx.lineWidth = h.PX
+    @ctx.strokeStyle = 'cyan'
+    @ctx.stroke()
 
-    # @ctx.beginPath()
-    # x = @x + Math.cos((@angle-90)*h.DEG)*@radius
-    # y = @y + Math.sin((@angle-90)*h.DEG)*@radius
-    # @ctx.lineWidth = h.PX
-    # @ctx.moveTo @x, @y
-    # @ctx.lineTo x, y
-    # @ctx.strokeStyle = 'slateblue'
-    # @ctx.stroke()
+    @ctx.beginPath()
+    x = @x + Math.cos((@angle-90)*h.DEG)*@radius
+    y = @y + Math.sin((@angle-90)*h.DEG)*@radius
+    @ctx.lineWidth = h.PX
+    @ctx.moveTo @x, @y
+    @ctx.lineTo x, y
+    @ctx.strokeStyle = 'slateblue'
+    @ctx.stroke()
 
 
 class BasePoint
@@ -214,18 +215,24 @@ class Main
     #     coef = -coef
     #   @base.setAngle i
     # , 16
-    
+    coef = 1
     setInterval =>
-      ang = -25
-      @base.setAngle ang
+      coef = -coef
+      ang = coef*45
       it = @
-      new TWEEN.Tween(p:0).to({p:1}, 1500)
+      new TWEEN.Tween(p:0).to({p:1}, 400)
         .onUpdate ->
-          it.base.setAngle ang*(1-@p)
-        .delay(500)
+          it.base.setAngle ang*@p
         .easing(TWEEN.Easing.Elastic.Out)
         .start()
-    , 4000
+        .onComplete =>
+          new TWEEN.Tween(p:0).to({p:1}, 1500)
+            .onUpdate ->
+              it.base.setAngle ang*(1-@p)
+            .delay(10500)
+            .easing(TWEEN.Easing.Elastic.Out)
+            .start()
+    , 15000
 
     ember2 = new Ember(
       ctx: @ctx
@@ -271,21 +278,6 @@ class Main
       base: @base
     )
 
-    # ember31 = new Ember(
-    #   ctx: @ctx
-    #   sensivity: .25
-    #   angleStep: 45
-    #   angleStart: 90
-    #   flickRadius: 20
-    #   color: "#A4D7F5"
-    #   top:    x: 335, y: 155
-    #   right:  x: 348, y: 388
-    #   bottom: x: 310, y: 460
-    #   left:   x: 280, y: 380
-    #   basePoint: @basePoint31
-    #   base: @base
-    # )
-    
     ember4 = new Ember(
       ctx: @ctx
       sensivity: .25
@@ -324,39 +316,43 @@ class Main
       ctx:    @ctx
       start:  x: 344, y: 200
       color:  "#F6D58A"
-      length: 10
+      length: 450
       radius: 7
       delay: 9
       base: @base
+      offset: 30
 
     spark2 = new Spark
       ctx:    @ctx
       start:  x: 284, y: 260
       color:  "#D5296F"
-      length: 10
+      length: 450
       radius: 9
       delay: 12
       isDelayed: true
       base: @base
+      offset: -30
 
     spark3 = new Spark
       ctx:    @ctx
       start:  x: 324, y: 210
       color:  "#65B4ED"
-      length: 10
+      length: 250
       radius: 6
       delay: 8
       isDelayed: true
       base: @base
+      offset: 20
 
     spark4 = new Spark
       ctx:    @ctx
       start:  x: 310, y: 160
       color:  "#EA69A9"
-      length: 10
-      radius: 6
+      length: 250
+      radius: 8
       delay: 18
       base: @base
+      offset: 0
 
     @sparks.push spark1
     @sparks.push spark2

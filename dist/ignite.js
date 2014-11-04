@@ -96,7 +96,7 @@ Ember = (function() {
 
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / (60 - 2 * Math.abs(this.base.angle));
+    this.angle += this.angleStep / (60 - Math.abs(this.base.angle));
     ang = this.angle;
     rX = .1 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -206,7 +206,26 @@ Base = (function() {
     return this.points.push(point);
   };
 
-  Base.prototype.draw = function() {};
+  Base.prototype.draw = function() {
+    var x, y;
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
+    this.ctx.fillStyle = 'cyan';
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    this.ctx.lineWidth = h.PX;
+    this.ctx.strokeStyle = 'cyan';
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    x = this.x + Math.cos((this.angle - 90) * h.DEG) * this.radius;
+    y = this.y + Math.sin((this.angle - 90) * h.DEG) * this.radius;
+    this.ctx.lineWidth = h.PX;
+    this.ctx.moveTo(this.x, this.y);
+    this.ctx.lineTo(x, y);
+    this.ctx.strokeStyle = 'slateblue';
+    return this.ctx.stroke();
+  };
 
   return Base;
 
@@ -337,7 +356,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
+    var coef, ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -390,21 +409,30 @@ Main = (function() {
       basePoint: this.basePoint11,
       base: this.base
     });
+    coef = 1;
     setInterval((function(_this) {
       return function() {
         var ang, it;
-        ang = -25;
-        _this.base.setAngle(ang);
+        coef = -coef;
+        ang = coef * 45;
         it = _this;
         return new TWEEN.Tween({
           p: 0
         }).to({
           p: 1
-        }, 1500).onUpdate(function() {
-          return it.base.setAngle(ang * (1 - this.p));
-        }).delay(500).easing(TWEEN.Easing.Elastic.Out).start();
+        }, 400).onUpdate(function() {
+          return it.base.setAngle(ang * this.p);
+        }).easing(TWEEN.Easing.Elastic.Out).start().onComplete(function() {
+          return new TWEEN.Tween({
+            p: 0
+          }).to({
+            p: 1
+          }, 1500).onUpdate(function() {
+            return it.base.setAngle(ang * (1 - this.p));
+          }).delay(10500).easing(TWEEN.Easing.Elastic.Out).start();
+        });
       };
-    })(this), 4000);
+    })(this), 15000);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -544,10 +572,11 @@ Main = (function() {
         y: 200
       },
       color: "#F6D58A",
-      length: 10,
+      length: 450,
       radius: 7,
       delay: 9,
-      base: this.base
+      base: this.base,
+      offset: 30
     });
     spark2 = new Spark({
       ctx: this.ctx,
@@ -556,11 +585,12 @@ Main = (function() {
         y: 260
       },
       color: "#D5296F",
-      length: 10,
+      length: 450,
       radius: 9,
       delay: 12,
       isDelayed: true,
-      base: this.base
+      base: this.base,
+      offset: -30
     });
     spark3 = new Spark({
       ctx: this.ctx,
@@ -569,11 +599,12 @@ Main = (function() {
         y: 210
       },
       color: "#65B4ED",
-      length: 10,
+      length: 250,
       radius: 6,
       delay: 8,
       isDelayed: true,
-      base: this.base
+      base: this.base,
+      offset: 20
     });
     spark4 = new Spark({
       ctx: this.ctx,
@@ -582,10 +613,11 @@ Main = (function() {
         y: 160
       },
       color: "#EA69A9",
-      length: 10,
-      radius: 6,
+      length: 250,
+      radius: 8,
       delay: 18,
-      base: this.base
+      base: this.base,
+      offset: 0
     });
     this.sparks.push(spark1);
     this.sparks.push(spark2);
@@ -661,7 +693,10 @@ Spark = (function() {
     this.color = this.o.color;
     this.delay = this.o.delay;
     this.delta = this.getDelta();
+    this.offset = this.o.offset || 0;
     this.isDelayed = this.o.isDelayed;
+    this.base = this.o.base;
+    this.sinCoef = 1;
     this.p = 0;
     this.pSin = 0;
     this.pSinStep = .04;
@@ -669,23 +704,24 @@ Spark = (function() {
   };
 
   Spark.prototype.draw = function() {
-    var x, y;
+    var b, quirk, rad, x, y;
     if (!this.isDelayed) {
       this.ctx.beginPath();
-      x = (this.position.x + (30 * Math.sin(this.pSin))) * h.PX;
-      y = (this.position.y - (this.p * this.delta)) * h.PX;
+      b = this.base;
+      rad = b.radius + 100 - this.length + (this.length * this.p);
+      quirk = 3 * Math.sin(this.pSin) * this.sinCoef;
+      x = b.x + Math.cos((b.angle + quirk - 90) * h.DEG) * rad;
+      y = b.y + Math.sin((b.angle + quirk - 90) * h.DEG) * rad;
+      x += this.offset * h.PX;
       this.ctx.arc(x, y, this.radius * (1 - this.p), 0, 2 * Math.PI);
       this.ctx.fillStyle = this.color;
       this.ctx.fill();
       this.pSin += this.pSinStep;
-      if (this.pSin >= 1 || this.pSin <= 0) {
-        this.pSinStep = -this.pSinStep;
-      }
       this.p += .02;
       if (this.p >= 1) {
         this.p = 0;
         this.pSin = 0;
-        this.pSinStep = -this.pSinStep;
+        this.sinCoef = -this.sinCoef;
         this.isDelayed = true;
         return this.radius = h.rand(5, 10);
       }
