@@ -88,7 +88,7 @@ Ember = (function() {
 
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / 60;
+    this.angle += this.angleStep / (60 - Math.abs(this.base.angle));
     ang = this.angle;
     rX = .01 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -333,7 +333,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var coef, ember1, ember11, ember2, ember21, ember3, ember31, ember4, ember41, i, spark1, spark2, spark3, spark4;
+    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -386,17 +386,20 @@ Main = (function() {
       basePoint: this.basePoint11,
       base: this.base
     });
-    i = 0;
-    coef = 1;
-    setInterval((function(_this) {
+    setTimeout((function(_this) {
       return function() {
-        i += coef * .5;
-        if (i < -25 || i > 25) {
-          coef = -coef;
-        }
-        return _this.base.setAngle(i);
+        var it;
+        _this.base.setAngle(25);
+        it = _this;
+        return new TWEEN.Tween({
+          p: 0
+        }).to({
+          p: 1
+        }, 1500).onUpdate(function() {
+          return it.base.setAngle(25 * (1 - this.p));
+        }).delay(150).easing(TWEEN.Easing.Elastic.Out).start();
       };
-    })(this), 16);
+    })(this), 2000);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -474,32 +477,6 @@ Main = (function() {
       basePoint: this.basePoint3,
       base: this.base
     });
-    ember31 = new Ember({
-      ctx: this.ctx,
-      sensivity: .25,
-      angleStep: 45,
-      angleStart: 90,
-      flickRadius: 20,
-      color: "#A4D7F5",
-      top: {
-        x: 335,
-        y: 155
-      },
-      right: {
-        x: 348,
-        y: 388
-      },
-      bottom: {
-        x: 310,
-        y: 460
-      },
-      left: {
-        x: 280,
-        y: 380
-      },
-      basePoint: this.basePoint31,
-      base: this.base
-    });
     ember4 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -553,7 +530,7 @@ Main = (function() {
     });
     this.embers.push(ember1, ember11);
     this.embers.push(ember2, ember21);
-    this.embers.push(ember3, ember31);
+    this.embers.push(ember3);
     this.embers.push(ember4, ember41);
     spark1 = new Spark({
       ctx: this.ctx,
@@ -645,6 +622,7 @@ Main = (function() {
       this.base.points[i].draw();
       i--;
     }
+    TWEEN.update();
     requestAnimationFrame(this.animationLoop);
   };
 

@@ -206,18 +206,25 @@ class Main
       base: @base
     )
 
-    i = 0
-    coef = 1
-    setInterval =>
-      i += coef*.5
-      if i < -25 or i > 25
-        coef = -coef
-      @base.setAngle i
-    , 16
+    # i = 0
+    # coef = 1
+    # setInterval =>
+    #   i += coef*.5
+    #   if i < -25 or i > 25
+    #     coef = -coef
+    #   @base.setAngle i
+    # , 16
     
-    # setTimeout =>
-    #   @base.setAngle 25
-    # , 2000
+    setTimeout =>
+      @base.setAngle 25
+      it = @
+      new TWEEN.Tween(p:0).to({p:1}, 1500)
+        .onUpdate ->
+          it.base.setAngle 25*(1-@p)
+        .delay(150)
+        .easing(TWEEN.Easing.Elastic.Out)
+        .start()
+    , 2000
 
     ember2 = new Ember(
       ctx: @ctx
@@ -263,20 +270,20 @@ class Main
       base: @base
     )
 
-    ember31 = new Ember(
-      ctx: @ctx
-      sensivity: .25
-      angleStep: 45
-      angleStart: 90
-      flickRadius: 20
-      color: "#A4D7F5"
-      top:    x: 335, y: 155
-      right:  x: 348, y: 388
-      bottom: x: 310, y: 460
-      left:   x: 280, y: 380
-      basePoint: @basePoint31
-      base: @base
-    )
+    # ember31 = new Ember(
+    #   ctx: @ctx
+    #   sensivity: .25
+    #   angleStep: 45
+    #   angleStart: 90
+    #   flickRadius: 20
+    #   color: "#A4D7F5"
+    #   top:    x: 335, y: 155
+    #   right:  x: 348, y: 388
+    #   bottom: x: 310, y: 460
+    #   left:   x: 280, y: 380
+    #   basePoint: @basePoint31
+    #   base: @base
+    # )
     
     ember4 = new Ember(
       ctx: @ctx
@@ -309,7 +316,7 @@ class Main
    
     @embers.push ember1, ember11
     @embers.push ember2, ember21
-    @embers.push ember3, ember31
+    @embers.push ember3#, ember31
     @embers.push ember4, ember41
 
     spark1 = new Spark
@@ -395,7 +402,7 @@ class Main
       @base.points[i].draw()
       i--
 
-    # TWEEN.update()
+    TWEEN.update()
     requestAnimationFrame @animationLoop
     return
 
