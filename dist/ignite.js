@@ -38,13 +38,21 @@ Ember = (function() {
   }
 
   Ember.prototype.draw = function() {
-    var topX, topY;
+    var ang, leftOffset, rightOffset, topX, topY;
     this.ctx.beginPath();
-    this.ctx.moveTo(this.left.x * h.PX, this.left.y * h.PX);
+    ang = this.base.angle;
+    if (ang < 0) {
+      leftOffset = ang / 2;
+      rightOffset = ang;
+    } else {
+      leftOffset = ang;
+      rightOffset = ang / 2;
+    }
+    this.ctx.moveTo((this.left.x + leftOffset) * h.PX, this.left.y * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
     topY = this.top.y + (this.p * this.delta.y);
     this.ctx.lineTo(topX * h.PX, topY * h.PX);
-    this.ctx.lineTo(this.right.x * h.PX, this.right.y * h.PX);
+    this.ctx.lineTo((this.right.x + rightOffset) * h.PX, this.right.y * h.PX);
     this.ctx.lineTo(this.bottom.x * h.PX, this.bottom.y * h.PX);
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
@@ -88,19 +96,15 @@ Ember = (function() {
 
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / (60 - Math.abs(this.base.angle));
+    this.angle += this.angleStep / (60 - 2 * Math.abs(this.base.angle));
     ang = this.angle;
-    rX = .01 * this.flickRadius;
+    rX = .1 * this.flickRadius;
     rY = 1 * this.flickRadius;
     cX = this.flickCenter.x;
     cY = this.flickCenter.y;
     bAng = this.base.angle * h.DEG;
     oX = cX - (rY * this.sin(ang)) * this.sin(bAng) + rX * this.cos(ang) * this.cos(bAng);
     oY = cY + (rX * this.cos(ang)) * this.sin(bAng) + rY * this.sin(ang) * this.cos(bAng);
-    newTop = {
-      x: this.flickCenter.x + Math.cos((this.angle + 90) * h.DEG) * .1 * this.flickRadius,
-      y: this.flickCenter.y + Math.sin((this.angle + 90) * h.DEG) * 1 * this.flickRadius
-    };
     newTop = {
       x: oX,
       y: oY
@@ -386,20 +390,21 @@ Main = (function() {
       basePoint: this.basePoint11,
       base: this.base
     });
-    setTimeout((function(_this) {
+    setInterval((function(_this) {
       return function() {
-        var it;
-        _this.base.setAngle(25);
+        var ang, it;
+        ang = -25;
+        _this.base.setAngle(ang);
         it = _this;
         return new TWEEN.Tween({
           p: 0
         }).to({
           p: 1
         }, 1500).onUpdate(function() {
-          return it.base.setAngle(25 * (1 - this.p));
-        }).delay(150).easing(TWEEN.Easing.Elastic.Out).start();
+          return it.base.setAngle(ang * (1 - this.p));
+        }).delay(500).easing(TWEEN.Easing.Elastic.Out).start();
       };
-    })(this), 2000);
+    })(this), 4000);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,

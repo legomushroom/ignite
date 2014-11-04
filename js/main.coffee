@@ -215,16 +215,17 @@ class Main
     #   @base.setAngle i
     # , 16
     
-    setTimeout =>
-      @base.setAngle 25
+    setInterval =>
+      ang = -25
+      @base.setAngle ang
       it = @
       new TWEEN.Tween(p:0).to({p:1}, 1500)
         .onUpdate ->
-          it.base.setAngle 25*(1-@p)
-        .delay(150)
+          it.base.setAngle ang*(1-@p)
+        .delay(500)
         .easing(TWEEN.Easing.Elastic.Out)
         .start()
-    , 2000
+    , 4000
 
     ember2 = new Ember(
       ctx: @ctx

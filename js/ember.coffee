@@ -28,11 +28,19 @@ class Ember
 
   draw:->
     @ctx.beginPath()
-    @ctx.moveTo @left.x*h.PX, (@left.y)*h.PX
+    ang = (@base.angle)
+    if ang < 0
+      leftOffset = ang/2
+      rightOffset = ang
+    else
+      leftOffset = ang
+      rightOffset = ang/2
+
+    @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y)*h.PX
     topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)
     @ctx.lineTo topX*h.PX, topY*h.PX
-    @ctx.lineTo (@right.x)*h.PX, (@right.y)*h.PX
-    @ctx.lineTo @bottom.x*h.PX,  (@bottom.y)*h.PX
+    @ctx.lineTo (@right.x+rightOffset)*h.PX, (@right.y)*h.PX
+    @ctx.lineTo (@bottom.x)*h.PX,  (@bottom.y)*h.PX
     @ctx.closePath()
     @ctx.fillStyle = @color
     @ctx.fill()
@@ -68,27 +76,16 @@ class Ember
     return
   
   getDelta: ->
-    @angle += @angleStep/(60-Math.abs(@base.angle))
-    # @angle %= 360
-
-    # if @angle > 90 and @angle < 270
-    #   @angle += 20
-
+    @angle += @angleStep/(60-2*Math.abs(@base.angle))
     ang = @angle
-    rX = .01*@flickRadius
+    rX = .1*@flickRadius
     rY = 1*@flickRadius
     cX = @flickCenter.x; cY = @flickCenter.y
     bAng = @base.angle*h.DEG
     oX = cX-(rY*@sin(ang))*@sin(bAng)+rX*@cos(ang)*@cos(bAng)
     oY = cY+(rX*@cos(ang))*@sin(bAng)+rY*@sin(ang)*@cos(bAng)
-    # console.log oX, oY
-    newTop =
-      x: @flickCenter.x + Math.cos((@angle+90)*h.DEG)*.1*@flickRadius
-      y: @flickCenter.y + Math.sin((@angle+90)*h.DEG)*1*@flickRadius
-
-    newTop =
-      x: oX, y: oY
     
+    newTop = x: oX, y: oY
     delta  = x: newTop.x  - @top.x,  y: newTop.y  - @top.y
 
   sin:(n)-> Math.sin.apply n, arguments
