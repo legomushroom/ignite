@@ -16,6 +16,8 @@ class Spark
     @delay    = @o.delay
     @delta    = @getDelta()
     @offset   = @o.offset or 0
+    @getRandOffset()
+
     @isDelayed = @o.isDelayed
     @base     = @o.base
     @sinCoef  = 1
@@ -23,6 +25,9 @@ class Spark
     @pSin     = 0
     @pSinStep = .04
     @d        = 0
+
+  getRandOffset:->
+    @xOffset = if @offset isnt 0 then h.rand(-@offset,@offset) else 0
 
   draw:->
     if !@isDelayed
@@ -33,7 +38,7 @@ class Spark
       quirk = Math.sin(@pSin)*@sinCoef
       x = b.x + Math.cos((b.angle+quirk-90)*h.DEG)*rad
       y = b.y + Math.sin((b.angle+quirk-90)*h.DEG)*rad
-      x += @offset*h.PX
+      x += @xOffset*h.PX
       @ctx.arc x, y, @radius*(1-@p), 0, 2*Math.PI
       @ctx.fillStyle = @color
       @ctx.fill()
@@ -48,10 +53,11 @@ class Spark
         @sinCoef = -@sinCoef
         @isDelayed = true
         @radius = h.rand(5,10)
+        @getRandOffset()
     
     else
       @d += .1
-      if @d >= @delay*(1 - Math.abs(@base.angle)/45)
+      if @d >= @delay*(1-Math.abs(@base.angle)/25)
         @d = 0
         @isDelayed = false
 

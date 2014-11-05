@@ -694,6 +694,7 @@ Spark = (function() {
     this.delay = this.o.delay;
     this.delta = this.getDelta();
     this.offset = this.o.offset || 0;
+    this.getRandOffset();
     this.isDelayed = this.o.isDelayed;
     this.base = this.o.base;
     this.sinCoef = 1;
@@ -701,6 +702,10 @@ Spark = (function() {
     this.pSin = 0;
     this.pSinStep = .04;
     return this.d = 0;
+  };
+
+  Spark.prototype.getRandOffset = function() {
+    return this.xOffset = this.offset !== 0 ? h.rand(-this.offset, this.offset) : 0;
   };
 
   Spark.prototype.draw = function() {
@@ -713,7 +718,7 @@ Spark = (function() {
       quirk = Math.sin(this.pSin) * this.sinCoef;
       x = b.x + Math.cos((b.angle + quirk - 90) * h.DEG) * rad;
       y = b.y + Math.sin((b.angle + quirk - 90) * h.DEG) * rad;
-      x += this.offset * h.PX;
+      x += this.xOffset * h.PX;
       this.ctx.arc(x, y, this.radius * (1 - this.p), 0, 2 * Math.PI);
       this.ctx.fillStyle = this.color;
       this.ctx.fill();
@@ -724,11 +729,12 @@ Spark = (function() {
         this.pSin = 0;
         this.sinCoef = -this.sinCoef;
         this.isDelayed = true;
-        return this.radius = h.rand(5, 10);
+        this.radius = h.rand(5, 10);
+        return this.getRandOffset();
       }
     } else {
       this.d += .1;
-      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 45)) {
+      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 25)) {
         this.d = 0;
         return this.isDelayed = false;
       }
