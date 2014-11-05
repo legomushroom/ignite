@@ -2,92 +2,9 @@ Ember = require './ember'
 Spark = require './spark'
 Hammer = require './hammer.min'
 TWEEN = require './tweenjs.min'
+Base = require './base'
+BasePoint = require './base-point'
 h = require './helpers'
-
-class Base
-  constructor:(@o={})->
-    @vars()
-
-  vars:->
-    @ctx = @o.ctx
-    @x = @o.x
-    @y = @o.y
-    @radius = @o.radius
-    @angle = @o.angle
-    @points = []
-
-  setAngle:(angle)->
-    @angle = angle
-    for point, i in @points
-      point.getPosition()
-      point.setAngle @angle
-
-  addPoint:(point)-> @points.push point
-
-  draw:->
-    return
-    @ctx.beginPath()
-    @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
-    @ctx.fillStyle = 'cyan'
-    @ctx.fill()
-    @ctx.beginPath()
-    @ctx.arc @x, @y, @radius, 0, 2*Math.PI
-    @ctx.lineWidth = h.PX
-    @ctx.strokeStyle = 'cyan'
-    @ctx.stroke()
-
-    @ctx.beginPath()
-    x = @x + Math.cos((@angle-90)*h.DEG)*@radius
-    y = @y + Math.sin((@angle-90)*h.DEG)*@radius
-    @ctx.lineWidth = h.PX
-    @ctx.moveTo @x, @y
-    @ctx.lineTo x, y
-    @ctx.strokeStyle = 'slateblue'
-    @ctx.stroke()
-
-
-class BasePoint
-  constructor:(@o={})->
-    @vars()
-    @getPosition()
-  vars:->
-    @ctx = @o.ctx
-    @base = @o.base
-    @radius = @o.radius*h.PX
-    @offset = @o.offset
-    @angle = @o.angle
-    @baseAngle = @angle
-
-  draw:->
-    # @ctx.beginPath()
-    # @ctx.lineWidth = h.PX
-  
-    # @ctx.arc @center.x, @center.y, 1*h.PX, 0, 2*Math.PI
-    # @ctx.fill()
-
-    # @ctx.beginPath()
-    # @ctx.arc x, y, @radius, 0, 2*Math.PI
-    # @ctx.strokeStyle = 'cyan'
-    # @ctx.stroke()
-
-    # @ctx.beginPath()
-    # @ctx.moveTo @center.x, @center.y
-    # @ctx.lineTo @x*h.PX, @y*h.PX
-    # @ctx.stroke()
-
-  getPosition:->
-    @center =
-      x: @base.x + Math.cos((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
-      y: @base.y + Math.sin((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
-
-    @x = (@center.x + Math.cos(@angle*h.DEG)*@radius)/2
-    @y = (@center.y + Math.sin(@angle*h.DEG)*@radius)/2
-
-    @onPositionChange?()
-
-  setAngle:(angle)->
-    @angle = @baseAngle + angle
-    @getPosition()
 
 class Main
   constructor:(@o={})->
