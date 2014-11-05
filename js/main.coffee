@@ -25,7 +25,7 @@ class Base
   addPoint:(point)-> @points.push point
 
   draw:->
-    # return
+    return
     @ctx.beginPath()
     @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
     @ctx.fillStyle = 'cyan'
@@ -306,45 +306,25 @@ class Main
 
     spark1 = new Spark
       ctx:    @ctx
-      start:  x: 344, y: 200
       color:  "#F6D58A"
-      length: 450
-      radius: 7
-      delay: 9
       base: @base
-      offset: 30
 
     spark2 = new Spark
       ctx:    @ctx
-      start:  x: 284, y: 260
       color:  "#D5296F"
-      length: 450
-      radius: 9
-      delay: 12
       isDelayed: true
       base: @base
-      offset: -30
 
     spark3 = new Spark
       ctx:    @ctx
-      start:  x: 324, y: 210
       color:  "#65B4ED"
-      length: 300
-      radius: 6
-      delay: 8
       isDelayed: true
       base: @base
-      offset: 24
 
     spark4 = new Spark
       ctx:    @ctx
-      start:  x: 310, y: 160
       color:  "#EA69A9"
-      length: 250
-      radius: 8
-      delay: 18
       base: @base
-      offset: 0
 
     @sparks.push spark1
     @sparks.push spark2

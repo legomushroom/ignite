@@ -208,6 +208,7 @@ Base = (function() {
 
   Base.prototype.draw = function() {
     var x, y;
+    return;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
     this.ctx.fillStyle = 'cyan';
@@ -567,57 +568,25 @@ Main = (function() {
     this.embers.push(ember4, ember41);
     spark1 = new Spark({
       ctx: this.ctx,
-      start: {
-        x: 344,
-        y: 200
-      },
       color: "#F6D58A",
-      length: 450,
-      radius: 7,
-      delay: 9,
-      base: this.base,
-      offset: 30
+      base: this.base
     });
     spark2 = new Spark({
       ctx: this.ctx,
-      start: {
-        x: 284,
-        y: 260
-      },
       color: "#D5296F",
-      length: 450,
-      radius: 9,
-      delay: 12,
       isDelayed: true,
-      base: this.base,
-      offset: -30
+      base: this.base
     });
     spark3 = new Spark({
       ctx: this.ctx,
-      start: {
-        x: 324,
-        y: 210
-      },
       color: "#65B4ED",
-      length: 300,
-      radius: 6,
-      delay: 8,
       isDelayed: true,
-      base: this.base,
-      offset: 24
+      base: this.base
     });
     spark4 = new Spark({
       ctx: this.ctx,
-      start: {
-        x: 310,
-        y: 160
-      },
       color: "#EA69A9",
-      length: 250,
-      radius: 8,
-      delay: 18,
-      base: this.base,
-      offset: 0
+      base: this.base
     });
     this.sparks.push(spark1);
     this.sparks.push(spark2);
@@ -685,14 +654,10 @@ Spark = (function() {
   Spark.prototype.vars = function() {
     this.ctx = this.o.ctx;
     this.start = this.o.start;
-    this.position = {};
-    this.position.x = this.start.x;
-    this.position.y = 210;
-    this.length = this.o.length;
-    this.radius = this.o.radius;
+    this.length = this.o.length || 450;
     this.color = this.o.color;
-    this.delta = this.getDelta();
     this.offset = this.o.offset || 0;
+    this.getRandRadius();
     this.getRandOffset();
     this.getRandDelay();
     this.isDelayed = this.o.isDelayed;
@@ -705,11 +670,15 @@ Spark = (function() {
   };
 
   Spark.prototype.getRandOffset = function() {
-    return this.xOffset = this.offset !== 0 ? h.rand(-35, 35) : 0;
+    return this.offset = h.rand(-35, 35);
   };
 
   Spark.prototype.getRandDelay = function() {
-    return this.delay = h.rand(0, 10);
+    return this.delay = h.rand(0, 20);
+  };
+
+  Spark.prototype.getRandRadius = function() {
+    return this.radius = h.rand(5, 10);
   };
 
   Spark.prototype.draw = function() {
@@ -722,7 +691,7 @@ Spark = (function() {
       quirk = Math.sin(this.pSin) * this.sinCoef;
       x = b.x + Math.cos((b.angle + quirk - 90) * h.DEG) * rad;
       y = b.y + Math.sin((b.angle + quirk - 90) * h.DEG) * rad;
-      x += this.xOffset * h.PX;
+      x += this.offset * h.PX;
       this.ctx.arc(x, y, this.radius * (1 - this.p), 0, 2 * Math.PI);
       this.ctx.fillStyle = this.color;
       this.ctx.fill();
@@ -745,10 +714,6 @@ Spark = (function() {
         return this.isDelayed = false;
       }
     }
-  };
-
-  Spark.prototype.getDelta = function() {
-    return this.start.y - this.length;
   };
 
   return Spark;
