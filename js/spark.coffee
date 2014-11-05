@@ -9,25 +9,29 @@ class Spark
     @ctx      = @o.ctx
     @start    = @o.start
     @position = {}
-    @position.x = @start.x; @position.y = @start.y
+    @position.x = @start.x; @position.y = 210
     @length   = @o.length
     @radius   = @o.radius
     @color    = @o.color
-    @delay    = @o.delay
+    # @delay    = @o.delay
+    
     @delta    = @getDelta()
     @offset   = @o.offset or 0
     @getRandOffset()
+    @getRandDelay()
 
     @isDelayed = @o.isDelayed
     @base     = @o.base
     @sinCoef  = 1
     @p        = 0
     @pSin     = 0
-    @pSinStep = .04
+    @pSinStep = .1
     @d        = 0
 
   getRandOffset:->
-    @xOffset = if @offset isnt 0 then h.rand(-@offset,@offset) else 0
+    @xOffset = if @offset isnt 0 then h.rand(-35,35) else 0
+  getRandDelay:->
+    @delay = h.rand(0,10)
 
   draw:->
     if !@isDelayed
@@ -53,11 +57,12 @@ class Spark
         @sinCoef = -@sinCoef
         @isDelayed = true
         @radius = h.rand(5,10)
+        @pSinStep = h.rand(0,2)/10
         @getRandOffset()
-    
+        @getRandDelay()
     else
       @d += .1
-      if @d >= @delay*(1-Math.abs(@base.angle)/25)
+      if @d >= @delay*(1-Math.abs(@base.angle)/45)
         @d = 0
         @isDelayed = false
 

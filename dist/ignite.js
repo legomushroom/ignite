@@ -429,10 +429,10 @@ Main = (function() {
             p: 1
           }, 1500).onUpdate(function() {
             return it.base.setAngle(ang * (1 - this.p));
-          }).delay(10500).easing(TWEEN.Easing.Elastic.Out).start();
+          }).delay(5000).easing(TWEEN.Easing.Elastic.Out).start();
         });
       };
-    })(this), 15000);
+    })(this), 8000);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,
@@ -687,25 +687,29 @@ Spark = (function() {
     this.start = this.o.start;
     this.position = {};
     this.position.x = this.start.x;
-    this.position.y = this.start.y;
+    this.position.y = 210;
     this.length = this.o.length;
     this.radius = this.o.radius;
     this.color = this.o.color;
-    this.delay = this.o.delay;
     this.delta = this.getDelta();
     this.offset = this.o.offset || 0;
     this.getRandOffset();
+    this.getRandDelay();
     this.isDelayed = this.o.isDelayed;
     this.base = this.o.base;
     this.sinCoef = 1;
     this.p = 0;
     this.pSin = 0;
-    this.pSinStep = .04;
+    this.pSinStep = .1;
     return this.d = 0;
   };
 
   Spark.prototype.getRandOffset = function() {
-    return this.xOffset = this.offset !== 0 ? h.rand(-this.offset, this.offset) : 0;
+    return this.xOffset = this.offset !== 0 ? h.rand(-35, 35) : 0;
+  };
+
+  Spark.prototype.getRandDelay = function() {
+    return this.delay = h.rand(0, 10);
   };
 
   Spark.prototype.draw = function() {
@@ -730,11 +734,13 @@ Spark = (function() {
         this.sinCoef = -this.sinCoef;
         this.isDelayed = true;
         this.radius = h.rand(5, 10);
-        return this.getRandOffset();
+        this.pSinStep = h.rand(0, 2) / 10;
+        this.getRandOffset();
+        return this.getRandDelay();
       }
     } else {
       this.d += .1;
-      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 25)) {
+      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 45)) {
         this.d = 0;
         return this.isDelayed = false;
       }

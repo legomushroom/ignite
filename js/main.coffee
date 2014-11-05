@@ -207,14 +207,6 @@ class Main
       base: @base
     )
 
-    # i = 0
-    # coef = 1
-    # setInterval =>
-    #   i += coef*.5
-    #   if i < -25 or i > 25
-    #     coef = -coef
-    #   @base.setAngle i
-    # , 16
     coef = 1
     setInterval =>
       coef = -coef
@@ -229,10 +221,10 @@ class Main
           new TWEEN.Tween(p:0).to({p:1}, 1500)
             .onUpdate ->
               it.base.setAngle ang*(1-@p)
-            .delay(10500)
+            .delay(5000)
             .easing(TWEEN.Easing.Elastic.Out)
             .start()
-    , 15000
+    , 8000
 
     ember2 = new Ember(
       ctx: @ctx
