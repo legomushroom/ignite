@@ -11,17 +11,14 @@ class BasePoint
     @offset = @o.offset
     @angle = @o.angle
     @baseAngle = @angle
-    @suppress = 0
 
   getPosition:->
-    @suppress = 200
-    rad = @base.radius-@suppress-@offset*h.PX
     @center =
-      x: @base.x + Math.cos((@base.angle-90)*h.DEG)*rad
-      y: @base.y + Math.sin((@base.angle-90)*h.DEG)*rad
+      x: @base.x + Math.cos((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
+      y: @base.y + Math.sin((@base.angle-90)*h.DEG)*(@base.radius-@offset*h.PX)
 
-    @x = (@center.x + Math.cos(@angle*h.DEG)*(@radius+(@suppress/4)))/2
-    @y = (@center.y + Math.sin(@angle*h.DEG)*(@radius+(@suppress/4)))/2
+    @x = (@center.x + Math.cos(@angle*h.DEG)*@radius)/2
+    @y = (@center.y + Math.sin(@angle*h.DEG)*@radius)/2
 
     @onPositionChange?()
 
@@ -29,9 +26,8 @@ class BasePoint
     @angle = @baseAngle + angle
     @getPosition()
 
-  setSuppress:(n)-> @suppress = n; @getPosition()
-
   draw:->
+    return
     @ctx.beginPath()
     @ctx.lineWidth = h.PX
   

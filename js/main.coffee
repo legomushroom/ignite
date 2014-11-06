@@ -9,7 +9,31 @@ h = require './helpers'
 class Main
   constructor:(@o={})->
     @vars()
+    @events()
     @run()
+
+  events:->
+    first =
+      x: null, y: null
+    delta = 0
+    timeout = null
+    @canvas.addEventListener 'mousemove', (e)=>
+      if !first.x then first = x: e.x, y: e.y
+      else
+        delta = first.x - e.x
+
+      angle = if delta < 0 then Math.min delta/5, 45
+      else Math.min delta/5, -45
+      @base.setAngle angle
+
+      if !timeout
+        timeout = setTimeout =>
+          console.log 'a'
+          clearTimeout timeout
+          timeout = null
+          first = x: null, y: null
+        , 100
+      # console.log delta
 
   vars:->
     # SYS
@@ -124,25 +148,24 @@ class Main
       base: @base
     )
 
-    coef = 1
-    setInterval =>
-      coef = -coef
-      ang = coef*45
-      it = @
-      new TWEEN.Tween(p:0).to({p:1}, 400)
-        .onUpdate ->
-          it.base.setAngle ang*@p
-          it.base.setSuppress ang*@p
-        .easing(TWEEN.Easing.Elastic.Out)
-        .start()
-        .onComplete =>
-          new TWEEN.Tween(p:0).to({p:1}, 1500)
-            .onUpdate ->
-              it.base.setAngle ang*(1-@p)
-            .delay(5000)
-            .easing(TWEEN.Easing.Elastic.Out)
-            .start()
-    , 8000
+    # coef = 1
+    # setInterval =>
+    #   coef = -coef
+    #   ang = coef*45
+    #   it = @
+    #   new TWEEN.Tween(p:0).to({p:1}, 400)
+    #     .onUpdate ->
+    #       it.base.setAngle ang*@p
+    #     .easing(TWEEN.Easing.Elastic.Out)
+    #     .start()
+    #     .onComplete =>
+    #       new TWEEN.Tween(p:0).to({p:1}, 1500)
+    #         .onUpdate ->
+    #           it.base.setAngle ang*(1-@p)
+    #         .delay(5000)
+    #         .easing(TWEEN.Easing.Elastic.Out)
+    #         .start()
+    # , 8000
 
     ember2 = new Ember(
       ctx: @ctx

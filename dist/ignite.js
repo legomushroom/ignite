@@ -16,20 +16,16 @@ BasePoint = (function() {
     this.radius = this.o.radius * h.PX;
     this.offset = this.o.offset;
     this.angle = this.o.angle;
-    this.baseAngle = this.angle;
-    return this.suppress = 0;
+    return this.baseAngle = this.angle;
   };
 
   BasePoint.prototype.getPosition = function() {
-    var rad;
-    this.suppress = 200;
-    rad = this.base.radius - this.suppress - this.offset * h.PX;
     this.center = {
-      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * rad,
-      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * rad
+      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX),
+      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX)
     };
-    this.x = (this.center.x + Math.cos(this.angle * h.DEG) * (this.radius + (this.suppress / 4))) / 2;
-    this.y = (this.center.y + Math.sin(this.angle * h.DEG) * (this.radius + (this.suppress / 4))) / 2;
+    this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
+    this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
     return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
 
@@ -38,12 +34,8 @@ BasePoint = (function() {
     return this.getPosition();
   };
 
-  BasePoint.prototype.setSuppress = function(n) {
-    this.suppress = n;
-    return this.getPosition();
-  };
-
   BasePoint.prototype.draw = function() {
+    return;
     this.ctx.beginPath();
     this.ctx.lineWidth = h.PX;
     this.ctx.arc(this.center.x, this.center.y, 1 * h.PX, 0, 2 * Math.PI);
@@ -94,10 +86,6 @@ Base = (function() {
       _results.push(point.setAngle(this.angle));
     }
     return _results;
-  };
-
-  Base.prototype.setSuppress = function(n) {
-    return this.suppress = n;
   };
 
   Base.prototype.addPoint = function(point) {
@@ -317,8 +305,45 @@ Main = (function() {
   function Main(o) {
     this.o = o != null ? o : {};
     this.vars();
+    this.events();
     this.run();
   }
+
+  Main.prototype.events = function() {
+    var delta, first, timeout;
+    first = {
+      x: null,
+      y: null
+    };
+    delta = 0;
+    timeout = null;
+    return this.canvas.addEventListener('mousemove', (function(_this) {
+      return function(e) {
+        var angle;
+        if (!first.x) {
+          first = {
+            x: e.x,
+            y: e.y
+          };
+        } else {
+          delta = first.x - e.x;
+        }
+        angle = delta < 0 ? Math.min(delta / 5, 45) : Math.min(delta / 5, -45);
+        _this.base.setAngle(angle);
+        if (!timeout) {
+          return timeout = setTimeout(function() {
+            console.log('a');
+            clearTimeout(timeout);
+            timeout = null;
+            return first = {
+              x: null,
+              y: null
+            };
+          }, 100);
+        }
+      };
+    })(this));
+  };
 
   Main.prototype.vars = function() {
     this.canvas = document.getElementById("js-canvas");
@@ -401,7 +426,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var coef, ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
+    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -454,31 +479,6 @@ Main = (function() {
       basePoint: this.basePoint11,
       base: this.base
     });
-    coef = 1;
-    setInterval((function(_this) {
-      return function() {
-        var ang, it;
-        coef = -coef;
-        ang = coef * 45;
-        it = _this;
-        return new TWEEN.Tween({
-          p: 0
-        }).to({
-          p: 1
-        }, 400).onUpdate(function() {
-          it.base.setAngle(ang * this.p);
-          return it.base.setSuppress(ang * this.p);
-        }).easing(TWEEN.Easing.Elastic.Out).start().onComplete(function() {
-          return new TWEEN.Tween({
-            p: 0
-          }).to({
-            p: 1
-          }, 1500).onUpdate(function() {
-            return it.base.setAngle(ang * (1 - this.p));
-          }).delay(5000).easing(TWEEN.Easing.Elastic.Out).start();
-        });
-      };
-    })(this), 8000);
     ember2 = new Ember({
       ctx: this.ctx,
       sensivity: .25,

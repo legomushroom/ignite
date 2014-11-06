@@ -15,7 +15,6 @@ class Base
     for point, i in @points
       point.getPosition()
       point.setAngle @angle
-  setSuppress:(n)->  @suppress = n
   addPoint:(point)-> @points.push point
   draw:->
     # return
