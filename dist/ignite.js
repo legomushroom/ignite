@@ -59,7 +59,8 @@ Base = (function() {
     this.y = this.o.y;
     this.radius = this.o.radius;
     this.angle = this.o.angle;
-    return this.points = [];
+    this.points = [];
+    return this.suppress = 0;
   };
 
   Base.prototype.setAngle = function(angle) {
@@ -73,6 +74,10 @@ Base = (function() {
       _results.push(point.setAngle(this.angle));
     }
     return _results;
+  };
+
+  Base.prototype.setSuppress = function(n) {
+    return this.suppress = n;
   };
 
   Base.prototype.addPoint = function(point) {
@@ -442,7 +447,8 @@ Main = (function() {
         }).to({
           p: 1
         }, 400).onUpdate(function() {
-          return it.base.setAngle(ang * this.p);
+          it.base.setAngle(ang * this.p);
+          return it.base.setSuppress(ang * this.p);
         }).easing(TWEEN.Easing.Elastic.Out).start().onComplete(function() {
           return new TWEEN.Tween({
             p: 0

@@ -132,6 +132,7 @@ class Main
       new TWEEN.Tween(p:0).to({p:1}, 400)
         .onUpdate ->
           it.base.setAngle ang*@p
+          it.base.setSuppress ang*@p
         .easing(TWEEN.Easing.Elastic.Out)
         .start()
         .onComplete =>

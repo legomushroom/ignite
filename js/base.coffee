@@ -7,11 +7,14 @@ class Base
     @radius = @o.radius
     @angle = @o.angle
     @points = []
+    @suppress = 0
   setAngle:(angle)->
     @angle = angle
     for point, i in @points
       point.getPosition()
       point.setAngle @angle
+  setSuppress:(n)-> @suppress = n
+
   addPoint:(point)-> @points.push point
   draw:->
     return
