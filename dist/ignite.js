@@ -94,6 +94,7 @@ Base = (function() {
 
   Base.prototype.draw = function() {
     var x, y;
+    return;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
     this.ctx.fillStyle = 'cyan';
@@ -310,39 +311,54 @@ Main = (function() {
   }
 
   Main.prototype.events = function() {
-    var delta, first, timeout;
-    first = {
-      x: null,
-      y: null
-    };
-    delta = 0;
+    var isTouched, mc, timeout;
+    mc = new Hammer(this.canvas);
+    isTouched = false;
     timeout = null;
-    return this.canvas.addEventListener('mousemove', (function(_this) {
+    mc.on('tap', (function(_this) {
       return function(e) {
-        var angle;
-        if (!first.x) {
-          first = {
-            x: e.x,
-            y: e.y
-          };
-        } else {
-          delta = first.x - e.x;
-        }
-        angle = delta < 0 ? Math.min(delta / 5, 45) : Math.min(delta / 5, -45);
-        _this.base.setAngle(angle);
-        if (!timeout) {
-          return timeout = setTimeout(function() {
-            console.log('a');
-            clearTimeout(timeout);
-            timeout = null;
-            return first = {
-              x: null,
-              y: null
-            };
-          }, 100);
+        return isTouched = true;
+      };
+    })(this));
+    mc.on('panstart', (function(_this) {
+      return function(e) {
+        isTouched = true;
+        return TWEEN.remove(_this.tween);
+      };
+    })(this));
+    return mc.on('pan', (function(_this) {
+      return function(e) {
+        if (isTouched) {
+          _this.ang = e.deltaX / 10;
+          if (_this.ang > _this.MAX_ANGLE) {
+            _this.ang = _this.MAX_ANGLE;
+          }
+          if (_this.ang < -_this.MAX_ANGLE) {
+            _this.ang = -_this.MAX_ANGLE;
+          }
+          _this.base.setAngle(_this.ang);
+          if (!timeout) {
+            return timeout = setTimeout(function() {
+              isTouched = false;
+              timeout = null;
+              return _this.normalizeBase();
+            }, 300);
+          }
         }
       };
     })(this));
+  };
+
+  Main.prototype.normalizeBase = function() {
+    var it;
+    it = this;
+    return this.tween = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 1500).onUpdate(function() {
+      return it.base.setAngle(it.ang * (1 - this.p));
+    }).easing(TWEEN.Easing.Elastic.Out).start();
   };
 
   Main.prototype.vars = function() {
@@ -352,6 +368,7 @@ Main = (function() {
     this.embers = [];
     this.sparks = [];
     this.basePoints = [];
+    this.MAX_ANGLE = 45;
     this.base = new Base({
       x: 310 * h.PX,
       y: 460 * h.PX,
@@ -706,7 +723,7 @@ Spark = (function() {
     this.getRandOffset();
     this.getRandDelay();
     this.isDelayed = this.o.isDelayed;
-    this.base = this.o.base;
+    this.base2 = {};
     this.sinCoef = 1;
     this.p = 0;
     this.pSin = 0;
@@ -726,12 +743,25 @@ Spark = (function() {
     return this.radius = h.rand(5, 10);
   };
 
+  Spark.prototype.cloneBase = function() {
+    var key, value, _ref, _results;
+    _ref = this.o.base;
+    _results = [];
+    for (key in _ref) {
+      value = _ref[key];
+      _results.push(this.base2[key] = value);
+    }
+    return _results;
+  };
+
   Spark.prototype.draw = function() {
     var b, quirk, rad, speed, x, y;
     if (!this.isDelayed) {
+      !this.isBaseCloned && this.cloneBase();
+      this.isBaseCloned = true;
       this.ctx.beginPath();
-      speed = Math.abs(this.base.angle) / 3000;
-      b = this.base;
+      b = this.base2;
+      speed = Math.abs(b.angle) / 3000;
       rad = b.radius + 100 - this.length + (this.length * this.p);
       quirk = Math.sin(this.pSin) * this.sinCoef;
       x = b.x + Math.cos((b.angle + quirk - 90) * h.DEG) * rad;
@@ -750,11 +780,12 @@ Spark = (function() {
         this.radius = h.rand(5, 10);
         this.pSinStep = h.rand(0, 2) / 10;
         this.getRandOffset();
-        return this.getRandDelay();
+        this.getRandDelay();
+        return this.isBaseCloned = false;
       }
     } else {
       this.d += .1;
-      if (this.d >= this.delay * (1 - Math.abs(this.base.angle) / 45)) {
+      if (this.d >= this.delay * (1 - Math.abs(this.base2.angle) / 45)) {
         this.d = 0;
         return this.isDelayed = false;
       }

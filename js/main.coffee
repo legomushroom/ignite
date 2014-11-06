@@ -13,27 +13,44 @@ class Main
     @run()
 
   events:->
-    first =
-      x: null, y: null
-    delta = 0
+    mc = new Hammer(@canvas)
+    # mc.add new Hammer.Pan {threshold: 50}
+    isTouched = false
     timeout = null
-    @canvas.addEventListener 'mousemove', (e)=>
-      if !first.x then first = x: e.x, y: e.y
-      else
-        delta = first.x - e.x
+    mc.on 'tap', (e)=> isTouched = true
+    mc.on 'panstart', (e)=>
+      isTouched = true
+      TWEEN.remove @tween
 
-      angle = if delta < 0 then Math.min delta/5, 45
-      else Math.min delta/5, -45
-      @base.setAngle angle
+    mc.on 'pan', (e)=>
+      if isTouched
+        @ang = e.deltaX/10
+        if @ang > @MAX_ANGLE
+          @ang = @MAX_ANGLE
+        if @ang < -@MAX_ANGLE
+          @ang = -@MAX_ANGLE
+        @base.setAngle @ang
+        if !timeout
+          timeout = setTimeout =>
+            isTouched = false
+            timeout = null
+            @normalizeBase()
+          , 300
 
-      if !timeout
-        timeout = setTimeout =>
-          console.log 'a'
-          clearTimeout timeout
-          timeout = null
-          first = x: null, y: null
-        , 100
-      # console.log delta
+      # console.log e.angle
+      # console.log 'pan'
+      # console.log e.deltaX, e.deltaY
+    # mc.on 'tapend', (e)=>
+    #   console.log 'tapend'
+  
+  normalizeBase:->
+    it = @
+    @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
+      .onUpdate ->
+        it.base.setAngle it.ang*(1-@p)
+      .easing(TWEEN.Easing.Elastic.Out)
+      .start()
+
 
   vars:->
     # SYS
@@ -43,6 +60,7 @@ class Main
     @embers = []
     @sparks = []
     @basePoints = []
+    @MAX_ANGLE = 45
     
     @base = new Base
       x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0, ctx: @ctx
@@ -110,12 +128,6 @@ class Main
       offset: 193
       angle: 0
     @base.addPoint @basePoint41
-
-    # @basePoints.push @basePoint11
-
-    # mc = new Hammer(@canvas)
-    # mc.add new Hammer.Pan {threshold: 50}
-    # mc.on 'tap', (e)=> @drawTap(e)
 
   run:->
     @animationLoop()

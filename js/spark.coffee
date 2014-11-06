@@ -16,7 +16,7 @@ class Spark
     @getRandDelay()
 
     @isDelayed = @o.isDelayed
-    @base     = @o.base
+    @base2     = {}
     @sinCoef  = 1
     @p        = 0
     @pSin     = 0
@@ -27,11 +27,17 @@ class Spark
   getRandDelay:->  @delay = h.rand(0,20)
   getRandRadius:-> @radius = h.rand(5,10)
 
+  cloneBase:->
+    for key, value of @o.base
+      @base2[key] = value
+
   draw:->
     if !@isDelayed
+      !@isBaseCloned and @cloneBase()
+      @isBaseCloned = true
       @ctx.beginPath()
-      speed = Math.abs(@base.angle)/3000
-      b = @base
+      b = @base2
+      speed = Math.abs(b.angle)/3000
       rad = (b.radius+100-@length+(@length*@p))
       quirk = Math.sin(@pSin)*@sinCoef
       x = b.x + Math.cos((b.angle+quirk-90)*h.DEG)*rad
@@ -54,9 +60,10 @@ class Spark
         @pSinStep = h.rand(0,2)/10
         @getRandOffset()
         @getRandDelay()
+        @isBaseCloned = false
     else
       @d += .1
-      if @d >= @delay*(1-Math.abs(@base.angle)/45)
+      if @d >= @delay*(1-Math.abs(@base2.angle)/45)
         @d = 0
         @isDelayed = false
 
