@@ -16,16 +16,20 @@ BasePoint = (function() {
     this.radius = this.o.radius * h.PX;
     this.offset = this.o.offset;
     this.angle = this.o.angle;
-    return this.baseAngle = this.angle;
+    this.baseAngle = this.angle;
+    return this.suppress = 0;
   };
 
   BasePoint.prototype.getPosition = function() {
+    var rad;
+    this.suppress = 200;
+    rad = this.base.radius - this.suppress - this.offset * h.PX;
     this.center = {
-      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX),
-      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX)
+      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * rad,
+      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * rad
     };
-    this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
-    this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
+    this.x = (this.center.x + Math.cos(this.angle * h.DEG) * (this.radius + (this.suppress / 4))) / 2;
+    this.y = (this.center.y + Math.sin(this.angle * h.DEG) * (this.radius + (this.suppress / 4))) / 2;
     return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
 
@@ -34,7 +38,21 @@ BasePoint = (function() {
     return this.getPosition();
   };
 
-  BasePoint.prototype.draw = function() {};
+  BasePoint.prototype.setSuppress = function(n) {
+    this.suppress = n;
+    return this.getPosition();
+  };
+
+  BasePoint.prototype.draw = function() {
+    this.ctx.beginPath();
+    this.ctx.lineWidth = h.PX;
+    this.ctx.arc(this.center.x, this.center.y, 1 * h.PX, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.center.x, this.center.y);
+    this.ctx.lineTo(this.x * h.PX, this.y * h.PX);
+    return this.ctx.stroke();
+  };
 
   return BasePoint;
 
@@ -45,7 +63,9 @@ module.exports = BasePoint;
 
 
 },{"./helpers":5}],2:[function(require,module,exports){
-var Base;
+var Base, h;
+
+h = require('./helpers');
 
 Base = (function() {
   function Base(o) {
@@ -86,7 +106,6 @@ Base = (function() {
 
   Base.prototype.draw = function() {
     var x, y;
-    return;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
     this.ctx.fillStyle = 'cyan';
@@ -114,7 +133,7 @@ module.exports = Base;
 
 
 
-},{}],3:[function(require,module,exports){
+},{"./helpers":5}],3:[function(require,module,exports){
 var Ember, TWEEN, h;
 
 h = require('./helpers');

@@ -1,3 +1,5 @@
+h = require './helpers'
+
 class Base
   constructor:(@o={})-> @vars()
   vars:->
@@ -13,11 +15,10 @@ class Base
     for point, i in @points
       point.getPosition()
       point.setAngle @angle
-  setSuppress:(n)-> @suppress = n
-
+  setSuppress:(n)->  @suppress = n
   addPoint:(point)-> @points.push point
   draw:->
-    return
+    # return
     @ctx.beginPath()
     @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
     @ctx.fillStyle = 'cyan'
