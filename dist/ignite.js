@@ -92,6 +92,18 @@ Base = (function() {
     return this.points.push(point);
   };
 
+  Base.prototype.suppress = function(n) {
+    var i, point, _i, _len, _ref, _results;
+    this.suppress = n;
+    _ref = this.points;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      point = _ref[i];
+      _results.push(point.suppress(this.suppress));
+    }
+    return _results;
+  };
+
   Base.prototype.draw = function() {
     var x, y;
     return;
@@ -337,6 +349,7 @@ Main = (function() {
             _this.ang = -_this.MAX_ANGLE;
           }
           _this.base.setAngle(_this.ang);
+          _this.base.suppress(_this.ang);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;

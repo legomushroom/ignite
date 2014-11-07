@@ -16,6 +16,12 @@ class Base
       point.getPosition()
       point.setAngle @angle
   addPoint:(point)-> @points.push point
+
+  suppress:(n)->
+    @suppress = n
+    for point, i in @points
+      point.suppress @suppress
+
   draw:->
     return
     @ctx.beginPath()

@@ -25,11 +25,10 @@ class Main
     mc.on 'pan', (e)=>
       if isTouched
         @ang = e.deltaX/10
-        if @ang > @MAX_ANGLE
-          @ang = @MAX_ANGLE
-        if @ang < -@MAX_ANGLE
-          @ang = -@MAX_ANGLE
+        if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
+        if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
+        @base.suppress @ang
         if !timeout
           timeout = setTimeout =>
             isTouched = false
