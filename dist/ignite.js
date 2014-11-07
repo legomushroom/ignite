@@ -16,7 +16,8 @@ BasePoint = (function() {
     this.radius = this.o.radius * h.PX;
     this.offset = this.o.offset;
     this.angle = this.o.angle;
-    return this.baseAngle = this.angle;
+    this.baseAngle = this.angle;
+    return this.suppress = 0;
   };
 
   BasePoint.prototype.getPosition = function() {
@@ -32,6 +33,10 @@ BasePoint = (function() {
   BasePoint.prototype.setAngle = function(angle) {
     this.angle = this.baseAngle + angle;
     return this.getPosition();
+  };
+
+  BasePoint.prototype.setSuppress = function(n) {
+    return this.suppress = n;
   };
 
   BasePoint.prototype.draw = function() {
@@ -92,14 +97,14 @@ Base = (function() {
     return this.points.push(point);
   };
 
-  Base.prototype.suppress = function(n) {
+  Base.prototype.setSuppress = function(n) {
     var i, point, _i, _len, _ref, _results;
     this.suppress = n;
     _ref = this.points;
     _results = [];
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       point = _ref[i];
-      _results.push(point.suppress(this.suppress));
+      _results.push(point.setSuppress(this.suppress));
     }
     return _results;
   };
@@ -174,7 +179,7 @@ Ember = (function() {
   }
 
   Ember.prototype.draw = function() {
-    var ang, leftOffset, rightOffset, topX, topY;
+    var ang, leftOffset, rightOffset, s, topX, topY;
     this.ctx.beginPath();
     ang = this.base.angle;
     if (ang < 0) {
@@ -184,11 +189,12 @@ Ember = (function() {
       leftOffset = ang;
       rightOffset = ang / 2;
     }
-    this.ctx.moveTo((this.left.x + leftOffset) * h.PX, this.left.y * h.PX);
+    s = this.base.suppress;
+    this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s) * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
-    topY = this.top.y + (this.p * this.delta.y);
+    topY = this.top.y + s + (this.p * this.delta.y);
     this.ctx.lineTo(topX * h.PX, topY * h.PX);
-    this.ctx.lineTo((this.right.x + rightOffset) * h.PX, this.right.y * h.PX);
+    this.ctx.lineTo((this.right.x + rightOffset) * h.PX, (this.right.y + s) * h.PX);
     this.ctx.lineTo(this.bottom.x * h.PX, this.bottom.y * h.PX);
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
@@ -349,7 +355,7 @@ Main = (function() {
             _this.ang = -_this.MAX_ANGLE;
           }
           _this.base.setAngle(_this.ang);
-          _this.base.suppress(_this.ang);
+          _this.base.setSuppress(Math.abs(_this.ang) / 2);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;
@@ -370,7 +376,8 @@ Main = (function() {
     }).to({
       p: 1
     }, 1500).onUpdate(function() {
-      return it.base.setAngle(it.ang * (1 - this.p));
+      it.base.setAngle(it.ang * (1 - this.p));
+      return it.base.setSuppress(it.ang * (1 - this.p));
     }).easing(TWEEN.Easing.Elastic.Out).start();
   };
 

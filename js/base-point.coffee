@@ -11,6 +11,7 @@ class BasePoint
     @offset = @o.offset
     @angle = @o.angle
     @baseAngle = @angle
+    @suppress = 0
 
   getPosition:->
     @center =
@@ -25,6 +26,9 @@ class BasePoint
   setAngle:(angle)->
     @angle = @baseAngle + angle
     @getPosition()
+
+  setSuppress:(n)->
+    @suppress = n
 
   draw:->
     return

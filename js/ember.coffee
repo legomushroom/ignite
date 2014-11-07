@@ -36,10 +36,11 @@ class Ember
       leftOffset = ang
       rightOffset = ang/2
 
-    @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y)*h.PX
-    topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)
+    s = @base.suppress
+    @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y+s)*h.PX
+    topX = @top.x + (@p*@delta.x); topY = @top.y + s + (@p*@delta.y)
     @ctx.lineTo topX*h.PX, topY*h.PX
-    @ctx.lineTo (@right.x+rightOffset)*h.PX, (@right.y)*h.PX
+    @ctx.lineTo (@right.x+rightOffset)*h.PX, (@right.y+s)*h.PX
     @ctx.lineTo (@bottom.x)*h.PX,  (@bottom.y)*h.PX
     @ctx.closePath()
     @ctx.fillStyle = @color

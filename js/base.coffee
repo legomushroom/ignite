@@ -17,10 +17,10 @@ class Base
       point.setAngle @angle
   addPoint:(point)-> @points.push point
 
-  suppress:(n)->
+  setSuppress:(n)->
     @suppress = n
     for point, i in @points
-      point.suppress @suppress
+      point.setSuppress @suppress
 
   draw:->
     return

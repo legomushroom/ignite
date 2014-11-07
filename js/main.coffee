@@ -28,7 +28,7 @@ class Main
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
-        @base.suppress @ang
+        @base.setSuppress Math.abs(@ang)/2
         if !timeout
           timeout = setTimeout =>
             isTouched = false
@@ -47,6 +47,7 @@ class Main
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
       .onUpdate ->
         it.base.setAngle it.ang*(1-@p)
+        it.base.setSuppress it.ang*(1-@p)
       .easing(TWEEN.Easing.Elastic.Out)
       .start()
 
