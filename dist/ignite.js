@@ -21,9 +21,11 @@ BasePoint = (function() {
   };
 
   BasePoint.prototype.getPosition = function() {
+    var rad;
+    rad = this.base.radius - 5 * this.suppress - this.offset * h.PX;
     this.center = {
-      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX),
-      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * (this.base.radius - this.offset * h.PX)
+      x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * rad,
+      y: this.base.y + Math.sin((this.base.angle - 90) * h.DEG) * rad
     };
     this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
     this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
@@ -36,7 +38,8 @@ BasePoint = (function() {
   };
 
   BasePoint.prototype.setSuppress = function(n) {
-    return this.suppress = n;
+    this.suppress = n;
+    return this.getPosition();
   };
 
   BasePoint.prototype.draw = function() {
@@ -189,10 +192,10 @@ Ember = (function() {
       leftOffset = ang;
       rightOffset = ang / 2;
     }
-    s = this.base.suppress;
+    s = this.base.suppress / 2;
     this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s) * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
-    topY = this.top.y + s + (this.p * this.delta.y);
+    topY = this.top.y + (this.p * this.delta.y);
     this.ctx.lineTo(topX * h.PX, topY * h.PX);
     this.ctx.lineTo((this.right.x + rightOffset) * h.PX, (this.right.y + s) * h.PX);
     this.ctx.lineTo(this.bottom.x * h.PX, this.bottom.y * h.PX);
@@ -355,13 +358,14 @@ Main = (function() {
             _this.ang = -_this.MAX_ANGLE;
           }
           _this.base.setAngle(_this.ang);
-          _this.base.setSuppress(Math.abs(_this.ang) / 2);
+          _this.suppress = e.deltaY / 20;
+          _this.base.setSuppress(_this.suppress);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;
               timeout = null;
               return _this.normalizeBase();
-            }, 300);
+            }, 350);
           }
         }
       };
@@ -377,7 +381,7 @@ Main = (function() {
       p: 1
     }, 1500).onUpdate(function() {
       it.base.setAngle(it.ang * (1 - this.p));
-      return it.base.setSuppress(it.ang * (1 - this.p));
+      return it.base.setSuppress(it.suppress * (1 - this.p));
     }).easing(TWEEN.Easing.Elastic.Out).start();
   };
 
@@ -388,7 +392,8 @@ Main = (function() {
     this.embers = [];
     this.sparks = [];
     this.basePoints = [];
-    this.MAX_ANGLE = 45;
+    this.MAX_ANGLE = 35;
+    this.suppress = 0;
     this.base = new Base({
       x: 310 * h.PX,
       y: 460 * h.PX,

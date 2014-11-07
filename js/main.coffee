@@ -21,20 +21,21 @@ class Main
     mc.on 'panstart', (e)=>
       isTouched = true
       TWEEN.remove @tween
-
     mc.on 'pan', (e)=>
       if isTouched
         @ang = e.deltaX/10
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
-        @base.setSuppress Math.abs(@ang)/2
+        @suppress = e.deltaY/20
+        # @base.setSuppress Math.abs(@ang)/4
+        @base.setSuppress @suppress
         if !timeout
           timeout = setTimeout =>
             isTouched = false
             timeout = null
             @normalizeBase()
-          , 300
+          , 350
 
       # console.log e.angle
       # console.log 'pan'
@@ -47,7 +48,7 @@ class Main
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
       .onUpdate ->
         it.base.setAngle it.ang*(1-@p)
-        it.base.setSuppress it.ang*(1-@p)
+        it.base.setSuppress it.suppress*(1-@p)
       .easing(TWEEN.Easing.Elastic.Out)
       .start()
 
@@ -60,7 +61,8 @@ class Main
     @embers = []
     @sparks = []
     @basePoints = []
-    @MAX_ANGLE = 45
+    @MAX_ANGLE = 35
+    @suppress = 0
     
     @base = new Base
       x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0, ctx: @ctx
