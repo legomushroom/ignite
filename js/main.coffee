@@ -18,9 +18,7 @@ class Main
     isTouched = false
     timeout = null
     mc.on 'tap', (e)=> isTouched = true
-    mc.on 'panstart', (e)=>
-      isTouched = true
-      TWEEN.remove @tween
+    mc.on 'panstart', (e)=> isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
       if isTouched
         @ang = e.deltaX/10
@@ -50,6 +48,8 @@ class Main
         it.base.setAngle it.ang*(1-@p)
         it.base.setSuppress it.suppress*(1-@p)
       .easing(TWEEN.Easing.Elastic.Out)
+      .onComplete =>
+        @suppress = 0
       .start()
 
 

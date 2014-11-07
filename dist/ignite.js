@@ -382,7 +382,11 @@ Main = (function() {
     }, 1500).onUpdate(function() {
       it.base.setAngle(it.ang * (1 - this.p));
       return it.base.setSuppress(it.suppress * (1 - this.p));
-    }).easing(TWEEN.Easing.Elastic.Out).start();
+    }).easing(TWEEN.Easing.Elastic.Out).onComplete((function(_this) {
+      return function() {
+        return _this.suppress = 0;
+      };
+    })(this)).start();
   };
 
   Main.prototype.vars = function() {
