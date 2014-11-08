@@ -80,7 +80,8 @@ Base = (function() {
     this.radius = this.o.radius;
     this.angle = this.o.angle;
     this.points = [];
-    return this.suppress = 0;
+    this.suppress = 0;
+    return this.speed = 1;
   };
 
   Base.prototype.setAngle = function(angle) {
@@ -110,6 +111,10 @@ Base = (function() {
       _results.push(point.setSuppress(this.suppress));
     }
     return _results;
+  };
+
+  Base.prototype.setSpeed = function(n) {
+    return this.speed = n;
   };
 
   Base.prototype.draw = function() {
@@ -241,7 +246,7 @@ Ember = (function() {
 
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / (60 - Math.abs(this.base.angle));
+    this.angle += this.angleStep / this.base.speed;
     ang = this.angle;
     rX = .1 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -336,11 +341,9 @@ Main = (function() {
     mc = new Hammer(this.canvas);
     isTouched = false;
     timeout = null;
-    mc.on('tap', (function(_this) {
-      return function(e) {
-        return isTouched = true;
-      };
-    })(this));
+    mc.on('tap', function(e) {
+      return isTouched = true;
+    });
     mc.on('panstart', (function(_this) {
       return function(e) {
         isTouched = true;
@@ -360,6 +363,8 @@ Main = (function() {
           _this.base.setAngle(_this.ang);
           _this.suppress = e.deltaY / 20;
           _this.base.setSuppress(_this.suppress);
+          _this.speed = Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY));
+          _this.base.setSpeed(_this.speed / 1000);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;
@@ -381,7 +386,9 @@ Main = (function() {
       p: 1
     }, 1500).onUpdate(function() {
       it.base.setAngle(it.ang * (1 - this.p));
-      return it.base.setSuppress(it.suppress * (1 - this.p));
+      it.base.setSuppress(it.suppress * (1 - this.p));
+      it.base.setSpeed(Math.max(it.speed * (1 - this.p), 1));
+      return console.log(Math.max(it.speed * (1 - this.p), 1));
     }).easing(TWEEN.Easing.Elastic.Out).onComplete((function(_this) {
       return function() {
         return _this.suppress = 0;
@@ -472,7 +479,7 @@ Main = (function() {
   };
 
   Main.prototype.run = function() {
-    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4;
+    var ember1, ember11, ember2, ember21, ember3, ember4, ember41, spark1, spark2, spark3, spark4, spark5, spark6, spark7, spark8;
     this.animationLoop();
     ember1 = new Ember({
       ctx: this.ctx,
@@ -679,10 +686,34 @@ Main = (function() {
       color: "#EA69A9",
       base: this.base
     });
+    spark5 = new Spark({
+      ctx: this.ctx,
+      color: "#65B4ED",
+      base: this.base
+    });
+    spark6 = new Spark({
+      ctx: this.ctx,
+      color: "#F6D58A",
+      base: this.base
+    });
+    spark7 = new Spark({
+      ctx: this.ctx,
+      color: "#D5296F",
+      base: this.base
+    });
+    spark8 = new Spark({
+      ctx: this.ctx,
+      color: "#EA69A9",
+      base: this.base
+    });
     this.sparks.push(spark1);
     this.sparks.push(spark2);
     this.sparks.push(spark3);
     this.sparks.push(spark4);
+    this.sparks.push(spark5);
+    this.sparks.push(spark6);
+    this.sparks.push(spark7);
+    this.sparks.push(spark8);
     return this.ctx.globalCompositeOperation = "multiply";
   };
 

@@ -77,7 +77,7 @@ class Ember
     return
   
   getDelta: ->
-    @angle += @angleStep/(60-Math.abs(@base.angle))
+    @angle += @angleStep/@base.speed
     ang = @angle
     rX = .1*@flickRadius
     rY = 1*@flickRadius

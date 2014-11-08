@@ -10,6 +10,7 @@ class Base
     @angle = @o.angle
     @points = []
     @suppress = 0
+    @speed = 1
   setAngle:(angle)->
     @angle = angle
     for point, i in @points
@@ -21,6 +22,8 @@ class Base
     @suppress = n
     for point, i in @points
       point.setSuppress @suppress
+
+  setSpeed:(n)-> @speed = n
 
   draw:->
     return

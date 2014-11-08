@@ -17,7 +17,7 @@ class Main
     # mc.add new Hammer.Pan {threshold: 50}
     isTouched = false
     timeout = null
-    mc.on 'tap', (e)=> isTouched = true
+    mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=> isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
       if isTouched
@@ -26,8 +26,11 @@ class Main
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
         @suppress = e.deltaY/20
-        # @base.setSuppress Math.abs(@ang)/4
         @base.setSuppress @suppress
+
+
+        @speed = Math.max Math.abs(e.deltaX), Math.abs(e.deltaY)
+        @base.setSpeed @speed/1000
         if !timeout
           timeout = setTimeout =>
             isTouched = false
@@ -35,18 +38,14 @@ class Main
             @normalizeBase()
           , 350
 
-      # console.log e.angle
-      # console.log 'pan'
-      # console.log e.deltaX, e.deltaY
-    # mc.on 'tapend', (e)=>
-    #   console.log 'tapend'
-  
   normalizeBase:->
     it = @
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
       .onUpdate ->
         it.base.setAngle it.ang*(1-@p)
         it.base.setSuppress it.suppress*(1-@p)
+        it.base.setSpeed Math.max it.speed*(1-@p), 1
+        console.log Math.max it.speed*(1-@p), 1
       .easing(TWEEN.Easing.Elastic.Out)
       .onComplete =>
         @suppress = 0
@@ -281,10 +280,34 @@ class Main
       color:  "#EA69A9"
       base: @base
 
+    spark5 = new Spark
+      ctx:    @ctx
+      color:  "#65B4ED"
+      base: @base
+
+    spark6 = new Spark
+      ctx:    @ctx
+      color:  "#F6D58A"
+      base: @base
+
+    spark7 = new Spark
+      ctx:    @ctx
+      color:  "#D5296F"
+      base: @base
+
+    spark8 = new Spark
+      ctx:    @ctx
+      color:  "#EA69A9"
+      base: @base
+
     @sparks.push spark1
     @sparks.push spark2
     @sparks.push spark3
     @sparks.push spark4
+    @sparks.push spark5
+    @sparks.push spark6
+    @sparks.push spark7
+    @sparks.push spark8
 
     @ctx.globalCompositeOperation = "multiply"
 
