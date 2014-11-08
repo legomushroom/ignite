@@ -114,7 +114,7 @@ Base = (function() {
   };
 
   Base.prototype.setSpeed = function(n) {
-    return this.speed = n;
+    return this.speed = n >= 1 ? n : 1;
   };
 
   Base.prototype.draw = function() {
@@ -245,8 +245,11 @@ Ember = (function() {
   };
 
   Ember.prototype.getDelta = function() {
-    var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY;
-    this.angle += this.angleStep / this.base.speed;
+    var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY, speed, suppress;
+    suppress = Math.abs(this.base.suppress);
+    speed = Math.abs(this.base.angle);
+    speed = 60 - Math.max(speed, suppress);
+    this.angle += this.angleStep / speed;
     ang = this.angle;
     rX = .1 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -363,8 +366,6 @@ Main = (function() {
           _this.base.setAngle(_this.ang);
           _this.suppress = e.deltaY / 20;
           _this.base.setSuppress(_this.suppress);
-          _this.speed = Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY));
-          _this.base.setSpeed(_this.speed / 1000);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;
@@ -386,9 +387,7 @@ Main = (function() {
       p: 1
     }, 1500).onUpdate(function() {
       it.base.setAngle(it.ang * (1 - this.p));
-      it.base.setSuppress(it.suppress * (1 - this.p));
-      it.base.setSpeed(Math.max(it.speed * (1 - this.p), 1));
-      return console.log(Math.max(it.speed * (1 - this.p), 1));
+      return it.base.setSuppress(it.suppress * (1 - this.p));
     }).easing(TWEEN.Easing.Elastic.Out).onComplete((function(_this) {
       return function() {
         return _this.suppress = 0;

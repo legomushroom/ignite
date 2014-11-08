@@ -23,7 +23,7 @@ class Base
     for point, i in @points
       point.setSuppress @suppress
 
-  setSpeed:(n)-> @speed = n
+  setSpeed:(n)-> @speed = if n >= 1 then n else 1
 
   draw:->
     return

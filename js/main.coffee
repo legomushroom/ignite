@@ -26,11 +26,8 @@ class Main
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
         @suppress = e.deltaY/20
+        # @base.setSuppress Math.abs(@ang)/4
         @base.setSuppress @suppress
-
-
-        @speed = Math.max Math.abs(e.deltaX), Math.abs(e.deltaY)
-        @base.setSpeed @speed/1000
         if !timeout
           timeout = setTimeout =>
             isTouched = false
@@ -38,14 +35,18 @@ class Main
             @normalizeBase()
           , 350
 
+      # console.log e.angle
+      # console.log 'pan'
+      # console.log e.deltaX, e.deltaY
+    # mc.on 'tapend', (e)=>
+    #   console.log 'tapend'
+  
   normalizeBase:->
     it = @
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
       .onUpdate ->
         it.base.setAngle it.ang*(1-@p)
         it.base.setSuppress it.suppress*(1-@p)
-        it.base.setSpeed Math.max it.speed*(1-@p), 1
-        console.log Math.max it.speed*(1-@p), 1
       .easing(TWEEN.Easing.Elastic.Out)
       .onComplete =>
         @suppress = 0
