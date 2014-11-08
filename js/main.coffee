@@ -19,7 +19,7 @@ class Main
     timeout = null
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
-      @base.panstart = x: e.x, y: e.y
+      @base.panstart =  x: e.x, y: e.y
       isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
       if isTouched
@@ -27,10 +27,9 @@ class Main
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
-        # suppress = Math.abs e.deltaY/20
-        # @suppress = e.deltaY/20
-        # @base.setSuppress Math.abs(@ang)/4
-        @base.setSuppress e.deltaY/20
+        
+        @suppress = e.deltaY/20
+        @base.setSuppress @suppress
         if !timeout
           timeout = setTimeout =>
             isTouched = false
@@ -38,12 +37,6 @@ class Main
             @normalizeBase()
           , 350
 
-      # console.log e.angle
-      # console.log 'pan'
-      # console.log e.deltaX, e.deltaY
-    # mc.on 'tapend', (e)=>
-    #   console.log 'tapend'
-  
   normalizeBase:->
     it = @
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
@@ -149,6 +142,7 @@ class Main
       left:   x: 256, y: 420
       basePoint: @basePoint1
       base: @base
+      name: '1'
     )
     ember11 = new Ember(
       ctx: @ctx
@@ -163,26 +157,8 @@ class Main
       left:   x: 256, y: 420
       basePoint: @basePoint11
       base: @base
+      name: '11'
     )
-
-    # coef = 1
-    # setInterval =>
-    #   coef = -coef
-    #   ang = coef*45
-    #   it = @
-    #   new TWEEN.Tween(p:0).to({p:1}, 400)
-    #     .onUpdate ->
-    #       it.base.setAngle ang*@p
-    #     .easing(TWEEN.Easing.Elastic.Out)
-    #     .start()
-    #     .onComplete =>
-    #       new TWEEN.Tween(p:0).to({p:1}, 1500)
-    #         .onUpdate ->
-    #           it.base.setAngle ang*(1-@p)
-    #         .delay(5000)
-    #         .easing(TWEEN.Easing.Elastic.Out)
-    #         .start()
-    # , 8000
 
     ember2 = new Ember(
       ctx: @ctx
@@ -197,6 +173,7 @@ class Main
       left:   x: 232, y: 404
       basePoint: @basePoint2
       base: @base
+      name: '2'
     )
 
     ember21 = new Ember(
@@ -212,6 +189,7 @@ class Main
       left:   x: 232, y: 404
       basePoint: @basePoint21
       base: @base
+      name: '21'
     )
 
     ember3 = new Ember(
@@ -226,6 +204,7 @@ class Main
       left:   x: 280, y: 380
       basePoint: @basePoint3
       base: @base
+      name: '3'
     )
 
     ember4 = new Ember(
@@ -240,6 +219,7 @@ class Main
       left:   x: 300, y: 410
       basePoint: @basePoint4
       base: @base
+      name: '4'
     )
 
     ember41 = new Ember(
@@ -255,6 +235,7 @@ class Main
       left:   x: 300, y: 410
       basePoint: @basePoint41
       base: @base
+      name: '41'
     )
    
     @embers.push ember1, ember11

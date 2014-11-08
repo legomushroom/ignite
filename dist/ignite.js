@@ -21,7 +21,7 @@ BasePoint = (function() {
   };
 
   BasePoint.prototype.getPosition = function() {
-    var rad;
+    var minSuppress, rad;
     rad = this.base.radius - 5 * this.suppress - this.offset * h.PX;
     this.center = {
       x: this.base.x + Math.cos((this.base.angle - 90) * h.DEG) * rad,
@@ -29,6 +29,8 @@ BasePoint = (function() {
     };
     this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
     this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
+    minSuppress = this.ember != null ? this.ember.bottom.y - 150 : 9999;
+    this.y = Math.min(minSuppress, this.y);
     return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
 
@@ -163,6 +165,7 @@ Ember = (function() {
     this.angleStep = this.o.angleStep || h.rand(30, 40);
     this.angleStart = this.o.angleStart || 0;
     this.basePoint = this.o.basePoint || this.top;
+    this.basePoint.ember = this;
     this.basePoint.onPositionChange = (function(_this) {
       return function() {
         return _this.flickCenter = {
@@ -192,7 +195,12 @@ Ember = (function() {
       leftOffset = ang;
       rightOffset = ang / 2;
     }
-    s = this.base.suppress / 2;
+    s = this.base.suppress / 3;
+    leftOffset = Math.max(s, leftOffset);
+    rightOffset = Math.max(s, rightOffset);
+    if (rightOffset === s) {
+      rightOffset = -rightOffset;
+    }
     this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s) * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
     topY = this.top.y + (this.p * this.delta.y);
@@ -363,7 +371,8 @@ Main = (function() {
             _this.ang = -_this.MAX_ANGLE;
           }
           _this.base.setAngle(_this.ang);
-          _this.base.setSuppress(e.deltaY / 20);
+          _this.suppress = e.deltaY / 20;
+          _this.base.setSuppress(_this.suppress);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;
@@ -501,7 +510,8 @@ Main = (function() {
         y: 420
       },
       basePoint: this.basePoint1,
-      base: this.base
+      base: this.base,
+      name: '1'
     });
     ember11 = new Ember({
       ctx: this.ctx,
@@ -527,7 +537,8 @@ Main = (function() {
         y: 420
       },
       basePoint: this.basePoint11,
-      base: this.base
+      base: this.base,
+      name: '11'
     });
     ember2 = new Ember({
       ctx: this.ctx,
@@ -553,7 +564,8 @@ Main = (function() {
         y: 404
       },
       basePoint: this.basePoint2,
-      base: this.base
+      base: this.base,
+      name: '2'
     });
     ember21 = new Ember({
       ctx: this.ctx,
@@ -579,7 +591,8 @@ Main = (function() {
         y: 404
       },
       basePoint: this.basePoint21,
-      base: this.base
+      base: this.base,
+      name: '21'
     });
     ember3 = new Ember({
       ctx: this.ctx,
@@ -604,7 +617,8 @@ Main = (function() {
         y: 380
       },
       basePoint: this.basePoint3,
-      base: this.base
+      base: this.base,
+      name: '3'
     });
     ember4 = new Ember({
       ctx: this.ctx,
@@ -629,7 +643,8 @@ Main = (function() {
         y: 410
       },
       basePoint: this.basePoint4,
-      base: this.base
+      base: this.base,
+      name: '4'
     });
     ember41 = new Ember({
       ctx: this.ctx,
@@ -655,7 +670,8 @@ Main = (function() {
         y: 410
       },
       basePoint: this.basePoint41,
-      base: this.base
+      base: this.base,
+      name: '41'
     });
     this.embers.push(ember1, ember11);
     this.embers.push(ember2, ember21);
@@ -779,8 +795,9 @@ Spark = (function() {
     this.getRandRadius();
     this.getRandOffset();
     this.getRandDelay();
-    this.isDelayed = this.o.isDelayed;
+    this.isDelayed = this.o.isDelayed || true;
     this.base2 = {};
+    this.cloneBase();
     this.sinCoef = 1;
     this.p = 0;
     this.pSin = 0;

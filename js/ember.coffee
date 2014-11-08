@@ -15,6 +15,7 @@ class Ember
     @angleStep = @o.angleStep or h.rand(30,40)
     @angleStart = @o.angleStart or 0
     @basePoint = @o.basePoint or @top
+    @basePoint.ember = @
     @basePoint.onPositionChange = =>
       @flickCenter = x: @basePoint.x, y: @basePoint.y
 
@@ -36,7 +37,10 @@ class Ember
       leftOffset = ang
       rightOffset = ang/2
 
-    s = @base.suppress/2
+    s = @base.suppress/3
+    leftOffset = Math.max s, leftOffset
+    rightOffset = Math.max s, rightOffset
+    if rightOffset is s then rightOffset = - rightOffset
     @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y+s)*h.PX
     topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)
     @ctx.lineTo topX*h.PX, topY*h.PX

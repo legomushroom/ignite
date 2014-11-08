@@ -15,8 +15,9 @@ class Spark
     @getRandOffset()
     @getRandDelay()
 
-    @isDelayed = @o.isDelayed
+    @isDelayed = @o.isDelayed or true
     @base2     = {}
+    @cloneBase()
     @sinCoef  = 1
     @p        = 0
     @pSin     = 0
