@@ -80,8 +80,7 @@ Base = (function() {
     this.radius = this.o.radius;
     this.angle = this.o.angle;
     this.points = [];
-    this.suppress = 0;
-    return this.speed = 1;
+    return this.suppress = 0;
   };
 
   Base.prototype.setAngle = function(angle) {
@@ -111,10 +110,6 @@ Base = (function() {
       _results.push(point.setSuppress(this.suppress));
     }
     return _results;
-  };
-
-  Base.prototype.setSpeed = function(n) {
-    return this.speed = n >= 1 ? n : 1;
   };
 
   Base.prototype.draw = function() {
@@ -349,6 +344,10 @@ Main = (function() {
     });
     mc.on('panstart', (function(_this) {
       return function(e) {
+        _this.base.panstart = {
+          x: e.x,
+          y: e.y
+        };
         isTouched = true;
         return TWEEN.remove(_this.tween);
       };
@@ -364,8 +363,7 @@ Main = (function() {
             _this.ang = -_this.MAX_ANGLE;
           }
           _this.base.setAngle(_this.ang);
-          _this.suppress = e.deltaY / 20;
-          _this.base.setSuppress(_this.suppress);
+          _this.base.setSuppress(e.deltaY / 20);
           if (!timeout) {
             return timeout = setTimeout(function() {
               isTouched = false;

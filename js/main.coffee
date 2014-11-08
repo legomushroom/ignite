@@ -18,16 +18,19 @@ class Main
     isTouched = false
     timeout = null
     mc.on 'tap', (e)-> isTouched = true
-    mc.on 'panstart', (e)=> isTouched = true; TWEEN.remove @tween
+    mc.on 'panstart', (e)=>
+      @base.panstart = x: e.x, y: e.y
+      isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
       if isTouched
         @ang = e.deltaX/10
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
-        @suppress = e.deltaY/20
+        # suppress = Math.abs e.deltaY/20
+        # @suppress = e.deltaY/20
         # @base.setSuppress Math.abs(@ang)/4
-        @base.setSuppress @suppress
+        @base.setSuppress e.deltaY/20
         if !timeout
           timeout = setTimeout =>
             isTouched = false
