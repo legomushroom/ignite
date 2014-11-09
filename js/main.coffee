@@ -59,9 +59,15 @@ class Main
     @basePoints = []
     @MAX_ANGLE = 35
     @suppress = 0
+    @startX = 500
+    @startY = 500
     
     @base = new Base
-      x: 310*h.PX, y: 460*h.PX, radius: 400*h.PX, angle: 0, ctx: @ctx
+      ctx: @ctx
+      x: (@startX+10)*h.PX
+      y: (@startY+60)*h.PX
+      radius: 400*h.PX
+      angle: 0
 
     @basePoint1 = new BasePoint
       ctx: @ctx
@@ -136,10 +142,10 @@ class Main
       angleStep: 45
       flickRadius: 20
       color:  "#E86CA9"
-      top:    x: 314, y: 130
-      right:  x: 364, y: 412
-      bottom: x: 310, y: 460
-      left:   x: 256, y: 420
+      top:    x: @startX+14, y: @startY-270
+      right:  x: @startX+64, y: @startY+12
+      bottom: x: @startX+10, y: @startY+60
+      left:   x: @startX-44, y: @startY+20
       basePoint: @basePoint1
       base: @base
       name: '1'
@@ -151,10 +157,10 @@ class Main
       angleStart: 90
       flickRadius: 20
       color: "#E86CA9"
-      top:    x: 324, y: 120
-      right:  x: 364, y: 412
-      bottom: x: 310, y: 460
-      left:   x: 256, y: 420
+      top:    x: @startX+24, y: @startY-280
+      right:  x: @startX+64, y: @startY+12
+      bottom: x: @startX+10, y: @startY+60
+      left:   x: @startX-4,  y: @startY+20
       basePoint: @basePoint11
       base: @base
       name: '11'
@@ -167,10 +173,10 @@ class Main
       angleStart: 20
       flickRadius: 20
       color: "#ED8CBA"
-      top:    x: 280, y: 240
-      right:  x: 300, y: 410
-      bottom: x: 280, y: 438
-      left:   x: 232, y: 404
+      top:    x: @startX-20, y: @startY-160
+      right:  x: @startX,    y: @startY+10
+      bottom: x: @startX-20, y: @startY+38
+      left:   x: @startX-68, y: @startY+4
       basePoint: @basePoint2
       base: @base
       name: '2'
@@ -183,10 +189,10 @@ class Main
       angleStart: 90
       flickRadius: 20
       color: "#ED8CBA"
-      top:    x: 290, y: 240
-      right:  x: 300, y: 410
-      bottom: x: 280, y: 438
-      left:   x: 232, y: 404
+      top:    x: @startX-10, y: @startY-160
+      right:  x: @startX,    y: @startY+10
+      bottom: x: @startX-20, y: @startY+38
+      left:   x: @startX-68, y: @startY+4
       basePoint: @basePoint21
       base: @base
       name: '21'
@@ -198,10 +204,10 @@ class Main
       angleStep: 45
       flickRadius: 20
       color: "#A4D7F5"
-      top:    x: 333, y: 160
-      right:  x: 348, y: 388
-      bottom: x: 310, y: 460
-      left:   x: 280, y: 380
+      top:    x: @startX+33, y: @startY-240
+      right:  x: @startX+48, y: @startY-22
+      bottom: x: @startX+10, y: @startY+60
+      left:   x: @startX-20, y: @startY-20
       basePoint: @basePoint3
       base: @base
       name: '3'
@@ -213,10 +219,10 @@ class Main
       angleStep: 45
       flickRadius: 20
       color: "#F6D58A"
-      top:    x: 352, y: 252
-      right:  x: 376, y: 402
-      bottom: x: 328, y: 444
-      left:   x: 300, y: 410
+      top:    x: @startX+52, y: @startY-148
+      right:  x: @startX+76, y: @startY+2
+      bottom: x: @startX+28, y: @startY+44
+      left:   x: @startX,    y: @startY+10
       basePoint: @basePoint4
       base: @base
       name: '4'
@@ -229,10 +235,10 @@ class Main
       angleStart: 90
       flickRadius: 20
       color: "#F6D58A"
-      top:    x: 344, y: 232
-      right:  x: 376, y: 402
-      bottom: x: 328, y: 444
-      left:   x: 300, y: 410
+      top:    x: @startX+44, y: @startY-168
+      right:  x: @startX+76, y: @startY+2
+      bottom: x: @startX+28, y: @startY+44
+      left:   x: @startX,    y: @startY+10
       basePoint: @basePoint41
       base: @base
       name: '41'
@@ -296,25 +302,9 @@ class Main
 
     @ctx.globalCompositeOperation = "multiply"
 
-  drawBones:->
-    @ctx.lineWidth = 7*h.PX
-    @ctx.strokeStyle = "#80404B"
-    
-    # bone 1
-    @ctx.beginPath()
-    @ctx.moveTo 260 * h.PX, 474 * h.PX
-    @ctx.lineTo 360 * h.PX, 500 * h.PX
-    @ctx.stroke()
-    
-    # bone 2
-    @ctx.beginPath()
-    @ctx.moveTo 256 * h.PX, 510 * h.PX
-    @ctx.lineTo 356 * h.PX, 472 * h.PX
-    @ctx.stroke()
-
     # LOOP
   animationLoop: ->
-    @ctx.clearRect 0, 0, 1200, 1200
+    @ctx.clearRect 0, 0, 2000, 2000
     
     i = @sparks.length - 1
     while i >= 0
@@ -326,9 +316,7 @@ class Main
       @embers[i].draw()
       i--
 
-    @drawBones()
     @base.draw()
-
     i = @base.points.length - 1
     while i >= 0
       @base.points[i].draw()

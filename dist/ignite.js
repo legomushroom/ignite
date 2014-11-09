@@ -29,7 +29,7 @@ BasePoint = (function() {
     };
     this.x = (this.center.x + Math.cos(this.angle * h.DEG) * this.radius) / 2;
     this.y = (this.center.y + Math.sin(this.angle * h.DEG) * this.radius) / 2;
-    minSuppress = this.ember != null ? this.ember.bottom.y - 150 : 9999;
+    minSuppress = this.ember != null ? this.ember.bottom.y - 50 : 9999;
     this.y = Math.min(minSuppress, this.y);
     return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
@@ -157,6 +157,7 @@ Ember = (function() {
     this.ctx = this.o.ctx;
     this.top = this.o.top;
     this.flickRadius = this.o.flickRadius || 10;
+    this.name = this.o.name;
     this.base = this.o.base;
     this.right = this.o.right;
     this.bottom = this.o.bottom;
@@ -185,7 +186,7 @@ Ember = (function() {
   }
 
   Ember.prototype.draw = function() {
-    var ang, leftOffset, rightOffset, s, topX, topY;
+    var ang, leftOffset, rightOffset, s, topOffset, topX, topY;
     this.ctx.beginPath();
     ang = this.base.angle;
     if (ang < 0) {
@@ -196,12 +197,17 @@ Ember = (function() {
       rightOffset = ang / 2;
     }
     s = this.base.suppress / 3;
+    topOffset = 0;
     leftOffset = Math.max(s, leftOffset);
     rightOffset = Math.max(s, rightOffset);
     if (rightOffset === s) {
       rightOffset = -rightOffset;
     }
-    this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s) * h.PX);
+    if (this.name === '1' && (leftOffset = s)) {
+      topOffset = -s;
+      leftOffset = 0;
+    }
+    this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s + topOffset) * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
     topY = this.top.y + (this.p * this.delta.y);
     this.ctx.lineTo(topX * h.PX, topY * h.PX);
@@ -250,6 +256,9 @@ Ember = (function() {
   Ember.prototype.getDelta = function() {
     var ang, bAng, cX, cY, delta, newTop, oX, oY, rX, rY, speed, suppress;
     suppress = Math.abs(this.base.suppress);
+    if (this.base.suppress > 0) {
+      suppress /= 2;
+    }
     speed = Math.abs(this.base.angle);
     speed = 60 - Math.max(speed, suppress);
     this.angle += this.angleStep / speed;
@@ -411,12 +420,14 @@ Main = (function() {
     this.basePoints = [];
     this.MAX_ANGLE = 35;
     this.suppress = 0;
+    this.startX = 500;
+    this.startY = 500;
     this.base = new Base({
-      x: 310 * h.PX,
-      y: 460 * h.PX,
+      ctx: this.ctx,
+      x: (this.startX + 10) * h.PX,
+      y: (this.startY + 60) * h.PX,
       radius: 400 * h.PX,
-      angle: 0,
-      ctx: this.ctx
+      angle: 0
     });
     this.basePoint1 = new BasePoint({
       ctx: this.ctx,
@@ -494,20 +505,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#E86CA9",
       top: {
-        x: 314,
-        y: 130
+        x: this.startX + 14,
+        y: this.startY - 270
       },
       right: {
-        x: 364,
-        y: 412
+        x: this.startX + 64,
+        y: this.startY + 12
       },
       bottom: {
-        x: 310,
-        y: 460
+        x: this.startX + 10,
+        y: this.startY + 60
       },
       left: {
-        x: 256,
-        y: 420
+        x: this.startX - 44,
+        y: this.startY + 20
       },
       basePoint: this.basePoint1,
       base: this.base,
@@ -521,20 +532,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#E86CA9",
       top: {
-        x: 324,
-        y: 120
+        x: this.startX + 24,
+        y: this.startY - 280
       },
       right: {
-        x: 364,
-        y: 412
+        x: this.startX + 64,
+        y: this.startY + 12
       },
       bottom: {
-        x: 310,
-        y: 460
+        x: this.startX + 10,
+        y: this.startY + 60
       },
       left: {
-        x: 256,
-        y: 420
+        x: this.startX - 4,
+        y: this.startY + 20
       },
       basePoint: this.basePoint11,
       base: this.base,
@@ -548,20 +559,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#ED8CBA",
       top: {
-        x: 280,
-        y: 240
+        x: this.startX - 20,
+        y: this.startY - 160
       },
       right: {
-        x: 300,
-        y: 410
+        x: this.startX,
+        y: this.startY + 10
       },
       bottom: {
-        x: 280,
-        y: 438
+        x: this.startX - 20,
+        y: this.startY + 38
       },
       left: {
-        x: 232,
-        y: 404
+        x: this.startX - 68,
+        y: this.startY + 4
       },
       basePoint: this.basePoint2,
       base: this.base,
@@ -575,20 +586,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#ED8CBA",
       top: {
-        x: 290,
-        y: 240
+        x: this.startX - 10,
+        y: this.startY - 160
       },
       right: {
-        x: 300,
-        y: 410
+        x: this.startX,
+        y: this.startY + 10
       },
       bottom: {
-        x: 280,
-        y: 438
+        x: this.startX - 20,
+        y: this.startY + 38
       },
       left: {
-        x: 232,
-        y: 404
+        x: this.startX - 68,
+        y: this.startY + 4
       },
       basePoint: this.basePoint21,
       base: this.base,
@@ -601,20 +612,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#A4D7F5",
       top: {
-        x: 333,
-        y: 160
+        x: this.startX + 33,
+        y: this.startY - 240
       },
       right: {
-        x: 348,
-        y: 388
+        x: this.startX + 48,
+        y: this.startY - 22
       },
       bottom: {
-        x: 310,
-        y: 460
+        x: this.startX + 10,
+        y: this.startY + 60
       },
       left: {
-        x: 280,
-        y: 380
+        x: this.startX - 20,
+        y: this.startY - 20
       },
       basePoint: this.basePoint3,
       base: this.base,
@@ -627,20 +638,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#F6D58A",
       top: {
-        x: 352,
-        y: 252
+        x: this.startX + 52,
+        y: this.startY - 148
       },
       right: {
-        x: 376,
-        y: 402
+        x: this.startX + 76,
+        y: this.startY + 2
       },
       bottom: {
-        x: 328,
-        y: 444
+        x: this.startX + 28,
+        y: this.startY + 44
       },
       left: {
-        x: 300,
-        y: 410
+        x: this.startX,
+        y: this.startY + 10
       },
       basePoint: this.basePoint4,
       base: this.base,
@@ -654,20 +665,20 @@ Main = (function() {
       flickRadius: 20,
       color: "#F6D58A",
       top: {
-        x: 344,
-        y: 232
+        x: this.startX + 44,
+        y: this.startY - 168
       },
       right: {
-        x: 376,
-        y: 402
+        x: this.startX + 76,
+        y: this.startY + 2
       },
       bottom: {
-        x: 328,
-        y: 444
+        x: this.startX + 28,
+        y: this.startY + 44
       },
       left: {
-        x: 300,
-        y: 410
+        x: this.startX,
+        y: this.startY + 10
       },
       basePoint: this.basePoint41,
       base: this.base,
@@ -730,22 +741,9 @@ Main = (function() {
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
-  Main.prototype.drawBones = function() {
-    this.ctx.lineWidth = 7 * h.PX;
-    this.ctx.strokeStyle = "#80404B";
-    this.ctx.beginPath();
-    this.ctx.moveTo(260 * h.PX, 474 * h.PX);
-    this.ctx.lineTo(360 * h.PX, 500 * h.PX);
-    this.ctx.stroke();
-    this.ctx.beginPath();
-    this.ctx.moveTo(256 * h.PX, 510 * h.PX);
-    this.ctx.lineTo(356 * h.PX, 472 * h.PX);
-    return this.ctx.stroke();
-  };
-
   Main.prototype.animationLoop = function() {
     var i;
-    this.ctx.clearRect(0, 0, 1200, 1200);
+    this.ctx.clearRect(0, 0, 2000, 2000);
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
@@ -756,7 +754,6 @@ Main = (function() {
       this.embers[i].draw();
       i--;
     }
-    this.drawBones();
     this.base.draw();
     i = this.base.points.length - 1;
     while (i >= 0) {

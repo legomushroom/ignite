@@ -3,13 +3,9 @@ body {
   overflow: hidden;
 }
 .canvas {
-  width: 600px;
-  height: 600px;
+  width: 1000px;
+  height: 1000px;
   margin: 0 auto;
   display: block;
-  position: absolute;
-  z-index: 2;
-}
-.canvas--2 {
-  z-index: 1;
+  margin: 0 auto;
 }

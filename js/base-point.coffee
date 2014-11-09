@@ -22,7 +22,7 @@ class BasePoint
     @x = (@center.x + Math.cos(@angle*h.DEG)*(@radius))/2
     @y = (@center.y + Math.sin(@angle*h.DEG)*(@radius))/2
 
-    minSuppress = if @ember? then @ember.bottom.y - 150 else 9999
+    minSuppress = if @ember? then @ember.bottom.y - 50 else 9999
     @y = Math.min minSuppress, @y
 
     @onPositionChange?()

@@ -7,6 +7,7 @@ class Ember
     @ctx = @o.ctx
     @top = @o.top
     @flickRadius = @o.flickRadius or 10
+    @name = @o.name
     @base = @o.base
     @right = @o.right
     @bottom = @o.bottom
@@ -38,11 +39,17 @@ class Ember
       rightOffset = ang/2
 
     s = @base.suppress/3
+    topOffset = 0
     leftOffset = Math.max s, leftOffset
     rightOffset = Math.max s, rightOffset
+
     if rightOffset is s then rightOffset = - rightOffset
-    @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y+s)*h.PX
-    topX = @top.x + (@p*@delta.x); topY = @top.y + (@p*@delta.y)
+    if @name is '1' and leftOffset = s
+      topOffset = -s
+      leftOffset = 0
+
+    @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y+s+topOffset)*h.PX
+    topX = @top.x + (@p*@delta.x); topY = @top.y+(@p*@delta.y)
     @ctx.lineTo topX*h.PX, topY*h.PX
     @ctx.lineTo (@right.x+rightOffset)*h.PX, (@right.y+s)*h.PX
     @ctx.lineTo (@bottom.x)*h.PX,  (@bottom.y)*h.PX
@@ -82,8 +89,10 @@ class Ember
   
   getDelta: ->
     suppress = Math.abs(@base.suppress)
+    if @base.suppress > 0 then suppress /= 2
     speed = Math.abs(@base.angle)
     speed = 60 - Math.max speed, suppress
+
     @angle += @angleStep/speed
     ang = @angle
     rX = .1*@flickRadius
