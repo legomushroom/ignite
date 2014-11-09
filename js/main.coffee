@@ -13,6 +13,9 @@ class Main
     @run()
 
   events:->
+    window.addEventListener 'resize', =>
+      @wWidth = window.outerWidth
+      @sizeCanvas()
     mc = new Hammer(@canvas)
     # mc.add new Hammer.Pan {threshold: 50}
     isTouched = false
@@ -53,13 +56,14 @@ class Main
     # SYS
     @canvas = document.getElementById("js-canvas")
     @ctx = @canvas.getContext("2d")
+    @wWidth = parseInt @canvas.getAttribute('width'), 10
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
     @basePoints = []
     @MAX_ANGLE = 35
     @suppress = 0
-    @startX = 500
+    @startX = @wWidth/4
     @startY = 500
     
     @base = new Base
@@ -304,7 +308,7 @@ class Main
 
     # LOOP
   animationLoop: ->
-    @ctx.clearRect 0, 0, 2000, 2000
+    @ctx.clearRect 0, 0, @wWidth, @wWidth
     
     i = @sparks.length - 1
     while i >= 0

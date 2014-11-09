@@ -353,6 +353,12 @@ Main = (function() {
 
   Main.prototype.events = function() {
     var isTouched, mc, timeout;
+    window.addEventListener('resize', (function(_this) {
+      return function() {
+        _this.wWidth = window.outerWidth;
+        return _this.sizeCanvas();
+      };
+    })(this));
     mc = new Hammer(this.canvas);
     isTouched = false;
     timeout = null;
@@ -414,13 +420,14 @@ Main = (function() {
   Main.prototype.vars = function() {
     this.canvas = document.getElementById("js-canvas");
     this.ctx = this.canvas.getContext("2d");
+    this.wWidth = parseInt(this.canvas.getAttribute('width'), 10);
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
     this.basePoints = [];
     this.MAX_ANGLE = 35;
     this.suppress = 0;
-    this.startX = 500;
+    this.startX = this.wWidth / 4;
     this.startY = 500;
     this.base = new Base({
       ctx: this.ctx,
@@ -743,7 +750,7 @@ Main = (function() {
 
   Main.prototype.animationLoop = function() {
     var i;
-    this.ctx.clearRect(0, 0, 2000, 2000);
+    this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
