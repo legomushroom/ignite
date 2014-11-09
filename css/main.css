@@ -7,5 +7,19 @@ body {
   height: 1280px;
   margin: 0 auto;
   display: block;
+  position: relative;
+  z-index: 2;
   margin: 0 auto;
+}
+.shadow {
+  width: 0;
+  height: 0;
+  box-shadow: 0 0 400px 200px #f6d58a;
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1;
+  margin-top: -25px;
+  opacity: 1;
+  left: 50%;
+  top: 50%;
 }

@@ -748,9 +748,12 @@ Main = (function() {
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
+  Main.prototype.drawShadow = function() {};
+
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
+    this.drawShadow();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();

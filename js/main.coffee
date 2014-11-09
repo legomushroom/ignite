@@ -55,7 +55,9 @@ class Main
   vars:->
     # SYS
     @canvas = document.getElementById("js-canvas")
+    # @canvas2 = document.getElementById("js-canvas2")
     @ctx = @canvas.getContext("2d")
+    # @ctx2 = @canvas2.getContext("2d")
     @wWidth = parseInt @canvas.getAttribute('width'), 10
     @animationLoop = @animationLoop.bind(@)
     @embers = []
@@ -306,10 +308,27 @@ class Main
 
     @ctx.globalCompositeOperation = "multiply"
 
+  drawShadow:->
+    # grd = @ctx.createRadialGradient(1250,800,0,1250,800,500)
+    # grd.addColorStop(0,"rgba(246,213,138,.65)")
+    # grd.addColorStop(1,"rgba(246,213,138,0)")
+
+    # @ctx.fillStyle = grd
+    # @ctx.fillRect(0,0,2000,2000)
+    # @ctx2.clearRect 0, 0, @wWidth, @wWidth
+    # @ctx2.arc(@wWidth/2, 2*500, 2*10, 0, 2*Math.PI)
+    # @ctx2.fillStyle = 'yellow'
+    # @ctx2.shadowColor = 'yellow'
+    # @ctx2.shadowBlur = 2000
+    # # @ctx2.shadowSpread = 1000
+    # @ctx.shadowOffsetX = 0
+    # @ctx.shadowOffsetY = 0
+    # @ctx2.fill()
+
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, @wWidth, @wWidth
-    
+    @drawShadow()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()
