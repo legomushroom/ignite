@@ -296,7 +296,7 @@ module.exports = Ember;
 
 
 
-},{"./helpers":5,"./tweenjs.min":8}],4:[function(require,module,exports){
+},{"./helpers":5,"./tweenjs.min":9}],4:[function(require,module,exports){
 /*! Hammer.JS - v2.0.4 - 2014-09-28
  * http://hammerjs.github.io/
  *
@@ -327,7 +327,7 @@ module.exports = new Helpers;
 
 
 },{}],6:[function(require,module,exports){
-var Base, BasePoint, Ember, Hammer, Main, Spark, TWEEN, h;
+var Base, BasePoint, Ember, Hammer, Main, Shadow, Spark, TWEEN, h;
 
 Ember = require('./ember');
 
@@ -340,6 +340,8 @@ TWEEN = require('./tweenjs.min');
 Base = require('./base');
 
 BasePoint = require('./base-point');
+
+Shadow = require('./shadow');
 
 h = require('./helpers');
 
@@ -435,6 +437,9 @@ Main = (function() {
       y: (this.startY + 60) * h.PX,
       radius: 400 * h.PX,
       angle: 0
+    });
+    this.shadow = new Shadow({
+      base: this.base
     });
     this.basePoint1 = new BasePoint({
       ctx: this.ctx,
@@ -748,12 +753,10 @@ Main = (function() {
     return this.ctx.globalCompositeOperation = "multiply";
   };
 
-  Main.prototype.drawShadow = function() {};
-
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
-    this.drawShadow();
+    this.shadow.draw();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
@@ -782,7 +785,45 @@ new Main;
 
 
 
-},{"./base":2,"./base-point":1,"./ember":3,"./hammer.min":4,"./helpers":5,"./spark":7,"./tweenjs.min":8}],7:[function(require,module,exports){
+},{"./base":2,"./base-point":1,"./ember":3,"./hammer.min":4,"./helpers":5,"./shadow":7,"./spark":8,"./tweenjs.min":9}],7:[function(require,module,exports){
+var Shadow, h;
+
+h = require('./helpers');
+
+Shadow = (function() {
+  function Shadow(o) {
+    this.o = o != null ? o : {};
+    this.vars();
+  }
+
+  Shadow.prototype.vars = function() {
+    this.shadow = document.getElementById('js-shadow');
+    this.base = this.o.base;
+    this.tick = 0;
+    this.o = .75;
+    return this.spread = 0;
+  };
+
+  Shadow.prototype.draw = function() {
+    var shadowString;
+    this.tick++;
+    if (this.tick % 3 === 0) {
+      this.o = h.rand(9, 10) / 10;
+      shadowString = "0 0 400px " + (200 - this.base.suppress) + "px #F6D58A";
+      this.shadow.style.boxShadow = shadowString;
+      return this.shadow.style.opacity = this.o;
+    }
+  };
+
+  return Shadow;
+
+})();
+
+module.exports = Shadow;
+
+
+
+},{"./helpers":5}],8:[function(require,module,exports){
 var Spark, h;
 
 h = require('./helpers');
@@ -881,7 +922,7 @@ module.exports = Spark;
 
 
 
-},{"./helpers":5}],8:[function(require,module,exports){
+},{"./helpers":5}],9:[function(require,module,exports){
 // tween.js v.0.15.0 https://github.com/sole/tween.js
 void 0 === Date.now && (Date.now = function() {
     return (new Date).valueOf()
