@@ -199,10 +199,6 @@ Ember = (function() {
     s = this.base.suppress / 3;
     topOffset = 0;
     leftOffset = Math.max(s, leftOffset);
-    rightOffset = Math.max(s, rightOffset);
-    if (rightOffset === s) {
-      rightOffset = -rightOffset;
-    }
     if (this.name === '1' && (leftOffset = s)) {
       topOffset = -s;
       leftOffset = 0;
@@ -260,8 +256,8 @@ Ember = (function() {
       suppress /= 2;
     }
     speed = Math.abs(this.base.angle);
-    speed = 60 - Math.max(speed, suppress);
-    this.angle += this.angleStep / speed;
+    this.speed = 60 - Math.max(speed, suppress);
+    this.angle += this.angleStep / this.speed;
     ang = this.angle;
     rX = .1 * this.flickRadius;
     rY = 1 * this.flickRadius;
@@ -801,13 +797,13 @@ Shadow = (function() {
     this.base = this.o.base;
     this.tick = 0;
     this.o = .75;
-    return this.spread = 0;
+    return this.speed = 3;
   };
 
   Shadow.prototype.draw = function() {
     var shadowString;
     this.tick++;
-    if (this.tick % 3 === 0) {
+    if (this.tick % this.speed === 0) {
       this.o = h.rand(9, 10) / 10;
       shadowString = "0 0 400px " + (200 - this.base.suppress) + "px #F6D58A";
       this.shadow.style.boxShadow = shadowString;

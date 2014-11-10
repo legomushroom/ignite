@@ -41,9 +41,9 @@ class Ember
     s = @base.suppress/3
     topOffset = 0
     leftOffset = Math.max s, leftOffset
-    rightOffset = Math.max s, rightOffset
+    # rightOffset = Math.max s, rightOffset
 
-    if rightOffset is s then rightOffset = - rightOffset
+    # if rightOffset is s then rightOffset = - rightOffset
     if @name is '1' and leftOffset = s
       topOffset = -s
       leftOffset = 0
@@ -91,9 +91,9 @@ class Ember
     suppress = Math.abs(@base.suppress)
     if @base.suppress > 0 then suppress /= 2
     speed = Math.abs(@base.angle)
-    speed = 60 - Math.max speed, suppress
+    @speed = 60 - Math.max speed, suppress
 
-    @angle += @angleStep/speed
+    @angle += @angleStep/@speed
     ang = @angle
     rX = .1*@flickRadius
     rY = 1*@flickRadius
