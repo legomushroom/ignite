@@ -17,13 +17,15 @@ class Main
     window.addEventListener 'resize', =>
       @wWidth = window.outerWidth
       @sizeCanvas()
-    mc = new Hammer(@canvas)
+    mc = new Hammer(document.body)
     # mc.add new Hammer.Pan {threshold: 50}
     isTouched = false
     timeout = null
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
-      @base.panstart =  x: e.x, y: e.y
+      # return if e.pointers[0].y > 520 or e.pointers[0].y < 100
+      pointer = e.pointers[0]
+      @base.panstart =  x: pointer.x, y: pointer.y
       isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
       if isTouched
@@ -31,7 +33,6 @@ class Main
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
         if @ang < -@MAX_ANGLE then @ang = -@MAX_ANGLE
         @base.setAngle @ang
-        
         @suppress = e.deltaY/20
         @base.setSuppress @suppress
         if !timeout
@@ -67,7 +68,7 @@ class Main
     @MAX_ANGLE = 35
     @suppress = 0
     @startX = @wWidth/4
-    @startY = 375
+    @startY = 390
     
     @base = new Base
       ctx: @ctx
@@ -314,7 +315,7 @@ class Main
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, @wWidth, @wWidth
-    # @shadow.draw()
+    @shadow.draw()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()

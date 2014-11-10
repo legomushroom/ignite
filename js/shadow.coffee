@@ -13,12 +13,24 @@ class Shadow
     @speed = 3
 
   draw:->
-    @tick++
+    return if @isFF
+    suppress = 0
+    suppress = if @base.suppress < 0
+      @base.suppress/80
+    else @base.suppress/120
 
-    if @tick % @speed is 0
-      @o = h.rand(9,10)/10
-      shadowString = "0 0 400px #{200-@base.suppress}px #F6D58A"
-      @shadow.style.boxShadow = shadowString
+    scale = "scale(#{1-suppress})"
+    translate = if @base.suppress > 0
+      "translate(#{2*@base.angle}px,#{3*@base.suppress}px)"
+    else ''
+    @shadow.style.transform = "#{scale} #{translate} translateZ(0)"
+
+    @tick++
+    sup = Math.abs ~~(10*suppress)
+    ang = Math.abs ~~(@base.angle/45)
+    flick = Math.max sup, ang
+    if @tick % (@speed - flick) is 0
+      @o = h.rand(8,10)/10
       @shadow.style.opacity = @o
 
 module.exports = Shadow

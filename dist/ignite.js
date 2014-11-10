@@ -304,14 +304,35 @@ module.exports = Ember;
 var Helpers;
 
 Helpers = (function() {
-  function Helpers() {}
-
   Helpers.prototype.PX = 2;
 
   Helpers.prototype.DEG = Math.PI / 180;
 
   Helpers.prototype.rand = function(min, max) {
     return Math.floor((Math.random() * ((max + 1) - min)) + min);
+  };
+
+  function Helpers() {
+    this.vars();
+  }
+
+  Helpers.prototype.vars = function() {
+    this.prefix = this.getPrefix();
+    return this.isFF = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+  };
+
+  Helpers.prototype.getPrefix = function() {
+    var dom, pre, styles, v;
+    styles = window.getComputedStyle(document.documentElement, "");
+    v = Array.prototype.slice.call(styles).join("").match(/-(moz|webkit|ms)-/);
+    pre = (v || (styles.OLink === "" && ["", "o"]))[1];
+    dom = "WebKit|Moz|MS|O".match(new RegExp("(" + pre + ")", "i"))[1];
+    return {
+      dom: dom,
+      lowercase: pre,
+      css: "-" + pre + "-",
+      js: pre[0].toUpperCase() + pre.substr(1)
+    };
   };
 
   return Helpers;
@@ -357,7 +378,7 @@ Main = (function() {
         return _this.sizeCanvas();
       };
     })(this));
-    mc = new Hammer(this.canvas);
+    mc = new Hammer(document.body);
     isTouched = false;
     timeout = null;
     mc.on('tap', function(e) {
@@ -365,9 +386,11 @@ Main = (function() {
     });
     mc.on('panstart', (function(_this) {
       return function(e) {
+        var pointer;
+        pointer = e.pointers[0];
         _this.base.panstart = {
-          x: e.x,
-          y: e.y
+          x: pointer.x,
+          y: pointer.y
         };
         isTouched = true;
         return TWEEN.remove(_this.tween);
@@ -426,7 +449,7 @@ Main = (function() {
     this.MAX_ANGLE = 35;
     this.suppress = 0;
     this.startX = this.wWidth / 4;
-    this.startY = 375;
+    this.startY = 390;
     this.base = new Base({
       ctx: this.ctx,
       x: (this.startX + 10) * h.PX,
@@ -752,6 +775,7 @@ Main = (function() {
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
+    this.shadow.draw();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();
@@ -800,12 +824,21 @@ Shadow = (function() {
   };
 
   Shadow.prototype.draw = function() {
-    var shadowString;
+    var ang, flick, scale, sup, suppress, translate;
+    if (this.isFF) {
+      return;
+    }
+    suppress = 0;
+    suppress = this.base.suppress < 0 ? this.base.suppress / 80 : this.base.suppress / 120;
+    scale = "scale(" + (1 - suppress) + ")";
+    translate = this.base.suppress > 0 ? "translate(" + (2 * this.base.angle) + "px," + (3 * this.base.suppress) + "px)" : '';
+    this.shadow.style.transform = "" + scale + " " + translate + " translateZ(0)";
     this.tick++;
-    if (this.tick % this.speed === 0) {
-      this.o = h.rand(9, 10) / 10;
-      shadowString = "0 0 400px " + (200 - this.base.suppress) + "px #F6D58A";
-      this.shadow.style.boxShadow = shadowString;
+    sup = Math.abs(~~(10 * suppress));
+    ang = Math.abs(~~(this.base.angle / 45));
+    flick = Math.max(sup, ang);
+    if (this.tick % (this.speed - flick) === 0) {
+      this.o = h.rand(8, 10) / 10;
       return this.shadow.style.opacity = this.o;
     }
   };

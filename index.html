@@ -1,19 +1,15 @@
-<doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>jelly torch</title>
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
-    <canvas id="js-canvas"
-      width="1200"
-      height="900"
-      class="canvas"></canvas>
-
-    <div class="shadow" id="js-shadow"></div>
-
-    <img src="i/torch.png" alt="" class="torch">
-
+    <div class="scene">
+      <canvas id="js-canvas" width="1200" height="900" class="canvas"></canvas>
+      <div id="js-shadow" class="shadow"></div>
+      <div class="torch"></div>
+    </div>
     <script src="dist/ignite.js"></script>
   </body>
 </html>

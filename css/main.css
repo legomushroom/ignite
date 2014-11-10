@@ -1,6 +1,15 @@
+body,
+html {
+  height: 100%;
+}
 body {
   margin: 0;
   overflow: hidden;
+  text-align: center;
+}
+.scene {
+  position: relative;
+  display: inline-block;
 }
 .canvas {
   width: 600px;
@@ -9,24 +18,27 @@ body {
   display: block;
   position: relative;
   z-index: 2;
-  border: 1px solid #ff69b4;
   margin: 0 auto;
 }
 .shadow {
-  width: 0;
-  height: 0;
-  box-shadow: 0 0 400px 200px #f6d58a;
+  width: 700px;
+  height: 700px;
+  background: transparent url("../i/shadow.svg") no-repeat center center;
   position: absolute;
-  border-radius: 50%;
   z-index: 1;
-  margin-top: -25px;
   left: 50%;
   top: 50%;
+  margin-left: -350px;
+  margin-top: -311.1111111111111px;
 }
 .torch {
   position: absolute;
   z-index: 2;
   left: 50%;
-  top: 547px;
-  margin-left: -9px;
+  bottom: -130px;
+  margin-left: -11px;
+  width: 73px;
+  height: 144px;
+  background: transparent url("../i/torch@2x.png") no-repeat center center;
+  background-size: 100% auto;
 }

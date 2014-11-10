@@ -1,7 +1,16 @@
 
+body, html
+  height 100%
+
 body
   margin 0
   overflow hidden
+  text-align center
+
+.scene
+  position relative
+  display inline-block
+  // border 1px solid green
 .canvas
   width 600px
   height 450px
@@ -10,27 +19,37 @@ body
   // position absolute
   position relative
   z-index 2
-  border 1px solid hotpink
+  // border 1px solid hotpink
   margin 0 auto
   // &--2
   //   z-index 1
-
+    
+shadowSize = 700px
 .shadow
-  width  0
-  height 0
-  box-shadow 0 0 400px 200px #F6D58A
+  width  shadowSize
+  height shadowSize
+  // box-shadow 0 0 400px 200px #F6D58A
+  background transparent url('../i/shadow.svg') no-repeat center center
   position absolute
-  border-radius 50%
+  // border-radius 50%
   z-index 1
-  margin-top -25px
-  // opacity 1
-  
   left 50%
   top 50%
+  margin-left -(shadowSize/2)
+  margin-top  -(shadowSize/2.25)
+  // transform translate(-50%)
   
+torchHeight = 144px
 .torch
   position absolute
   z-index 2
   left 50%
-  top  547px
-  margin-left - 9px
+  bottom - torchHeight + 14px
+  margin-left - 11px
+  width  73px
+  height torchHeight
+  background transparent url('../i/torch@2x.png') no-repeat center center
+  background-size 100% auto
+
+// *
+//   border 1px solid deeppink
