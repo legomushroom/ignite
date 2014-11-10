@@ -67,7 +67,7 @@ class Main
     @MAX_ANGLE = 35
     @suppress = 0
     @startX = @wWidth/4
-    @startY = 420
+    @startY = 375
     
     @base = new Base
       ctx: @ctx

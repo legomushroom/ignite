@@ -426,7 +426,7 @@ Main = (function() {
     this.MAX_ANGLE = 35;
     this.suppress = 0;
     this.startX = this.wWidth / 4;
-    this.startY = 420;
+    this.startY = 375;
     this.base = new Base({
       ctx: this.ctx,
       x: (this.startX + 10) * h.PX,
