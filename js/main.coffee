@@ -67,7 +67,7 @@ class Main
     @MAX_ANGLE = 35
     @suppress = 0
     @startX = @wWidth/4
-    @startY = 500
+    @startY = 420
     
     @base = new Base
       ctx: @ctx
@@ -314,7 +314,7 @@ class Main
     # LOOP
   animationLoop: ->
     @ctx.clearRect 0, 0, @wWidth, @wWidth
-    @shadow.draw()
+    # @shadow.draw()
     i = @sparks.length - 1
     while i >= 0
       @sparks[i].draw()

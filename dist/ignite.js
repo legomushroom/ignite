@@ -426,7 +426,7 @@ Main = (function() {
     this.MAX_ANGLE = 35;
     this.suppress = 0;
     this.startX = this.wWidth / 4;
-    this.startY = 500;
+    this.startY = 420;
     this.base = new Base({
       ctx: this.ctx,
       x: (this.startX + 10) * h.PX,
@@ -752,7 +752,6 @@ Main = (function() {
   Main.prototype.animationLoop = function() {
     var i;
     this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
-    this.shadow.draw();
     i = this.sparks.length - 1;
     while (i >= 0) {
       this.sparks[i].draw();

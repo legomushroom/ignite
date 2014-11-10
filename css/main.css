@@ -3,12 +3,13 @@ body {
   overflow: hidden;
 }
 .canvas {
-  width: 1280px;
-  height: 1280px;
+  width: 532px;
+  height: 700px;
   margin: 0 auto;
   display: block;
   position: relative;
   z-index: 2;
+  border: 1px solid #ff69b4;
   margin: 0 auto;
 }
 .shadow {
