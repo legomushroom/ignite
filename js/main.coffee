@@ -7,6 +7,11 @@ BasePoint = require './base-point'
 Shadow = require './shadow'
 h = require './helpers'
 
+# TODO:
+#   prefixes to transform(shadow)
+#   torch slide
+#   fade scene
+
 class Main
   constructor:(@o={})->
     @vars()
@@ -182,7 +187,8 @@ class Main
       color: "#ED8CBA"
       top:    x: @startX-20, y: @startY-160
       right:  x: @startX,    y: @startY+10
-      bottom: x: @startX-20, y: @startY+38
+      # bottom: x: @startX-20, y: @startY+38
+      bottom: x: @startX, y: @startY+52
       left:   x: @startX-68, y: @startY+4
       basePoint: @basePoint2
       base: @base
@@ -198,7 +204,8 @@ class Main
       color: "#ED8CBA"
       top:    x: @startX-10, y: @startY-160
       right:  x: @startX,    y: @startY+10
-      bottom: x: @startX-20, y: @startY+38
+      bottom: x: @startX, y: @startY+52
+      # bottom: x: @startX-20, y: @startY+38
       left:   x: @startX-68, y: @startY+4
       basePoint: @basePoint21
       base: @base
@@ -228,7 +235,8 @@ class Main
       color: "#F6D58A"
       top:    x: @startX+52, y: @startY-148
       right:  x: @startX+76, y: @startY+2
-      bottom: x: @startX+28, y: @startY+44
+      # bottom: x: @startX+28, y: @startY+44
+      bottom: x: @startX, y: @startY+70
       left:   x: @startX,    y: @startY+10
       basePoint: @basePoint4
       base: @base
@@ -244,7 +252,8 @@ class Main
       color: "#F6D58A"
       top:    x: @startX+44, y: @startY-168
       right:  x: @startX+76, y: @startY+2
-      bottom: x: @startX+28, y: @startY+44
+      # bottom: x: @startX+28, y: @startY+44
+      bottom: x: @startX, y: @startY+70
       left:   x: @startX,    y: @startY+10
       basePoint: @basePoint41
       base: @base

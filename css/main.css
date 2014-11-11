@@ -43,8 +43,7 @@ body {
   margin-left: -11px;
   width: 73px;
   height: 144px;
-  background: transparent url("../i/torch@2x.png") no-repeat center center;
-  background-size: 100% auto;
+  background: transparent url("../i/torch.svg") no-repeat center center;
 }
 .jelly-torch {
   position: absolute;

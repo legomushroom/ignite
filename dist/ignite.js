@@ -588,8 +588,8 @@ Main = (function() {
         y: this.startY + 10
       },
       bottom: {
-        x: this.startX - 20,
-        y: this.startY + 38
+        x: this.startX,
+        y: this.startY + 52
       },
       left: {
         x: this.startX - 68,
@@ -615,8 +615,8 @@ Main = (function() {
         y: this.startY + 10
       },
       bottom: {
-        x: this.startX - 20,
-        y: this.startY + 38
+        x: this.startX,
+        y: this.startY + 52
       },
       left: {
         x: this.startX - 68,
@@ -667,8 +667,8 @@ Main = (function() {
         y: this.startY + 2
       },
       bottom: {
-        x: this.startX + 28,
-        y: this.startY + 44
+        x: this.startX,
+        y: this.startY + 70
       },
       left: {
         x: this.startX,
@@ -694,8 +694,8 @@ Main = (function() {
         y: this.startY + 2
       },
       bottom: {
-        x: this.startX + 28,
-        y: this.startY + 44
+        x: this.startX,
+        y: this.startY + 70
       },
       left: {
         x: this.startX,
