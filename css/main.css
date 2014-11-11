@@ -10,6 +10,7 @@ body {
 .scene {
   position: relative;
   display: inline-block;
+  margin-left: -200px;
 }
 .canvas {
   width: 600px;
@@ -18,6 +19,9 @@ body {
   display: block;
   position: relative;
   z-index: 2;
+  -webkit-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
   margin: 0 auto;
 }
 .shadow {
@@ -41,4 +45,22 @@ body {
   height: 144px;
   background: transparent url("../i/torch@2x.png") no-repeat center center;
   background-size: 100% auto;
+}
+.jelly-torch {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -80px;
+  margin-left: 140px;
+  z-index: 3;
+}
+.by {
+  position: absolute;
+  right: -84px;
+  bottom: 40px;
+  display: block;
+  width: 35px;
+  height: 32px;
+  background: transparent url("../i/by.svg") no-repeat center center;
+  z-index: 3;
 }

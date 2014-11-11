@@ -10,6 +10,7 @@ body
 .scene
   position relative
   display inline-block
+  margin-left -200px
   // border 1px solid green
 .canvas
   width 600px
@@ -20,6 +21,7 @@ body
   position relative
   z-index 2
   // border 1px solid hotpink
+  backface-visibility hidden
   margin 0 auto
   // &--2
   //   z-index 1
@@ -37,6 +39,7 @@ shadowSize = 700px
   top 50%
   margin-left -(shadowSize/2)
   margin-top  -(shadowSize/2.25)
+  // backface-visibility hidden
   // transform translate(-50%)
   
 torchHeight = 144px
@@ -51,5 +54,29 @@ torchHeight = 144px
   background transparent url('../i/torch@2x.png') no-repeat center center
   background-size 100% auto
 
+.jelly-torch
+  position absolute
+  left 50%
+  top 50%
+  margin-top -80px
+  margin-left 140px
+  z-index 3
+
+.by
+  position absolute
+  right -84px
+  bottom 40px
+  display block
+  width 35px
+  height 32px
+  background transparent url('../i/by.svg') no-repeat center center
+  z-index 3
+
 // *
 //   border 1px solid deeppink
+
+
+
+
+
+

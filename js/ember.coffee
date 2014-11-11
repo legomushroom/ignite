@@ -44,9 +44,9 @@ class Ember
     # rightOffset = Math.max s, rightOffset
 
     # if rightOffset is s then rightOffset = - rightOffset
-    if @name is '1' and leftOffset = s
-      topOffset = -s
-      leftOffset = 0
+    # if @name is '1' and leftOffset = s
+    #   topOffset = -s
+    #   leftOffset = 0
 
     @ctx.moveTo (@left.x+leftOffset)*h.PX, (@left.y+s+topOffset)*h.PX
     topX = @top.x + (@p*@delta.x); topY = @top.y+(@p*@delta.y)

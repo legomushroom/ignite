@@ -14,9 +14,6 @@ class Main
     @run()
 
   events:->
-    window.addEventListener 'resize', =>
-      @wWidth = window.outerWidth
-      @sizeCanvas()
     mc = new Hammer(document.body)
     # mc.add new Hammer.Pan {threshold: 50}
     isTouched = false

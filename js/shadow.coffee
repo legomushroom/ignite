@@ -13,6 +13,7 @@ class Shadow
     @speed = 3
 
   draw:->
+    # return
     return if @isFF
     suppress = 0
     suppress = if @base.suppress < 0

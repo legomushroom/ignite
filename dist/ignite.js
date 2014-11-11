@@ -199,10 +199,6 @@ Ember = (function() {
     s = this.base.suppress / 3;
     topOffset = 0;
     leftOffset = Math.max(s, leftOffset);
-    if (this.name === '1' && (leftOffset = s)) {
-      topOffset = -s;
-      leftOffset = 0;
-    }
     this.ctx.moveTo((this.left.x + leftOffset) * h.PX, (this.left.y + s + topOffset) * h.PX);
     topX = this.top.x + (this.p * this.delta.x);
     topY = this.top.y + (this.p * this.delta.y);
@@ -372,12 +368,6 @@ Main = (function() {
 
   Main.prototype.events = function() {
     var isTouched, mc, timeout;
-    window.addEventListener('resize', (function(_this) {
-      return function() {
-        _this.wWidth = window.outerWidth;
-        return _this.sizeCanvas();
-      };
-    })(this));
     mc = new Hammer(document.body);
     isTouched = false;
     timeout = null;
