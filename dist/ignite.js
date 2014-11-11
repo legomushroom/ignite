@@ -34,6 +34,11 @@ BasePoint = (function() {
     return typeof this.onPositionChange === "function" ? this.onPositionChange() : void 0;
   };
 
+  BasePoint.prototype.setOffset = function(offset) {
+    this.offset = offset;
+    return this.getPosition();
+  };
+
   BasePoint.prototype.setAngle = function(angle) {
     this.angle = this.baseAngle + angle;
     return this.getPosition();
@@ -364,7 +369,7 @@ Main = (function() {
     this.vars();
     this.events();
     this.run();
-    this.show();
+    this.showTorch();
   }
 
   Main.prototype.events = function() {
@@ -429,7 +434,23 @@ Main = (function() {
     })(this)).start();
   };
 
-  Main.prototype.show = function() {
+  Main.prototype.showTorch = function() {
+    var it;
+    it = this;
+    return this.tweenTorch = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 300).onUpdate(function() {
+      it.torch.style.opacity = this.p;
+      it.torch.style.transform = "translateY(" + (15 * (1 - this.p)) + "px)";
+      if (this.p > .5 && !it.isShowed) {
+        return it.showFire();
+      }
+    }).easing(TWEEN.Easing.Cubic.Out).delay(1000).start();
+  };
+
+  Main.prototype.showFire = function() {
     var i, it, lefts, offsets, rights;
     it = this;
     lefts = [];
@@ -452,8 +473,8 @@ Main = (function() {
       p: 0
     }).to({
       p: 1
-    }, 2000).onUpdate(function() {
-      var ember, left, newLeftX, newLeftY, newRightX, newRightY, offset, right, _results;
+    }, 1500).onUpdate(function() {
+      var ember, left, newLeftX, newLeftY, newRightX, newRightY, right, transform, _results;
       i = it.embers.length - 1;
       _results = [];
       while (i >= 0) {
@@ -472,21 +493,24 @@ Main = (function() {
           x: newRightX,
           y: newRightY
         };
-        offset = offsets[i];
-        ember.basePoint.offset = 450 + ((offset - 450) * this.p);
-        ember.basePoint.getPosition();
+        ember.basePoint.setOffset(250 + ((offsets[i] - 250) * this.p));
+        transform = "scale(" + this.p + ") translateY(" + (300 * (1 - this.p)) + "px)";
+        it.shadow.shadow.style.transform = transform;
         _results.push(i--);
       }
       return _results;
-    }).onStart(function() {
-      return it.isShowed = true;
-    }).delay(2000).easing(TWEEN.Easing.Elastic.Out).start();
+    }).onStart((function(_this) {
+      return function() {
+        return _this.isShowed = true;
+      };
+    })(this)).easing(TWEEN.Easing.Elastic.Out).start();
   };
 
   Main.prototype.vars = function() {
     this.canvas = document.getElementById("js-canvas");
     this.ctx = this.canvas.getContext("2d");
     this.wWidth = parseInt(this.canvas.getAttribute('width'), 10);
+    this.torch = document.getElementById('js-torch');
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];

@@ -30,17 +30,14 @@ shadowSize = 700px
 .shadow
   width  shadowSize
   height shadowSize
-  // box-shadow 0 0 400px 200px #F6D58A
   background transparent url('../i/shadow.svg') no-repeat center center
   position absolute
-  // border-radius 50%
   z-index 1
   left 50%
   top 50%
   margin-left -(shadowSize/2)
   margin-top  -(shadowSize/2.25)
-  // backface-visibility hidden
-  // transform translate(-50%)
+  transform  scale(0) translateY(300px)
   
 torchHeight = 144px
 .torch
@@ -54,7 +51,7 @@ torchHeight = 144px
   // background transparent url('../i/torch@2x.png') no-repeat center center
   // background-size 100% auto
   background transparent url('../i/torch.svg') no-repeat center center
-  
+  opacity 0
 
 .jelly-torch
   position absolute

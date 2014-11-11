@@ -34,6 +34,9 @@ body {
   top: 50%;
   margin-left: -350px;
   margin-top: -311.1111111111111px;
+  -webkit-transform: scale(0) translateY(300px);
+  -ms-transform: scale(0) translateY(300px);
+  transform: scale(0) translateY(300px);
 }
 .torch {
   position: absolute;
@@ -44,6 +47,7 @@ body {
   width: 73px;
   height: 144px;
   background: transparent url("../i/torch.svg") no-repeat center center;
+  opacity: 0;
 }
 .jelly-torch {
   position: absolute;

@@ -26,9 +26,9 @@ class BasePoint
 
     @onPositionChange?()
 
-  setAngle:(angle)-> @angle = @baseAngle + angle; @getPosition()
-
-  setSuppress:(n)->  @suppress = n; @getPosition()
+  setOffset:(offset)->  @offset = offset; @getPosition()
+  setAngle:(angle)->    @angle = @baseAngle + angle; @getPosition()
+  setSuppress:(n)->     @suppress = n; @getPosition()
 
   draw:->
     return

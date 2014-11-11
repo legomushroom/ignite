@@ -17,8 +17,7 @@ class Main
     @vars()
     @events()
     @run()
-    @show()
-
+    @showTorch()
 
   events:->
     mc = new Hammer(document.body)
@@ -57,10 +56,23 @@ class Main
         @suppress = 0
       .start()
 
-  show:->
+  showTorch:->
+    it = @
+    @tweenTorch = new TWEEN.Tween(p:0).to({p:1}, 300)
+      .onUpdate ->
+        it.torch.style.opacity = @p
+        it.torch.style.transform = "translateY(#{15*(1-@p)}px)"
+        if @p > .5 and !it.isShowed then it.showFire()
+        # console.log 'a'
+      .easing(TWEEN.Easing.Cubic.Out)
+      .delay 1000
+      # .onComplete => @
+      .start()
+
+
+  showFire:->
     it = @; lefts  = []; rights = []; offsets = []
     i = it.embers.length - 1
-    # @shadow.
     while i >= 0
       lefts[i] =
         x: it.embers[i].left.x
@@ -70,7 +82,7 @@ class Main
         y: it.embers[i].right.y
       offsets[i] = it.embers[i].basePoint.offset
       i--
-    @tweenShow = new TWEEN.Tween(p:0).to({p:1},2000)
+    @tweenShow = new TWEEN.Tween(p:0).to({p:1},1500)
       .onUpdate ->
         i = it.embers.length - 1
         while i >= 0
@@ -82,22 +94,20 @@ class Main
           newRightY = (it.startY+60)+((right.y-(it.startY+60))*@p)
           ember.left  = x: newLeftX,  y: newLeftY
           ember.right = x: newRightX, y: newRightY
-          offset = offsets[i]
-          ember.basePoint.offset = 450+((offset-450)*@p)
-          ember.basePoint.getPosition()
+          ember.basePoint.setOffset 250+((offsets[i]-250)*@p)
+          transform = "scale(#{@p}) translateY(#{300*(1-@p)}px)"
+          it.shadow.shadow.style.transform = transform
           i--
-      .onStart -> it.isShowed = true
-      .delay(2000)
+      .onStart => @isShowed = true
       .easing(TWEEN.Easing.Elastic.Out)
       .start()
 
   vars:->
     # SYS
     @canvas = document.getElementById("js-canvas")
-    # @canvas2 = document.getElementById("js-canvas2")
     @ctx = @canvas.getContext("2d")
-    # @ctx2 = @canvas2.getContext("2d")
     @wWidth = parseInt @canvas.getAttribute('width'), 10
+    @torch = document.getElementById 'js-torch'
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
