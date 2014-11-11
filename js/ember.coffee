@@ -86,8 +86,8 @@ class Ember
     @flickCenterStart.y = flickCenter.y
     @flickRadius = flickRadius
     return
-  
-  getDelta: ->
+
+  getDelta:->
     suppress = Math.abs(@base.suppress)
     if @base.suppress > 0 then suppress /= 2
     speed = Math.abs(@base.angle)

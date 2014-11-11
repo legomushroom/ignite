@@ -364,6 +364,7 @@ Main = (function() {
     this.vars();
     this.events();
     this.run();
+    this.show();
   }
 
   Main.prototype.events = function() {
@@ -426,6 +427,60 @@ Main = (function() {
         return _this.suppress = 0;
       };
     })(this)).start();
+  };
+
+  Main.prototype.show = function() {
+    var i, it, lefts, offsets, rights;
+    it = this;
+    lefts = [];
+    rights = [];
+    offsets = [];
+    i = it.embers.length - 1;
+    while (i >= 0) {
+      lefts[i] = {
+        x: it.embers[i].left.x,
+        y: it.embers[i].left.y
+      };
+      rights[i] = {
+        x: it.embers[i].right.x,
+        y: it.embers[i].right.y
+      };
+      offsets[i] = it.embers[i].basePoint.offset;
+      i--;
+    }
+    return this.tweenShow = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 2000).onUpdate(function() {
+      var ember, left, newLeftX, newLeftY, newRightX, newRightY, offset, right, _results;
+      i = it.embers.length - 1;
+      _results = [];
+      while (i >= 0) {
+        ember = it.embers[i];
+        left = lefts[i];
+        right = rights[i];
+        newLeftX = it.startX + ((left.x - it.startX) * this.p);
+        newLeftY = (it.startY + 60) + ((left.y - (it.startY + 60)) * this.p);
+        newRightX = it.startX + ((right.x - it.startX) * this.p);
+        newRightY = (it.startY + 60) + ((right.y - (it.startY + 60)) * this.p);
+        ember.left = {
+          x: newLeftX,
+          y: newLeftY
+        };
+        ember.right = {
+          x: newRightX,
+          y: newRightY
+        };
+        offset = offsets[i];
+        ember.basePoint.offset = 450 + ((offset - 450) * this.p);
+        ember.basePoint.getPosition();
+        _results.push(i--);
+      }
+      return _results;
+    }).onStart(function() {
+      return it.isShowed = true;
+    }).delay(2000).easing(TWEEN.Easing.Elastic.Out).start();
   };
 
   Main.prototype.vars = function() {
@@ -764,26 +819,22 @@ Main = (function() {
 
   Main.prototype.animationLoop = function() {
     var i;
-    this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
-    this.shadow.draw();
-    i = this.sparks.length - 1;
-    while (i >= 0) {
-      this.sparks[i].draw();
-      i--;
-    }
-    i = this.embers.length - 1;
-    while (i >= 0) {
-      this.embers[i].draw();
-      i--;
-    }
-    this.base.draw();
-    i = this.base.points.length - 1;
-    while (i >= 0) {
-      this.base.points[i].draw();
-      i--;
+    if (this.isShowed) {
+      this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
+      this.shadow.draw();
+      i = this.sparks.length - 1;
+      while (i >= 0) {
+        this.sparks[i].draw();
+        i--;
+      }
+      i = this.embers.length - 1;
+      while (i >= 0) {
+        this.embers[i].draw();
+        i--;
+      }
     }
     TWEEN.update();
-    requestAnimationFrame(this.animationLoop);
+    return requestAnimationFrame(this.animationLoop);
   };
 
   return Main;

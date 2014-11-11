@@ -17,6 +17,8 @@ class Main
     @vars()
     @events()
     @run()
+    @show()
+
 
   events:->
     mc = new Hammer(document.body)
@@ -55,6 +57,39 @@ class Main
         @suppress = 0
       .start()
 
+  show:->
+    it = @; lefts  = []; rights = []; offsets = []
+    i = it.embers.length - 1
+    # @shadow.
+    while i >= 0
+      lefts[i] =
+        x: it.embers[i].left.x
+        y: it.embers[i].left.y
+      rights[i] =
+        x: it.embers[i].right.x
+        y: it.embers[i].right.y
+      offsets[i] = it.embers[i].basePoint.offset
+      i--
+    @tweenShow = new TWEEN.Tween(p:0).to({p:1},2000)
+      .onUpdate ->
+        i = it.embers.length - 1
+        while i >= 0
+          ember = it.embers[i]
+          left = lefts[i]; right = rights[i]
+          newLeftX = it.startX+((left.x-it.startX)*@p)
+          newLeftY  = (it.startY+60)+((left.y-(it.startY+60))*@p)
+          newRightX = it.startX+((right.x-it.startX)*@p)
+          newRightY = (it.startY+60)+((right.y-(it.startY+60))*@p)
+          ember.left  = x: newLeftX,  y: newLeftY
+          ember.right = x: newRightX, y: newRightY
+          offset = offsets[i]
+          ember.basePoint.offset = 450+((offset-450)*@p)
+          ember.basePoint.getPosition()
+          i--
+      .onStart -> it.isShowed = true
+      .delay(2000)
+      .easing(TWEEN.Easing.Elastic.Out)
+      .start()
 
   vars:->
     # SYS
@@ -318,29 +353,29 @@ class Main
 
     @ctx.globalCompositeOperation = "multiply"
 
-    # LOOP
+  # LOOP
   animationLoop: ->
-    @ctx.clearRect 0, 0, @wWidth, @wWidth
-    @shadow.draw()
-    i = @sparks.length - 1
-    while i >= 0
-      @sparks[i].draw()
-      i--
+    if @isShowed
+      @ctx.clearRect 0, 0, @wWidth, @wWidth
+      @shadow.draw()
+      i = @sparks.length - 1
+      while i >= 0
+        @sparks[i].draw()
+        i--
 
-    i = @embers.length - 1
-    while i >= 0
-      @embers[i].draw()
-      i--
+      i = @embers.length - 1
+      while i >= 0
+        @embers[i].draw()
+        i--
 
-    @base.draw()
-    i = @base.points.length - 1
-    while i >= 0
-      @base.points[i].draw()
-      i--
+      # @base.draw()
+      # i = @base.points.length - 1
+      # while i >= 0
+      #   @base.points[i].draw()
+      #   i--
 
     TWEEN.update()
     requestAnimationFrame @animationLoop
-    return
 
 
 new Main

@@ -1,9 +1,8 @@
 h = require './helpers'
 
 class BasePoint
-  constructor:(@o={})->
-    @vars()
-    @getPosition()
+  constructor:(@o={})-> @vars(); @getPosition()
+
   vars:->
     @ctx = @o.ctx
     @base = @o.base
@@ -27,13 +26,9 @@ class BasePoint
 
     @onPositionChange?()
 
-  setAngle:(angle)->
-    @angle = @baseAngle + angle
-    @getPosition()
+  setAngle:(angle)-> @angle = @baseAngle + angle; @getPosition()
 
-  setSuppress:(n)->
-    @suppress = n
-    @getPosition()
+  setSuppress:(n)->  @suppress = n; @getPosition()
 
   draw:->
     return

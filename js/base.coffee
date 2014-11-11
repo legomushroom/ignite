@@ -10,6 +10,7 @@ class Base
     @angle = @o.angle
     @points = []
     @suppress = 0
+
   setAngle:(angle)->
     @angle = angle
     for point, i in @points
