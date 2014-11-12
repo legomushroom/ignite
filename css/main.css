@@ -11,6 +11,7 @@ body {
   position: relative;
   display: inline-block;
   margin-left: -200px;
+  border: 1px solid #008000;
 }
 .canvas {
   width: 600px;

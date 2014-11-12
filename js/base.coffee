@@ -5,6 +5,7 @@ class Base
   vars:->
     @ctx = @o.ctx
     @x = @o.x
+    @initX = @x
     @y = @o.y
     @radius = @o.radius
     @angle = @o.angle
@@ -18,13 +19,18 @@ class Base
       point.setAngle @angle
   addPoint:(point)-> @points.push point
 
+  setX:(x)->
+    @x = x
+    for point, i in @points
+      point.getPosition()
+
   setSuppress:(n)->
     @suppress = n
     for point, i in @points
       point.setSuppress @suppress
 
   draw:->
-    return
+    # return
     @ctx.beginPath()
     @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
     @ctx.fillStyle = 'cyan'

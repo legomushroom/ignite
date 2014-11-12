@@ -12,7 +12,7 @@ mojs = require './mojs.min'
 # TODO:
 #   prefixes to transform(shadow)
 #   torch slide
-#   fade scene
+#   legend
 
 class Main
   constructor:(@o={})->
@@ -24,9 +24,22 @@ class Main
 
   events:->
     mc = new Hammer(document.body)
-    # mc.add new Hammer.Pan {threshold: 50}
+    tch = new Hammer(@torch)
     isTouched = false
     timeout = null
+
+    tch.on 'pan', (e)=>
+      # console.log e.pointers[0]
+      deltaX = e.deltaX
+      newX = @base.xOld + deltaX
+      return if Math.abs(newX - @base.initX) > 2*200
+      @base.setX newX
+      @torch.style.left = "#{newX/2 - 10}px"
+
+    tch.on 'panstart', (e)=>
+      # console.log @base.x
+      @base.xOld = @base.x
+
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
       # return if e.pointers[0].y > 520 or e.pointers[0].y < 100
@@ -34,6 +47,7 @@ class Main
       @base.panstart =  x: pointer.x, y: pointer.y
       isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
+      console.log 'a'
       if isTouched
         @ang = e.deltaX/10
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
@@ -170,8 +184,7 @@ class Main
       cnt: 5
       radius: { 75: 150 }
       color: '#FFC37B'
-      # color: 'rgba(0,0,0,0)'
-      shape: 'line'
+      # shape: 'line'
       bitRadius: { 3: 0 }
       lineWidth: { 2: 0 }
       position: x: 672, y: 394
@@ -367,7 +380,7 @@ class Main
    
     @embers.push ember1, ember11
     @embers.push ember2, ember21
-    @embers.push ember3#, ember31
+    @embers.push ember3
     @embers.push ember4, ember41
 
     spark1 = new Spark
@@ -438,7 +451,7 @@ class Main
         @embers[i].draw()
         i--
 
-      # @base.draw()
+      @base.draw()
       # i = @base.points.length - 1
       # while i >= 0
       #   @base.points[i].draw()

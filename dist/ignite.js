@@ -83,6 +83,7 @@ Base = (function() {
   Base.prototype.vars = function() {
     this.ctx = this.o.ctx;
     this.x = this.o.x;
+    this.initX = this.x;
     this.y = this.o.y;
     this.radius = this.o.radius;
     this.angle = this.o.angle;
@@ -107,6 +108,18 @@ Base = (function() {
     return this.points.push(point);
   };
 
+  Base.prototype.setX = function(x) {
+    var i, point, _i, _len, _ref, _results;
+    this.x = x;
+    _ref = this.points;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      point = _ref[i];
+      _results.push(point.getPosition());
+    }
+    return _results;
+  };
+
   Base.prototype.setSuppress = function(n) {
     var i, point, _i, _len, _ref, _results;
     this.suppress = n;
@@ -121,7 +134,6 @@ Base = (function() {
 
   Base.prototype.draw = function() {
     var x, y;
-    return;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
     this.ctx.fillStyle = 'cyan';
@@ -376,10 +388,28 @@ Main = (function() {
   }
 
   Main.prototype.events = function() {
-    var isTouched, mc, timeout;
+    var isTouched, mc, tch, timeout;
     mc = new Hammer(document.body);
+    tch = new Hammer(this.torch);
     isTouched = false;
     timeout = null;
+    tch.on('pan', (function(_this) {
+      return function(e) {
+        var deltaX, newX;
+        deltaX = e.deltaX;
+        newX = _this.base.xOld + deltaX;
+        if (Math.abs(newX - _this.base.initX) > 2 * 200) {
+          return;
+        }
+        _this.base.setX(newX);
+        return _this.torch.style.left = "" + (newX / 2 - 10) + "px";
+      };
+    })(this));
+    tch.on('panstart', (function(_this) {
+      return function(e) {
+        return _this.base.xOld = _this.base.x;
+      };
+    })(this));
     mc.on('tap', function(e) {
       return isTouched = true;
     });
@@ -397,6 +427,7 @@ Main = (function() {
     })(this));
     return mc.on('pan', (function(_this) {
       return function(e) {
+        console.log('a');
         if (isTouched) {
           _this.ang = e.deltaX / 10;
           if (_this.ang > _this.MAX_ANGLE) {
@@ -609,7 +640,6 @@ Main = (function() {
         75: 150
       },
       color: '#FFC37B',
-      shape: 'line',
       bitRadius: {
         3: 0
       },
@@ -959,6 +989,7 @@ Main = (function() {
         this.embers[i].draw();
         i--;
       }
+      this.base.draw();
     }
     TWEEN.update();
     return requestAnimationFrame(this.animationLoop);

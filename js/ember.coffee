@@ -42,7 +42,6 @@ class Ember
     topOffset = 0
     leftOffset = Math.max s, leftOffset
     # rightOffset = Math.max s, rightOffset
-
     # if rightOffset is s then rightOffset = - rightOffset
     # if @name is '1' and leftOffset = s
     #   topOffset = -s
