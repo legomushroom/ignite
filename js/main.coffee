@@ -7,6 +7,8 @@ BasePoint = require './base-point'
 Shadow = require './shadow'
 h = require './helpers'
 
+mojs = require './mojs.min'
+
 # TODO:
 #   prefixes to transform(shadow)
 #   torch slide
@@ -15,6 +17,7 @@ h = require './helpers'
 class Main
   constructor:(@o={})->
     @vars()
+    @prepareText()
     @events()
     @run()
     @showTorch()
@@ -57,7 +60,6 @@ class Main
       .start()
 
   showText:->
-    @prepareText()
     childs = @mask.children
     @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
       .onUpdate ->
@@ -70,6 +72,20 @@ class Main
           i--
       .delay(200)
       .onStart => @text.style.display = 'block'
+      .onComplete => @showMushroom()
+      .easing(TWEEN.Easing.Cubic.Out)
+      .start()
+
+  showMushroom:->
+    it = @
+    @tweenMushroom = new TWEEN.Tween(p:0).to({p:1}, 400)
+      .onUpdate ->
+        it.mushroom.style.opacity = "#{@p}"
+      .onStart =>
+        @mushroom.style.display = 'block'
+        @burst.run()
+          # delay: 500
+
       .easing(TWEEN.Easing.Cubic.Out)
       .start()
 
@@ -137,6 +153,8 @@ class Main
     @torch  = document.getElementById 'js-torch'
     @mask   = document.getElementById 'js-text-mask'
     @text   = document.getElementById 'js-text'
+    @scene  = document.getElementById 'js-scene'
+    @mushroom      = document.getElementById 'js-mushroom'
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []
@@ -145,6 +163,19 @@ class Main
     @suppress = 0
     @startX = @wWidth/4
     @startY = 390
+    @burst = new mojs.Burst
+      parent: @scene
+      isRunLess: true
+      duration: 800
+      cnt: 5
+      radius: { 75: 150 }
+      color: '#FFC37B'
+      # color: 'rgba(0,0,0,0)'
+      shape: 'line'
+      bitRadius: { 3: 0 }
+      lineWidth: { 2: 0 }
+      position: x: 672, y: 394
+      easing: 'Cubic.Out'
     
     @base = new Base
       ctx: @ctx

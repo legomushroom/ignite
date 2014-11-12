@@ -61,9 +61,10 @@ body {
   position: absolute;
   right: -84px;
   bottom: 40px;
-  display: block;
   width: 35px;
   height: 32px;
   background: transparent url("../i/by.svg") no-repeat center center;
   z-index: 3;
+  display: none;
+  opacity: 0;
 }
