@@ -56,21 +56,48 @@ class Main
         @suppress = 0
       .start()
 
+  showText:->
+    @prepareText()
+    childs = @mask.children
+    @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
+      .onUpdate ->
+        i = childs.length - 1
+        while i >= 0
+          child = childs[i]; coef = if child.isTorch then 1 else -1
+          if child.strokeLength
+            currOffset = coef*child.strokeLength*(1-@p)
+            child.style['stroke-dashoffset'] = "#{currOffset}px"
+          i--
+      .delay(200)
+      .onStart => @text.style.display = 'block'
+      .easing(TWEEN.Easing.Cubic.Out)
+      .start()
+
+  prepareText:->
+    for path, i in @mask.children
+      length = path.getTotalLength()
+      if length > 50
+        torch = path.getAttribute 'torch'
+        path.style['stroke-dasharray'] = "#{length}px"
+        path.style['stroke-dashoffset'] = "#{-length}px"
+        path.strokeLength = length
+        path.isTorch = !!torch
+
   showTorch:->
     it = @
     @tweenTorch = new TWEEN.Tween(p:0).to({p:1}, 300)
       .onUpdate ->
         it.torch.style.opacity = @p
-        it.torch.style.transform = "translateY(#{15*(1-@p)}px)"
-        if @p > .5 and !it.isShowed then it.showFire()
+        it.torch.style.transform = "translateY(#{25*(1-@p)}px)"
+        if @p > .5 and !it.isShowRun then it.showFire()
         # console.log 'a'
       .easing(TWEEN.Easing.Cubic.Out)
       .delay 1000
-      # .onComplete => @
+      .onComplete => @showText()
       .start()
 
-
   showFire:->
+    @isShowRun = true
     it = @; lefts  = []; rights = []; offsets = []
     i = it.embers.length - 1
     while i >= 0
@@ -107,7 +134,9 @@ class Main
     @canvas = document.getElementById("js-canvas")
     @ctx = @canvas.getContext("2d")
     @wWidth = parseInt @canvas.getAttribute('width'), 10
-    @torch = document.getElementById 'js-torch'
+    @torch  = document.getElementById 'js-torch'
+    @mask   = document.getElementById 'js-text-mask'
+    @text   = document.getElementById 'js-text'
     @animationLoop = @animationLoop.bind(@)
     @embers = []
     @sparks = []

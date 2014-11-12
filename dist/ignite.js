@@ -434,6 +434,55 @@ Main = (function() {
     })(this)).start();
   };
 
+  Main.prototype.showText = function() {
+    var childs;
+    this.prepareText();
+    childs = this.mask.children;
+    return this.tweenText = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 1200).onUpdate(function() {
+      var child, coef, currOffset, i, _results;
+      i = childs.length - 1;
+      _results = [];
+      while (i >= 0) {
+        child = childs[i];
+        coef = child.isTorch ? 1 : -1;
+        if (child.strokeLength) {
+          currOffset = coef * child.strokeLength * (1 - this.p);
+          child.style['stroke-dashoffset'] = "" + currOffset + "px";
+        }
+        _results.push(i--);
+      }
+      return _results;
+    }).delay(200).onStart((function(_this) {
+      return function() {
+        return _this.text.style.display = 'block';
+      };
+    })(this)).easing(TWEEN.Easing.Cubic.Out).start();
+  };
+
+  Main.prototype.prepareText = function() {
+    var i, length, path, torch, _i, _len, _ref, _results;
+    _ref = this.mask.children;
+    _results = [];
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      path = _ref[i];
+      length = path.getTotalLength();
+      if (length > 50) {
+        torch = path.getAttribute('torch');
+        path.style['stroke-dasharray'] = "" + length + "px";
+        path.style['stroke-dashoffset'] = "" + (-length) + "px";
+        path.strokeLength = length;
+        _results.push(path.isTorch = !!torch);
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
   Main.prototype.showTorch = function() {
     var it;
     it = this;
@@ -443,15 +492,20 @@ Main = (function() {
       p: 1
     }, 300).onUpdate(function() {
       it.torch.style.opacity = this.p;
-      it.torch.style.transform = "translateY(" + (15 * (1 - this.p)) + "px)";
-      if (this.p > .5 && !it.isShowed) {
+      it.torch.style.transform = "translateY(" + (25 * (1 - this.p)) + "px)";
+      if (this.p > .5 && !it.isShowRun) {
         return it.showFire();
       }
-    }).easing(TWEEN.Easing.Cubic.Out).delay(1000).start();
+    }).easing(TWEEN.Easing.Cubic.Out).delay(1000).onComplete((function(_this) {
+      return function() {
+        return _this.showText();
+      };
+    })(this)).start();
   };
 
   Main.prototype.showFire = function() {
     var i, it, lefts, offsets, rights;
+    this.isShowRun = true;
     it = this;
     lefts = [];
     rights = [];
@@ -511,6 +565,8 @@ Main = (function() {
     this.ctx = this.canvas.getContext("2d");
     this.wWidth = parseInt(this.canvas.getAttribute('width'), 10);
     this.torch = document.getElementById('js-torch');
+    this.mask = document.getElementById('js-text-mask');
+    this.text = document.getElementById('js-text');
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];
     this.sparks = [];
