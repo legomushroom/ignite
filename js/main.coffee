@@ -5,13 +5,13 @@ TWEEN = require './tweenjs.min'
 Base = require './base'
 BasePoint = require './base-point'
 Shadow = require './shadow'
+SHaker = require './shaker'
 h = require './helpers'
 
 mojs = require './mojs.min'
 
 # TODO:
 #   prefixes to transform(shadow)
-#   torch slide
 #   legend
 #   check ios composite
 
@@ -32,10 +32,22 @@ class Main
     isTouched = false
     timeout = null
 
-    currTorchX = 0
-    torchSceneX = 0
-    @ang2 = 0
-    tm = null
+    shaker = new Shaker
+    dir = ''
+    tch.on 'panleft',  (e)=>
+      return if dir is 'left'
+      dir = 'left'
+      shaker.setPosition
+        dir: 'left'
+        timestamp: new Date().getTime()
+    tch.on 'panright', (e)=>
+      return if dir is 'right'
+      dir = 'right'
+      shaker.setPosition
+        dir: 'right'
+        timestamp: new Date().getTime()
+
+    currTorchX = 0; torchSceneX = 0; tm = null
     tch.on 'pan', (e)=>
       torchSceneX = currTorchX + e.deltaX
       @torchScene.style.transform = "translateX(#{torchSceneX}px)"
@@ -45,24 +57,9 @@ class Main
         @stopNormalizingBase()
         @ang = angleVelocity
         @base.setAngle @ang
-        @base.setSuppress -Math.abs 9*velocityX
+        coef = if shaker.isShake then 3 else -1
+        @base.setSuppress coef*Math.abs 9*velocityX
       else @normalizeBase()
-
-      # if Math.abs(@ang) < Math.abs angleVelocity
-      #   @stopNormalizingBase()
-      #   @ang = angleVelocity
-      #   # console.log @ang
-      #   @base.setAngle @ang
-      #   @base.setSuppress -Math.abs 8*velocityX
-      # else if Math.abs angleVelocity < .2
-      #   @normalizeBase()
-      # else
-      #   if !tm
-      #     tm = setTimeout =>
-      #       @normalizeBase()
-      #       tm = null
-      #     , 100
-        # @normalizeBase()
 
     tch.on 'panstart', (e)=>
       angle = 0; @isTorch = true; @stopNormalizingBase()
