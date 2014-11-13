@@ -13,6 +13,7 @@ mojs = require './mojs.min'
 #   prefixes to transform(shadow)
 #   torch slide
 #   legend
+#   check ios composite
 
 class Main
   constructor:(@o={})->
@@ -22,24 +23,59 @@ class Main
     @run()
     @showTorch()
 
+  stopNormalizingBase:->
+    TWEEN.remove(@tween); @isNormalizing = false
+
   events:->
     mc = new Hammer(document.body)
     tch = new Hammer(@torch)
     isTouched = false
     timeout = null
 
+    currTorchX = 0
+    torchSceneX = 0
+    @ang2 = 0
+    tm = null
     tch.on 'pan', (e)=>
-      
+      torchSceneX = currTorchX + e.deltaX
+      @torchScene.style.transform = "translateX(#{torchSceneX}px)"
+      velocityX = h.slice e.velocityX, 7
+      angleVelocity = 6*velocityX
+      if Math.abs(angleVelocity) > 6
+        @stopNormalizingBase()
+        @ang = angleVelocity
+        @base.setAngle @ang
+        @base.setSuppress -Math.abs 9*velocityX
+      else @normalizeBase()
 
-    tch.on 'panstart', (e)=> @isTorch = true
-    tch.on 'panend',   (e)=> @isTorch = false
+      # if Math.abs(@ang) < Math.abs angleVelocity
+      #   @stopNormalizingBase()
+      #   @ang = angleVelocity
+      #   # console.log @ang
+      #   @base.setAngle @ang
+      #   @base.setSuppress -Math.abs 8*velocityX
+      # else if Math.abs angleVelocity < .2
+      #   @normalizeBase()
+      # else
+      #   if !tm
+      #     tm = setTimeout =>
+      #       @normalizeBase()
+      #       tm = null
+      #     , 100
+        # @normalizeBase()
+
+    tch.on 'panstart', (e)=>
+      angle = 0; @isTorch = true; @stopNormalizingBase()
+
+    tch.on 'panend',   (e)=> @isTorch = false; currTorchX = torchSceneX
 
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
+      return if @isTorch
       # return if e.pointers[0].y > 520 or e.pointers[0].y < 100
       pointer = e.pointers[0]
       @base.panstart =  x: pointer.x, y: pointer.y
-      isTouched = true; TWEEN.remove @tween
+      isTouched = true; TWEEN.remove(@tween); @isNormalizing = false
     mc.on 'pan', (e)=>
       return if @isTorch
       if isTouched
@@ -57,6 +93,8 @@ class Main
           , 350
 
   normalizeBase:->
+    return if @isNormalizing
+    @isNormalizing = true
     it = @
     @tween = new TWEEN.Tween(p:0).to({p:1}, 1500)
       .onUpdate ->
@@ -64,7 +102,7 @@ class Main
         it.base.setSuppress it.suppress*(1-@p)
       .easing(TWEEN.Easing.Elastic.Out)
       .onComplete =>
-        @suppress = 0
+        @suppress = 0; @isNormalizing = false ;@ang = 0
       .start()
 
   showText:->
@@ -162,6 +200,7 @@ class Main
     @mask   = document.getElementById 'js-text-mask'
     @text   = document.getElementById 'js-text'
     @scene  = document.getElementById 'js-scene'
+    @torchScene    = document.getElementById 'js-torch-scene'
     @mushroom      = document.getElementById 'js-mushroom'
     @animationLoop = @animationLoop.bind(@)
     @embers = []

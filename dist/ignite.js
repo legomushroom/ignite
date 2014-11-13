@@ -402,23 +402,50 @@ Main = (function() {
     this.showTorch();
   }
 
+  Main.prototype.stopNormalizingBase = function() {
+    TWEEN.remove(this.tween);
+    return this.isNormalizing = false;
+  };
+
   Main.prototype.events = function() {
-    var isTouched, mc, tch, timeout;
+    var currTorchX, isTouched, mc, tch, timeout, tm, torchSceneX;
     mc = new Hammer(document.body);
     tch = new Hammer(this.torch);
     isTouched = false;
     timeout = null;
+    currTorchX = 0;
+    torchSceneX = 0;
+    this.ang2 = 0;
+    tm = null;
     tch.on('pan', (function(_this) {
-      return function(e) {};
+      return function(e) {
+        var angleVelocity, velocityX;
+        torchSceneX = currTorchX + e.deltaX;
+        _this.torchScene.style.transform = "translateX(" + torchSceneX + "px)";
+        velocityX = h.slice(e.velocityX, 7);
+        angleVelocity = 6 * velocityX;
+        if (Math.abs(angleVelocity) > 6) {
+          _this.stopNormalizingBase();
+          _this.ang = angleVelocity;
+          _this.base.setAngle(_this.ang);
+          return _this.base.setSuppress(-Math.abs(9 * velocityX));
+        } else {
+          return _this.normalizeBase();
+        }
+      };
     })(this));
     tch.on('panstart', (function(_this) {
       return function(e) {
-        return _this.isTorch = true;
+        var angle;
+        angle = 0;
+        _this.isTorch = true;
+        return _this.stopNormalizingBase();
       };
     })(this));
     tch.on('panend', (function(_this) {
       return function(e) {
-        return _this.isTorch = false;
+        _this.isTorch = false;
+        return currTorchX = torchSceneX;
       };
     })(this));
     mc.on('tap', function(e) {
@@ -427,13 +454,17 @@ Main = (function() {
     mc.on('panstart', (function(_this) {
       return function(e) {
         var pointer;
+        if (_this.isTorch) {
+          return;
+        }
         pointer = e.pointers[0];
         _this.base.panstart = {
           x: pointer.x,
           y: pointer.y
         };
         isTouched = true;
-        return TWEEN.remove(_this.tween);
+        TWEEN.remove(_this.tween);
+        return _this.isNormalizing = false;
       };
     })(this));
     return mc.on('pan', (function(_this) {
@@ -466,6 +497,10 @@ Main = (function() {
 
   Main.prototype.normalizeBase = function() {
     var it;
+    if (this.isNormalizing) {
+      return;
+    }
+    this.isNormalizing = true;
     it = this;
     return this.tween = new TWEEN.Tween({
       p: 0
@@ -476,7 +511,9 @@ Main = (function() {
       return it.base.setSuppress(it.suppress * (1 - this.p));
     }).easing(TWEEN.Easing.Elastic.Out).onComplete((function(_this) {
       return function() {
-        return _this.suppress = 0;
+        _this.suppress = 0;
+        _this.isNormalizing = false;
+        return _this.ang = 0;
       };
     })(this)).start();
   };
@@ -635,6 +672,7 @@ Main = (function() {
     this.mask = document.getElementById('js-text-mask');
     this.text = document.getElementById('js-text');
     this.scene = document.getElementById('js-scene');
+    this.torchScene = document.getElementById('js-torch-scene');
     this.mushroom = document.getElementById('js-mushroom');
     this.animationLoop = this.animationLoop.bind(this);
     this.embers = [];

@@ -12,6 +12,9 @@ body {
   display: inline-block;
   margin-left: -200px;
 }
+.torch-scene {
+  position: relative;
+}
 .canvas {
   width: 600px;
   height: 450px;
