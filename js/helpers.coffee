@@ -3,6 +3,18 @@ class Helpers
   DEG: Math.PI/180
   rand:(min, max) -> Math.floor((Math.random() * ((max + 1) - min)) + min)
 
+
+  slice:(val, max)->
+    if val < 0
+      if val < -max
+        return -max
+
+    if val > 0
+      if val > max
+        return max
+
+    val
+
   constructor:-> @vars()
   vars:->
     @prefix = @getPrefix()

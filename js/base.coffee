@@ -30,7 +30,7 @@ class Base
       point.setSuppress @suppress
 
   draw:->
-    # return
+    return
     @ctx.beginPath()
     @ctx.arc @x, @y, 5*h.PX, 0, 2*Math.PI
     @ctx.fillStyle = 'cyan'

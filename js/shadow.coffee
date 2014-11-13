@@ -21,6 +21,7 @@ class Shadow
     else @base.suppress/120
 
     scale = "scale(#{1-suppress})"
+    x = @base.x - @base.initX
     translate = if @base.suppress > 0
       "translate(#{2*@base.angle}px,#{3*@base.suppress}px)"
     else ''

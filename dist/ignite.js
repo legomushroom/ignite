@@ -134,6 +134,7 @@ Base = (function() {
 
   Base.prototype.draw = function() {
     var x, y;
+    return;
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, 5 * h.PX, 0, 2 * Math.PI);
     this.ctx.fillStyle = 'cyan';
@@ -325,6 +326,20 @@ Helpers = (function() {
     return Math.floor((Math.random() * ((max + 1) - min)) + min);
   };
 
+  Helpers.prototype.slice = function(val, max) {
+    if (val < 0) {
+      if (val < -max) {
+        return -max;
+      }
+    }
+    if (val > 0) {
+      if (val > max) {
+        return max;
+      }
+    }
+    return val;
+  };
+
   function Helpers() {
     this.vars();
   }
@@ -394,21 +409,10 @@ Main = (function() {
     isTouched = false;
     timeout = null;
     tch.on('pan', (function(_this) {
-      return function(e) {
-        var deltaX, newX;
-        deltaX = e.deltaX;
-        newX = _this.base.xOld + deltaX;
-        if (Math.abs(newX - _this.base.initX) > 2 * 200) {
-          return;
-        }
-        _this.base.setX(newX);
-        return _this.torch.style.left = "" + (newX / 2 - 10) + "px";
-      };
+      return function(e) {};
     })(this));
     tch.on('panstart', (function(_this) {
-      return function(e) {
-        return _this.base.xOld = _this.base.x;
-      };
+      return function(e) {};
     })(this));
     mc.on('tap', function(e) {
       return isTouched = true;
@@ -1026,13 +1030,14 @@ Shadow = (function() {
   };
 
   Shadow.prototype.draw = function() {
-    var ang, flick, scale, sup, suppress, translate;
+    var ang, flick, scale, sup, suppress, translate, x;
     if (this.isFF) {
       return;
     }
     suppress = 0;
     suppress = this.base.suppress < 0 ? this.base.suppress / 80 : this.base.suppress / 120;
     scale = "scale(" + (1 - suppress) + ")";
+    x = this.base.x - this.base.initX;
     translate = this.base.suppress > 0 ? "translate(" + (2 * this.base.angle) + "px," + (3 * this.base.suppress) + "px)" : '';
     this.shadow.style.transform = "" + scale + " " + translate + " translateZ(0)";
     this.tick++;

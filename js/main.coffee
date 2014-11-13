@@ -29,16 +29,8 @@ class Main
     timeout = null
 
     tch.on 'pan', (e)=>
-      # console.log e.pointers[0]
-      deltaX = e.deltaX
-      newX = @base.xOld + deltaX
-      return if Math.abs(newX - @base.initX) > 2*200
-      @base.setX newX
-      @torch.style.left = "#{newX/2 - 10}px"
 
     tch.on 'panstart', (e)=>
-      # console.log @base.x
-      @base.xOld = @base.x
 
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
