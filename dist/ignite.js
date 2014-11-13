@@ -412,7 +412,14 @@ Main = (function() {
       return function(e) {};
     })(this));
     tch.on('panstart', (function(_this) {
-      return function(e) {};
+      return function(e) {
+        return _this.isTorch = true;
+      };
+    })(this));
+    tch.on('panend', (function(_this) {
+      return function(e) {
+        return _this.isTorch = false;
+      };
     })(this));
     mc.on('tap', function(e) {
       return isTouched = true;
@@ -431,7 +438,9 @@ Main = (function() {
     })(this));
     return mc.on('pan', (function(_this) {
       return function(e) {
-        console.log('a');
+        if (_this.isTorch) {
+          return;
+        }
         if (isTouched) {
           _this.ang = e.deltaX / 10;
           if (_this.ang > _this.MAX_ANGLE) {

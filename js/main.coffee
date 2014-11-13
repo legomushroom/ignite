@@ -29,8 +29,10 @@ class Main
     timeout = null
 
     tch.on 'pan', (e)=>
+      
 
-    tch.on 'panstart', (e)=>
+    tch.on 'panstart', (e)=> @isTorch = true
+    tch.on 'panend',   (e)=> @isTorch = false
 
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
@@ -39,7 +41,7 @@ class Main
       @base.panstart =  x: pointer.x, y: pointer.y
       isTouched = true; TWEEN.remove @tween
     mc.on 'pan', (e)=>
-      console.log 'a'
+      return if @isTorch
       if isTouched
         @ang = e.deltaX/10
         if @ang >  @MAX_ANGLE then @ang =  @MAX_ANGLE
