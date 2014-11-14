@@ -12,7 +12,6 @@ mojs = require './mojs.min'
 
 # TODO:
 #   legend
-#   make screen
 #   check ie9
 
 class Main
@@ -482,6 +481,10 @@ class Main
 
   # LOOP
   animationLoop: ->
+    @i ?= 0
+    @i++
+    if @i >= 170 then return false
+
     if @isShowed
       @ctx.clearRect 0, 0, @wWidth, @wWidth
       @shadow.draw()

@@ -1079,6 +1079,13 @@ Main = (function() {
 
   Main.prototype.animationLoop = function() {
     var i;
+    if (this.i == null) {
+      this.i = 0;
+    }
+    this.i++;
+    if (this.i >= 170) {
+      return false;
+    }
     if (this.isShowed) {
       this.ctx.clearRect(0, 0, this.wWidth, this.wWidth);
       this.shadow.draw();
