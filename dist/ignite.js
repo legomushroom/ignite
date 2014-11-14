@@ -565,19 +565,26 @@ Main = (function() {
 
   Main.prototype.showLegend = function() {
     var it;
+    if (this.isLegendHidden) {
+      return;
+    }
     it = this;
-    return this.tweenText = new TWEEN.Tween({
+    return this.tweenLegend = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
     }, 1200).onUpdate(function() {
       return it.legend.style.opacity = "" + this.p;
-    }).delay(2000).easing(TWEEN.Easing.Cubic.Out).start();
+    }).delay(2500).easing(TWEEN.Easing.Cubic.Out).start();
   };
 
   Main.prototype.hideLegend = function() {
-    !this.isLegendHidden && (this.legend.style.display = 'none');
-    return this.isLegendHidden = true;
+    if (this.isLegendHidden) {
+      return;
+    }
+    this.legend.style.display = 'none';
+    this.isLegendHidden = true;
+    return TWEEN.remove(this.tweenLegend);
   };
 
   Main.prototype.showText = function() {

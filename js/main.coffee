@@ -7,11 +7,7 @@ BasePoint = require './base-point'
 Shadow = require './shadow'
 Shaker = require './shaker'
 h = require './helpers'
-
 mojs = require './mojs.min'
-
-# TODO:
-#   legend
 
 class Main
   constructor:(@o={})->
@@ -109,16 +105,19 @@ class Main
       .start()
 
   showLegend:->
+    return if @isLegendHidden
     it = @
-    @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
+    @tweenLegend = new TWEEN.Tween(p:0).to({p:1}, 1200)
       .onUpdate -> it.legend.style.opacity = "#{@p}"
-      .delay(2000)
+      .delay(2500)
       .easing(TWEEN.Easing.Cubic.Out)
       .start()
 
   hideLegend:->
-    !@isLegendHidden and @legend.style.display = 'none'
+    return if @isLegendHidden
+    @legend.style.display = 'none'
     @isLegendHidden = true
+    TWEEN.remove(@tweenLegend)
 
   showText:->
     childs = @maskChilds
