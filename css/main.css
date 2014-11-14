@@ -71,3 +71,13 @@ body {
   display: none;
   opacity: 0;
 }
+.legend {
+  width: 334px;
+  height: 292px;
+  background: transparent url("../i/legend.svg") no-repeat center center;
+  top: 215px;
+  left: 112px;
+  position: absolute;
+  z-index: 4;
+  opacity: 0;
+}

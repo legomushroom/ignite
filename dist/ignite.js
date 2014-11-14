@@ -480,7 +480,8 @@ Main = (function() {
     })(this), 100);
     tch.on('panstart', (function(_this) {
       return function(e) {
-        return _this.isTorch = true;
+        _this.isTorch = true;
+        return _this.hideLegend();
       };
     })(this));
     tch.on('panend', (function(_this) {
@@ -491,11 +492,13 @@ Main = (function() {
       };
     })(this));
     mc.on('tap', function(e) {
-      return isTouched = true;
+      isTouched = true;
+      return this.hideLegend();
     });
     mc.on('panstart', (function(_this) {
       return function(e) {
         var pointer;
+        _this.hideLegend();
         if (_this.isTorch) {
           return;
         }
@@ -560,6 +563,23 @@ Main = (function() {
     })(this)).start();
   };
 
+  Main.prototype.showLegend = function() {
+    var it;
+    it = this;
+    return this.tweenText = new TWEEN.Tween({
+      p: 0
+    }).to({
+      p: 1
+    }, 1200).onUpdate(function() {
+      return it.legend.style.opacity = "" + this.p;
+    }).delay(2000).easing(TWEEN.Easing.Cubic.Out).start();
+  };
+
+  Main.prototype.hideLegend = function() {
+    !this.isLegendHidden && (this.legend.style.display = 'none');
+    return this.isLegendHidden = true;
+  };
+
   Main.prototype.showText = function() {
     var childs;
     childs = this.maskChilds;
@@ -604,6 +624,10 @@ Main = (function() {
       return function() {
         _this.mushroom.style.display = 'block';
         return _this.burst.run();
+      };
+    })(this)).onComplete((function(_this) {
+      return function() {
+        return _this.showLegend();
       };
     })(this)).easing(TWEEN.Easing.Cubic.Out).start();
   };
@@ -711,6 +735,7 @@ Main = (function() {
     this.ctx = this.canvas.getContext("2d");
     this.wWidth = parseInt(this.canvas.getAttribute('width'), 10);
     this.torch = document.getElementById('js-torch');
+    this.legend = document.getElementById('js-legend');
     this.mask = document.getElementById('js-text-mask');
     this.maskChilds = this.mask.childNodes;
     childs = [];

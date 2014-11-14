@@ -66,13 +66,14 @@ class Main
       else currTorchXOld = currTorchX
     , 100
 
-    tch.on 'panstart', (e)=> @isTorch = true
+    tch.on 'panstart', (e)=> @isTorch = true; @hideLegend()
     tch.on 'panend',   (e)=>
       @isTorch = false; currTorchX = torchSceneX
       @normalizeBase()
 
-    mc.on 'tap', (e)-> isTouched = true
+    mc.on 'tap', (e)-> isTouched = true; @hideLegend()
     mc.on 'panstart', (e)=>
+      @hideLegend()
       return if @isTorch
       # return if e.pointers[0].y > 520 or e.pointers[0].y < 100
       pointer = e.pointers[0]
@@ -107,6 +108,18 @@ class Main
         @suppress = 0; @ang = 0; @isNormalizing = false
       .start()
 
+  showLegend:->
+    it = @
+    @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
+      .onUpdate -> it.legend.style.opacity = "#{@p}"
+      .delay(2000)
+      .easing(TWEEN.Easing.Cubic.Out)
+      .start()
+
+  hideLegend:->
+    !@isLegendHidden and @legend.style.display = 'none'
+    @isLegendHidden = true
+
   showText:->
     childs = @maskChilds
     @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
@@ -132,8 +145,7 @@ class Main
       .onStart =>
         @mushroom.style.display = 'block'
         @burst.run()
-          # delay: 500
-
+      .onComplete => @showLegend()
       .easing(TWEEN.Easing.Cubic.Out)
       .start()
 
@@ -200,6 +212,7 @@ class Main
     @ctx = @canvas.getContext("2d")
     @wWidth = parseInt @canvas.getAttribute('width'), 10
     @torch  = document.getElementById 'js-torch'
+    @legend  = document.getElementById 'js-legend'
     @mask   = document.getElementById 'js-text-mask'
     @maskChilds = @mask.childNodes; childs = []
     for child, i in @maskChilds
