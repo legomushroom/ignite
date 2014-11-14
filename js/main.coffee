@@ -12,7 +12,6 @@ mojs = require './mojs.min'
 
 # TODO:
 #   legend
-#   check ie9
 
 class Main
   constructor:(@o={})->
@@ -481,10 +480,6 @@ class Main
 
   # LOOP
   animationLoop: ->
-    @i ?= 0
-    @i++
-    if @i >= 170 then return false
-
     if @isShowed
       @ctx.clearRect 0, 0, @wWidth, @wWidth
       @shadow.draw()
@@ -498,7 +493,7 @@ class Main
         @embers[i].draw()
         i--
 
-      @base.draw()
+      # @base.draw()
       # i = @base.points.length - 1
       # while i >= 0
       #   @base.points[i].draw()
