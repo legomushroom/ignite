@@ -25,7 +25,8 @@ class Shadow
     translate = if @base.suppress > 0
       "translate(#{2*@base.angle}px,#{3*@base.suppress}px)"
     else ''
-    @shadow.style.transform = "#{scale} #{translate} translateZ(0)"
+    h.transform @shadow, "#{scale} #{translate} translateZ(0)"
+    # @shadow.style.transform = "#{scale} #{translate} translateZ(0)"
 
     @tick++
     sup = Math.abs ~~(10*suppress)

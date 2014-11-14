@@ -5,15 +5,15 @@ TWEEN = require './tweenjs.min'
 Base = require './base'
 BasePoint = require './base-point'
 Shadow = require './shadow'
-SHaker = require './shaker'
+Shaker = require './shaker'
 h = require './helpers'
 
 mojs = require './mojs.min'
 
 # TODO:
-#   prefixes to transform(shadow)
 #   legend
-#   check ios composite
+#   make screen
+#   check ie9
 
 class Main
   constructor:(@o={})->
@@ -32,39 +32,46 @@ class Main
     isTouched = false
     timeout = null
 
-    shaker = new Shaker
+    @shaker = new Shaker
     dir = ''
     tch.on 'panleft',  (e)=>
       return if dir is 'left'
       dir = 'left'
-      shaker.setPosition
+      @shaker.setPosition
         dir: 'left'
         timestamp: new Date().getTime()
     tch.on 'panright', (e)=>
       return if dir is 'right'
       dir = 'right'
-      shaker.setPosition
+      @shaker.setPosition
         dir: 'right'
         timestamp: new Date().getTime()
 
     currTorchX = 0; torchSceneX = 0; tm = null
     tch.on 'pan', (e)=>
       torchSceneX = currTorchX + e.deltaX
-      @torchScene.style.transform = "translateX(#{torchSceneX}px)"
-      velocityX = h.slice e.velocityX, 7
-      angleVelocity = 6*velocityX
-      if Math.abs(angleVelocity) > 6
+      velocityX = h.slice e.velocityX, 6
+      angleVelocity = 12*velocityX
+      if Math.abs(velocityX) > 1
         @stopNormalizingBase()
         @ang = angleVelocity
+        @ang = h.slice @ang, 35
         @base.setAngle @ang
-        coef = if shaker.isShake then 3 else -1
+        coef = if @shaker.isShake then 2 else -1
         @base.setSuppress coef*Math.abs 9*velocityX
       else @normalizeBase()
+      h.transform @torchScene, "translateX(#{torchSceneX}px)"
 
-    tch.on 'panstart', (e)=>
-      angle = 0; @isTorch = true; @stopNormalizingBase()
+    currTorchXOld = -1
+    setInterval =>
+      if currTorchX is currTorchXOld and @isTorch then @normalizeBase()
+      else currTorchXOld = currTorchX
+    , 100
 
-    tch.on 'panend',   (e)=> @isTorch = false; currTorchX = torchSceneX
+    tch.on 'panstart', (e)=> @isTorch = true
+    tch.on 'panend',   (e)=>
+      @isTorch = false; currTorchX = torchSceneX
+      @normalizeBase()
 
     mc.on 'tap', (e)-> isTouched = true
     mc.on 'panstart', (e)=>
@@ -99,18 +106,18 @@ class Main
         it.base.setSuppress it.suppress*(1-@p)
       .easing(TWEEN.Easing.Elastic.Out)
       .onComplete =>
-        @suppress = 0; @isNormalizing = false ;@ang = 0
+        @suppress = 0; @ang = 0; @isNormalizing = false
       .start()
 
   showText:->
-    childs = @mask.children
+    childs = @maskChilds
     @tweenText = new TWEEN.Tween(p:0).to({p:1}, 1200)
       .onUpdate ->
         i = childs.length - 1
         while i >= 0
-          child = childs[i]; coef = if child.isTorch then 1 else -1
+          child = childs[i]#; coef = if child.isTorch then 1 else -1
           if child.strokeLength
-            currOffset = coef*child.strokeLength*(1-@p)
+            currOffset = child.strokeLength*(1-@p)
             child.style['stroke-dashoffset'] = "#{currOffset}px"
           i--
       .delay(200)
@@ -133,7 +140,7 @@ class Main
       .start()
 
   prepareText:->
-    for path, i in @mask.children
+    for path, i in @maskChilds
       length = path.getTotalLength()
       if length > 50
         torch = path.getAttribute 'torch'
@@ -147,7 +154,7 @@ class Main
     @tweenTorch = new TWEEN.Tween(p:0).to({p:1}, 300)
       .onUpdate ->
         it.torch.style.opacity = @p
-        it.torch.style.transform = "translateY(#{25*(1-@p)}px)"
+        h.transform it.torch, "translateY(#{25*(1-@p)}px)"
         if @p > .5 and !it.isShowRun then it.showFire()
         # console.log 'a'
       .easing(TWEEN.Easing.Cubic.Out)
@@ -182,7 +189,8 @@ class Main
           ember.right = x: newRightX, y: newRightY
           ember.basePoint.setOffset 250+((offsets[i]-250)*@p)
           transform = "scale(#{@p}) translateY(#{300*(1-@p)}px)"
-          it.shadow.shadow.style.transform = transform
+          h.transform it.shadow.shadow, transform
+          # it.shadow.shadow.style.transform = transform
           i--
       .onStart => @isShowed = true
       .easing(TWEEN.Easing.Elastic.Out)
@@ -195,6 +203,12 @@ class Main
     @wWidth = parseInt @canvas.getAttribute('width'), 10
     @torch  = document.getElementById 'js-torch'
     @mask   = document.getElementById 'js-text-mask'
+    @maskChilds = @mask.childNodes; childs = []
+    for child, i in @maskChilds
+      if child.getTotalLength
+        childs.push child
+    @maskChilds = childs
+
     @text   = document.getElementById 'js-text'
     @scene  = document.getElementById 'js-scene'
     @torchScene    = document.getElementById 'js-torch-scene'

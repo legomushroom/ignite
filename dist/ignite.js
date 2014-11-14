@@ -340,6 +340,11 @@ Helpers = (function() {
     return val;
   };
 
+  Helpers.prototype.transform = function(el, val) {
+    el.style["" + this.prefix.js + "Transform"] = val;
+    return el.style.transform = val;
+  };
+
   function Helpers() {
     this.vars();
   }
@@ -372,7 +377,7 @@ module.exports = new Helpers;
 
 
 },{}],6:[function(require,module,exports){
-var Base, BasePoint, Ember, Hammer, Main, SHaker, Shadow, Spark, TWEEN, h, mojs;
+var Base, BasePoint, Ember, Hammer, Main, Shadow, Shaker, Spark, TWEEN, h, mojs;
 
 Ember = require('./ember');
 
@@ -388,7 +393,7 @@ BasePoint = require('./base-point');
 
 Shadow = require('./shadow');
 
-SHaker = require('./shaker');
+Shaker = require('./shaker');
 
 h = require('./helpers');
 
@@ -410,12 +415,12 @@ Main = (function() {
   };
 
   Main.prototype.events = function() {
-    var currTorchX, dir, isTouched, mc, shaker, tch, timeout, tm, torchSceneX;
+    var currTorchX, currTorchXOld, dir, isTouched, mc, tch, timeout, tm, torchSceneX;
     mc = new Hammer(document.body);
     tch = new Hammer(this.torch);
     isTouched = false;
     timeout = null;
-    shaker = new Shaker;
+    this.shaker = new Shaker;
     dir = '';
     tch.on('panleft', (function(_this) {
       return function(e) {
@@ -423,7 +428,7 @@ Main = (function() {
           return;
         }
         dir = 'left';
-        return shaker.setPosition({
+        return _this.shaker.setPosition({
           dir: 'left',
           timestamp: new Date().getTime()
         });
@@ -435,7 +440,7 @@ Main = (function() {
           return;
         }
         dir = 'right';
-        return shaker.setPosition({
+        return _this.shaker.setPosition({
           dir: 'right',
           timestamp: new Date().getTime()
         });
@@ -448,32 +453,41 @@ Main = (function() {
       return function(e) {
         var angleVelocity, coef, velocityX;
         torchSceneX = currTorchX + e.deltaX;
-        _this.torchScene.style.transform = "translateX(" + torchSceneX + "px)";
-        velocityX = h.slice(e.velocityX, 7);
-        angleVelocity = 6 * velocityX;
-        if (Math.abs(angleVelocity) > 6) {
+        velocityX = h.slice(e.velocityX, 6);
+        angleVelocity = 12 * velocityX;
+        if (Math.abs(velocityX) > 1) {
           _this.stopNormalizingBase();
           _this.ang = angleVelocity;
+          _this.ang = h.slice(_this.ang, 35);
           _this.base.setAngle(_this.ang);
-          coef = shaker.isShake ? 3 : -1;
-          return _this.base.setSuppress(coef * Math.abs(9 * velocityX));
+          coef = _this.shaker.isShake ? 2 : -1;
+          _this.base.setSuppress(coef * Math.abs(9 * velocityX));
         } else {
-          return _this.normalizeBase();
+          _this.normalizeBase();
         }
+        return h.transform(_this.torchScene, "translateX(" + torchSceneX + "px)");
       };
     })(this));
+    currTorchXOld = -1;
+    setInterval((function(_this) {
+      return function() {
+        if (currTorchX === currTorchXOld && _this.isTorch) {
+          return _this.normalizeBase();
+        } else {
+          return currTorchXOld = currTorchX;
+        }
+      };
+    })(this), 100);
     tch.on('panstart', (function(_this) {
       return function(e) {
-        var angle;
-        angle = 0;
-        _this.isTorch = true;
-        return _this.stopNormalizingBase();
+        return _this.isTorch = true;
       };
     })(this));
     tch.on('panend', (function(_this) {
       return function(e) {
         _this.isTorch = false;
-        return currTorchX = torchSceneX;
+        currTorchX = torchSceneX;
+        return _this.normalizeBase();
       };
     })(this));
     mc.on('tap', function(e) {
@@ -540,28 +554,27 @@ Main = (function() {
     }).easing(TWEEN.Easing.Elastic.Out).onComplete((function(_this) {
       return function() {
         _this.suppress = 0;
-        _this.isNormalizing = false;
-        return _this.ang = 0;
+        _this.ang = 0;
+        return _this.isNormalizing = false;
       };
     })(this)).start();
   };
 
   Main.prototype.showText = function() {
     var childs;
-    childs = this.mask.children;
+    childs = this.maskChilds;
     return this.tweenText = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
     }, 1200).onUpdate(function() {
-      var child, coef, currOffset, i, _results;
+      var child, currOffset, i, _results;
       i = childs.length - 1;
       _results = [];
       while (i >= 0) {
         child = childs[i];
-        coef = child.isTorch ? 1 : -1;
         if (child.strokeLength) {
-          currOffset = coef * child.strokeLength * (1 - this.p);
+          currOffset = child.strokeLength * (1 - this.p);
           child.style['stroke-dashoffset'] = "" + currOffset + "px";
         }
         _results.push(i--);
@@ -597,7 +610,7 @@ Main = (function() {
 
   Main.prototype.prepareText = function() {
     var i, length, path, torch, _i, _len, _ref, _results;
-    _ref = this.mask.children;
+    _ref = this.maskChilds;
     _results = [];
     for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
       path = _ref[i];
@@ -624,7 +637,7 @@ Main = (function() {
       p: 1
     }, 300).onUpdate(function() {
       it.torch.style.opacity = this.p;
-      it.torch.style.transform = "translateY(" + (25 * (1 - this.p)) + "px)";
+      h.transform(it.torch, "translateY(" + (25 * (1 - this.p)) + "px)");
       if (this.p > .5 && !it.isShowRun) {
         return it.showFire();
       }
@@ -681,7 +694,7 @@ Main = (function() {
         };
         ember.basePoint.setOffset(250 + ((offsets[i] - 250) * this.p));
         transform = "scale(" + this.p + ") translateY(" + (300 * (1 - this.p)) + "px)";
-        it.shadow.shadow.style.transform = transform;
+        h.transform(it.shadow.shadow, transform);
         _results.push(i--);
       }
       return _results;
@@ -693,11 +706,22 @@ Main = (function() {
   };
 
   Main.prototype.vars = function() {
+    var child, childs, i, _i, _len, _ref;
     this.canvas = document.getElementById("js-canvas");
     this.ctx = this.canvas.getContext("2d");
     this.wWidth = parseInt(this.canvas.getAttribute('width'), 10);
     this.torch = document.getElementById('js-torch');
     this.mask = document.getElementById('js-text-mask');
+    this.maskChilds = this.mask.childNodes;
+    childs = [];
+    _ref = this.maskChilds;
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      child = _ref[i];
+      if (child.getTotalLength) {
+        childs.push(child);
+      }
+    }
+    this.maskChilds = childs;
     this.text = document.getElementById('js-text');
     this.scene = document.getElementById('js-scene');
     this.torchScene = document.getElementById('js-torch-scene');
@@ -1114,7 +1138,7 @@ Shadow = (function() {
     scale = "scale(" + (1 - suppress) + ")";
     x = this.base.x - this.base.initX;
     translate = this.base.suppress > 0 ? "translate(" + (2 * this.base.angle) + "px," + (3 * this.base.suppress) + "px)" : '';
-    this.shadow.style.transform = "" + scale + " " + translate + " translateZ(0)";
+    h.transform(this.shadow, "" + scale + " " + translate + " translateZ(0)");
     this.tick++;
     sup = Math.abs(~~(10 * suppress));
     ang = Math.abs(~~(this.base.angle / 45));
@@ -1145,6 +1169,16 @@ Shaker = (function() {
     return this.pos = [];
   };
 
+  Shaker.prototype.reset = function() {
+    var len;
+    this.isShake = false;
+    len = this.pos.length;
+    if (len < 3) {
+      return;
+    }
+    return this.pos = [this.pos[len - 3], this.pos[len - 2], this.pos[len - 1]];
+  };
+
   Shaker.prototype.setPosition = function(pos) {
     var lastI, len, time;
     this.pos.push(pos);
@@ -1155,7 +1189,7 @@ Shaker = (function() {
     lastI = len - 1;
     if ((pos.dir !== this.pos[lastI - 1].dir) && (pos.dir === this.pos[lastI - 2].dir)) {
       time = (pos.timestamp - this.pos[lastI - 1].timestamp) / 1000;
-      return this.isShake = time < .5;
+      return this.isShake = time < .2;
     }
   };
 

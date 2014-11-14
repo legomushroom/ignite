@@ -15,6 +15,11 @@ class Helpers
 
     val
 
+  transform:(el, val)->
+    el.style["#{@prefix.js}Transform"] = val
+    el.style.transform = val
+
+
   constructor:-> @vars()
   vars:->
     @prefix = @getPrefix()
