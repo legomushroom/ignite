@@ -1014,8 +1014,8 @@ Main = (function() {
         y: this.startY + 2
       },
       bottom: {
-        x: this.startX,
-        y: this.startY + 70
+        x: this.startX + 8,
+        y: this.startY + 60
       },
       left: {
         x: this.startX,
@@ -1041,8 +1041,8 @@ Main = (function() {
         y: this.startY + 2
       },
       bottom: {
-        x: this.startX,
-        y: this.startY + 70
+        x: this.startX + 8,
+        y: this.startY + 60
       },
       left: {
         x: this.startX,

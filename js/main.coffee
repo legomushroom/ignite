@@ -408,7 +408,7 @@ class Main
       top:    x: @startX+52, y: @startY-148
       right:  x: @startX+76, y: @startY+2
       # bottom: x: @startX+28, y: @startY+44
-      bottom: x: @startX, y: @startY+70
+      bottom: x: @startX+8, y: @startY+60
       left:   x: @startX,    y: @startY+10
       basePoint: @basePoint4
       base: @base
@@ -425,7 +425,7 @@ class Main
       top:    x: @startX+44, y: @startY-168
       right:  x: @startX+76, y: @startY+2
       # bottom: x: @startX+28, y: @startY+44
-      bottom: x: @startX, y: @startY+70
+      bottom: x: @startX+8, y: @startY+60
       left:   x: @startX,    y: @startY+10
       basePoint: @basePoint41
       base: @base
