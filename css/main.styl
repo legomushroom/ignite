@@ -4,13 +4,17 @@ body, html
 
 body
   margin 0
-  overflow hidden
-  text-align center
+  width 100%
 
 .scene
-  position relative
+  position absolute
   display inline-block
-  margin-left -200px
+  // border 1px solid red
+  top 50%
+  left 50%
+  transform translate(-50%,-50%)
+  margin-left -95px
+  margin-top  -115px
 
 .torch-scene
   position relative
@@ -51,6 +55,7 @@ torchHeight = 144px
   margin-left - 11px
   width  73px
   height torchHeight
+  cursor move
   // background transparent url('../i/torch@2x.png') no-repeat center center
   // background-size 100% auto
   background transparent url('../i/torch.svg') no-repeat center center
